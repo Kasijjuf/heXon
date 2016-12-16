@@ -323,6 +323,7 @@ void MasterControl::CreateScene()
     navMesh->Build();
 
     for (int p{1}; p <= Max(INPUT->GetNumJoysticks(), 2); ++p){
+
         players_.Push(SharedPtr<Player>(new Player(p, context_)));
 
         Node* pilotNode{ scene_->CreateChild("Pilot") };

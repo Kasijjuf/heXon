@@ -437,6 +437,9 @@ void Ship::Explode()
 
 void Ship::Eject()
 {
+    if (!IsEnabled() || MC->GetGameState() != GS_PLAY)
+        return;
+
     GetSubsystem<SpawnMaster>()->Create<Phaser>()->Set(model_->GetModel(),
                                                        GetPosition(),
                                                        rigidBody_->GetLinearVelocity() + node_->GetDirection() * 10e-5);

@@ -106,12 +106,18 @@ void InputMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
     for (Player* p : MC->GetPlayers()){
 
         int pId{ p->GetPlayerId() };
-        for (int button : pressedJoystickButtons_[pId-1])
+        Vector<SixaxisButton> pressedButtons{ pressedJoystickButtons_[pId-1] };
+
+        for (int button : pressedButtons)
             if (buttonBindingsPlayer_[pId].Contains(button)){
                 PlayerInputAction action{ buttonBindingsPlayer_[pId][button]};
                 if (!activeActions.player_[pId].Contains(action))
                     activeActions.player_[pId].Push(action);
             }
+
+        if (pressedButtons.Contains(SB_L2) && pressedButtons.Contains(SB_R2))
+            if (p->GetShip())
+                p->GetShip()->Eject();
     }
 
     //Handle the registered actions
