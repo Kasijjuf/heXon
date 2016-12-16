@@ -50,7 +50,7 @@ void Door::OnNodeSet(Node *node)
     doorLight->SetBrightness(6.66f);
     doorLight->SetSpecularIntensity(0.05f);
     doorLight->SetCastShadows(true);
-    doorLight->SetShadowBias(BiasParameters(0.000000023f, 0.42f));
+    doorLight->SetShadowBias(BiasParameters(0.0000023f, 2.3f));
 //    doorLight->SetShadowResolution(0.5f);
 
     node_->CreateComponent<SoundSource>();
