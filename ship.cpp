@@ -70,6 +70,9 @@ void Ship::OnNodeSet(Node *node)
     gui3d_ = guiNode->CreateComponent<GUI3D>();
     gui3d_->Initialize(colorSet_);
 
+    SharedPtr<AnimatedModel> model{ model_ };
+    model->Remove();
+    node_->CreateChild("Model")->AddComponent(model, model->GetID(), LOCAL);
     model_->SetModel(MC->GetModel("KlåMk10"));
 
     particleEmitter_ = node_->CreateComponent<ParticleEmitter>();
@@ -119,8 +122,6 @@ void Ship::SetColors()
 {
     model_->SetMaterial(0, MC->colorSets_[colorSet_].glowMaterial_);
     model_->SetMaterial(1, MC->colorSets_[colorSet_].hullMaterial_);
-//    model_->SetMaterial(0, colorSet_ == 2 ? MC->GetMaterial("PurpleGlow") : MC->GetMaterial("GreenGlow"));
-//    model_->SetMaterial(1, colorSet_ == 2 ? MC->GetMaterial("Purple") : MC->GetMaterial("Green"));
 
     SharedPtr<ParticleEffect> particleEffect{ CACHE->GetTempResource<ParticleEffect>("Particles/Shine.xml") };
     Vector<ColorFrame> colorFrames{};
@@ -129,6 +130,12 @@ void Ship::SetColors()
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 0.4f));
     particleEffect->SetColorFrames(colorFrames);
     particleEmitter_->SetEffect(particleEffect);
+}
+
+void Ship::HandleSetControlled()
+{
+    GetPlayer()->gui3d_ = gui3d_;
+    Player::colorSets_[GetPlayer()->GetPlayerId()] = colorSet_;
 }
 
 void Ship::EnterPlay(StringHash eventType, VariantMap &eventData)
@@ -185,21 +192,6 @@ void Ship::CreateTails()
         tailGen->SetColorForHead(MC->colorSets_[colorSet_].colors_.first_);//colorSet_==2 ? Color(1.0f, 0.666f, 0.23f) : Color(0.8f, 0.8f, 0.2f));
         tailGen->SetColorForTip(MC->colorSets_[colorSet_].colors_.first_);//colorSet_==2 ? Color(1.0f, 0.23f, 0.0f) : Color(0.23f, 0.6f, 0.0f));
         tailGens_.Push(tailGen);
-        /*RibbonTrail* tailGen{tailNode->CreateComponent<RibbonTrail>()};
-        tailGen->SetTrailType(TT_FACE_CAMERA);
-        tailGen->SetMaterial(CACHE->GetResource<Material>("Data/Materials/SlashTrail.xml"));
-        tailGen->SetLifetime(5.0f);
-        tailGen->SetStartColor(Color(1.0f, 1.0f, 1.0f, 0.75f));
-        tailGen->SetEndColor(Color(0.2f, 0.5f, 1.0f, 0.0f));
-        tailGen->SetTailColumn(4);
-        tailGen->SetStartScale(5.0f);*/
-//        tailGen->SetUpdateInvisible(true);
-
-//        tailGen->SetSetDrawHorizontal(true);
-//        tailGen->SetDrawVertical(t==1?true:false);
-//        tailGen->SetNumTails(t==1? 13 : 7);
-//        tailGen->SetWidthScale(t==1? 0.5f : 0.13f);
-//        tailGens_.Push(tailGen);
     }
 }
 
@@ -221,7 +213,7 @@ void Ship::Update(float timeStep)
     shieldMaterial_->SetShaderParameter("MatDiffColor", shieldColor.Lerp(newColor, Min(timeStep * 23.5f, 1.0f)));
 
     //Float
-//        ship_.node_->SetPosition(Vector3::UP *MC->Sine(2.3f, -0.1f, 0.1f));
+    model_->GetNode()->SetPosition(Vector3::UP * MC->Sine(0.34f, -0.1f, 0.1f));
     //Apply movement
     Vector3 force{ move_ * thrust_ * timeStep };
     if (rigidBody_->GetLinearVelocity().Length() < maxSpeed_
@@ -241,7 +233,7 @@ void Ship::Update(float timeStep)
         TailGenerator* tailGen{tailGens_[t]};
         if (tailGen) {
             tailGen->SetTailLength(t==1? velocityToScale * 0.1f : velocityToScale * 0.075f);
-            //            tailGen->SetNumTails(t==1? (int)(velocityToScale * 23) : (int)(velocityToScale * 16));
+            tailGen->SetNumTails(static_cast<int>(velocityToScale * (t==1 ? 23 : 16)));
             tailGen->SetWidthScale(t==1? velocityToScale * 0.666f : velocityToScale * 0.23f);
         }
     }
@@ -603,10 +595,4 @@ Vector3 Ship::Sniff(float playerFactor, Vector3& move, bool taste)
         smell *= 1.0f + (0.5f * scentEffect);
     }
     return smell / whiskers;
-}
-
-void Ship::HandleSetControlled()
-{
-    GetPlayer()->gui3d_ = gui3d_;
-    Player::colorSets_[GetPlayer()->GetPlayerId()] = colorSet_;
 }
