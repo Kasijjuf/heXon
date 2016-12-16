@@ -51,7 +51,7 @@ protected:
     bool big_;
     SharedPtr<Node> soundNode_;
     SharedPtr<Node> graphicsNode_;
-    Vector<SharedPtr<SoundSource> > sampleSources_;
+    Vector<SoundSource*> sampleSources_;
 
     void Emerge(const float timeStep);
 
@@ -59,10 +59,6 @@ protected:
     void StopAllSound();
 
     void BlinkCheck(StringHash eventType, VariantMap &eventData);
-private:
-    SharedPtr<Sound> flashSample_;
-    SharedPtr<SoundSource> flashSource_;
-
 };
 
 #endif // SCENEOBJECT_H

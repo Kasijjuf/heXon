@@ -33,9 +33,8 @@ SceneObject::SceneObject(Context* context):
 void SceneObject::OnNodeSet(Node *node)
 { (void)node;
 
-    flashSample_ = MC->GetSample("Flash");
     for (int i{0}; i < 5; ++i){
-        SharedPtr<SoundSource> sampleSource{ SharedPtr<SoundSource>(node_->CreateComponent<SoundSource>()) };
+        SoundSource* sampleSource{ node_->CreateComponent<SoundSource>() };
         sampleSource->SetSoundType(SOUND_EFFECT);
         sampleSources_.Push(sampleSource);
     }
@@ -65,7 +64,7 @@ void SceneObject::Disable()
 
 void SceneObject::PlaySample(Sound* sample, const float gain)
 {
-    for (SharedPtr<SoundSource> s : sampleSources_)
+    for (SoundSource* s : sampleSources_)
         if (!s->IsPlaying()){
             s->SetGain(gain);
             s->Play(sample);
@@ -74,12 +73,12 @@ void SceneObject::PlaySample(Sound* sample, const float gain)
 }
 void SceneObject::StopAllSound()
 {
-    for (SharedPtr<SoundSource> s : sampleSources_)
+    for (SoundSource* s : sampleSources_)
         s->Stop();
 }
 bool SceneObject::IsPlayingSound()
 {
-    for (SharedPtr<SoundSource> s : sampleSources_)
+    for (SoundSource* s : sampleSources_)
         if (s->IsPlaying()) return true;
     return false;
 }
@@ -117,7 +116,7 @@ void SceneObject::BlinkCheck(StringHash eventType, VariantMap &eventData)
                         ->Set(newPosition, big_);
 
 
-                PlaySample(flashSample_, 0.16f);
+                PlaySample(MC->GetSample("Flash"), 0.16f);
             }
         }
     }

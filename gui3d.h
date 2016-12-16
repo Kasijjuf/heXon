@@ -38,6 +38,7 @@ public:
     void SetHealth(float health);
     void SetHeartsAndApples(int hearts, int apples);
     void SetScore(unsigned score);
+    void PlayDeathSound();
 private:
     int colorSet_;
     unsigned score_;
@@ -48,6 +49,7 @@ private:
     int heartCount_;
 
     AnimatedModel* healthIndicator_;
+    SoundSource* deathSource_;
 
     Node* scoreNode_;
     HashMap< int, Node* > scoreDigits_;

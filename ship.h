@@ -75,9 +75,6 @@ private:
     Node* shieldNode_;
     StaticModel* shieldModel_;
     SharedPtr<Material> shieldMaterial_;
-    Vector<SharedPtr<Bullet> > bullets_;
-
-    Sound* shot_s;
 
     void CreateTails();
     void Shoot(Vector3 aim);

@@ -34,6 +34,7 @@ void Pilot::RegisterObject(Context *context)
 
 Pilot::Pilot(Context* context) : Controllable(context),
     pickedShip_{ nullptr },
+    score_{},
     male_{ false },
     alive_{ true },
     deceased_{ 0.0f },
@@ -71,7 +72,6 @@ void Pilot::OnNodeSet(Node *node)
     animCtrl_->SetStartBone("Models/IdleAlert.ani", "MasterBone");
 
     SubscribeToEvent(node_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Pilot, HandleNodeCollisionStart));
-
 }
 
 void Pilot::Update(float timeStep)
@@ -131,7 +131,7 @@ void Pilot::Initialize(int playerId)
 
 void Pilot::Save(int playerID, unsigned score)
 {
-    using namespace std;
+    /*using namespace std;
     ofstream fPilot{};
     fPilot.open("Resources/.Pilot" + to_string(playerID) + ".lkp");
     fPilot << male_ << '\n';
@@ -142,11 +142,11 @@ void Pilot::Save(int playerID, unsigned score)
                << c.b_ << ' '
                << '\n';
     }
-    fPilot << score;
+    fPilot << score;*/
 }
 
 void Pilot::Load()
-{
+{/*
     using namespace std;
 
     ifstream fPilot{ "Resources/.Pilot" + to_string(playerId_) + ".lkp" };
@@ -182,13 +182,13 @@ void Pilot::Load()
 
         score_ = static_cast<unsigned>(stoul(score_str, 0, 10));
     }
-
+*/
     if (!pilotColors_.Size() || score_ == 0)
         Randomize();
 
     UpdateModel();
 
-    if (!(node_->GetName() == "HighestPilot"))
+    if (node_->GetName() != "HighestPilot")
         EnterLobbyThroughDoor();
 }
 

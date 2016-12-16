@@ -135,6 +135,10 @@ void GUI3D::Initialize(int colorSet)
         heart->SetModel(MC->GetModel("Heart"));
         heart->SetMaterial(MC->GetMaterial("RedEnvmap"));
     }
+
+    deathSource_ = node_->CreateComponent<SoundSource>();
+    deathSource_->SetSoundType(SOUND_EFFECT);
+    deathSource_->SetGain(2.3f);
 }
 
 void GUI3D::Update(float timeStep)
@@ -153,6 +157,11 @@ void GUI3D::Update(float timeStep)
     healthIndicator_->GetMaterial(0)->SetShaderParameter("MatDiffColor", HealthToColor(health_));
     healthIndicator_->GetMaterial(0)->SetShaderParameter("MatEmissiveColor", HealthToColor(health_) * 0.13f);
     healthIndicator_->GetMaterial(0)->SetShaderParameter("MatSpecularColor", HealthToColor(health_) * 0.05f);
+}
+
+void GUI3D::PlayDeathSound()
+{
+    deathSource_->Play(MC->GetSample("Death"));
 }
 
 void GUI3D::SetHealth(float health)

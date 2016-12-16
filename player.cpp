@@ -82,7 +82,7 @@ void Player::ResetScore()
 }
 
 void Player::EnterLobby(StringHash eventType, VariantMap &eventData)
-{
+{ (void)eventType; (void)eventData;
 
     for (Pilot* pilot : MC->GetComponentsInScene<Pilot>()) {
         if (playerId_ == pilot->GetPlayerId()){
@@ -95,6 +95,7 @@ void Player::EnterLobby(StringHash eventType, VariantMap &eventData)
 }
 void Player::EnterPlay(StringHash eventType, VariantMap &eventData)
 {
+    flightScore_ = 0;
 }
 
 void Player::AddScore(int points)

@@ -85,7 +85,7 @@ void MasterControl::Setup()
     //Add resource path
 //    Vector<String> resourcePaths{};
 //    resourcePaths.Push(FILES->GetAppPreferencesDir("luckey", "hexon"));
-    engineParameters_["ResourcePaths"] = "Resources;Data;CoreData";
+    engineParameters_["ResourcePaths"] = "Resources;";
     /*resourcePaths.Push(String("Resources"));
     resourcePaths.Push(String("../heXon/Resources"));
 
@@ -100,7 +100,6 @@ void MasterControl::Setup()
 //    engineParameters_["WindowWidth"] = 1920/2;
 //    engineParameters_["WindowHeight"] = 1080/2;
 //    engineParameters_["borderless"] = true;
-//    engineParameters_["RenderPath"] = "RenderPaths/ForwardOutline.xml";
 }
 void MasterControl::Start()
 {
@@ -144,9 +143,6 @@ void MasterControl::Start()
     context_->RegisterSubsystem(new InputMaster(context_));
     context_->RegisterSubsystem(new SpawnMaster(context_));
 
-    defaultStyle_ = CACHE->GetResource<XMLFile>("UI/DefaultStyle.xml");
-    CreateConsoleAndDebugHud();
-
     CreateColorSets();
     CreateScene();
     CreateUI();
@@ -183,18 +179,6 @@ void MasterControl::SubscribeToEvents()
     //Subscribe scene update event.
     SubscribeToEvent(E_SCENEUPDATE, URHO3D_HANDLER(MasterControl, HandleSceneUpdate));
     SubscribeToEvent(E_POSTRENDERUPDATE, URHO3D_HANDLER(MasterControl, HandlePostRenderUpdate));
-}
-
-void MasterControl::CreateConsoleAndDebugHud()
-{
-    // Create console
-    Console* console{ engine_->CreateConsole() };
-    console->SetDefaultStyle(defaultStyle_);
-    console->GetBackground()->SetOpacity(0.8f);
-
-    // Create debug HUD.
-    DebugHud* debugHud{engine_->CreateDebugHud()};
-    debugHud->SetDefaultStyle(defaultStyle_);
 }
 
 void MasterControl::CreateUI()

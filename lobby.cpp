@@ -45,10 +45,6 @@ void Lobby::OnNodeSet(Node *node)
     chamberModel->SetMaterial(3, MC->GetMaterial("Drain"));
     chamberModel->SetCastShadows(true);
 
-    //Create highest
-    Node* highestNode{ node_->CreateChild("Highest") };
-    highest_ = highestNode->CreateComponent<Highest>();
-
     //Create coliders
     node_->CreateComponent<RigidBody>();
     node_->CreateComponent<CollisionShape>()->SetTriangleMesh(MC->GetModel("Chamber_COLLISION"));
@@ -80,6 +76,10 @@ void Lobby::OnNodeSet(Node *node)
 
     SubscribeToEvent(E_ENTERLOBBY, URHO3D_HANDLER(Lobby, EnterLobby));
     SubscribeToEvent(E_ENTERPLAY,  URHO3D_HANDLER(Lobby, EnterPlay));
+
+    //Create highest
+    Node* highestNode{ node_->CreateChild("Highest") };
+    highest_ = highestNode->CreateComponent<Highest>();
 }
 
 void Lobby::Update(float timeStep)

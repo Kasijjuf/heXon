@@ -52,8 +52,7 @@ Ship::Ship(Context* context) : Controllable(context),
     shotInterval_{initialShotInterval_},
     sinceLastShot_{0.0f},
     appleCount_{0},
-    heartCount_{0},
-    shot_s{MC->GetSample("Shot")}
+    heartCount_{0}
 {
     thrust_ = 2342.0f;
     maxSpeed_ = 23.0f;
@@ -285,7 +284,7 @@ void Ship::Shoot(Vector3 aim)
     if (bulletAmount_ > 0) {
 
         MoveMuzzle();
-        PlaySample(shot_s, 0.17f);
+        PlaySample(MC->GetSample("Shot"), 0.17f);
     }
 }
 
@@ -369,7 +368,7 @@ void Ship::Pickup(PickupType pickup)
 
 void Ship::PlayPickupSample(int pickupCount)
 {
-    PlaySample(MC->GetSample("Pickup" + String(Clamp(pickupCount - 1, 1, 4))), 0.42f);
+    PlaySample(MC->GetSample("Pickup" + String(Clamp(pickupCount, 1, 4))), 0.42f);
 }
 
 void Ship::UpgradeWeapons()
@@ -423,7 +422,8 @@ void Ship::Explode()
     explosion->Set(node_->GetPosition(),
                    MC->colorSets_[colorSet_].colors_.first_,
                    2.0f, 0);
-    PlaySample(MC->GetSample("Death"), 2.3f);
+
+    gui3d_->PlayDeathSound();
 
     Pickup(PT_RESET);
 

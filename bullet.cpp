@@ -95,9 +95,12 @@ void Bullet::Disable()
 void Bullet::HitCheck(float timeStep)
 {
     if (!fading_) {
+
         PODVector<PhysicsRaycastResult> hitResults{};
-        Ray bulletRay(node_->GetPosition() - rigidBody_->GetLinearVelocity()*timeStep, node_->GetDirection());
+        Ray bulletRay(node_->GetPosition() - rigidBody_->GetLinearVelocity() * timeStep, node_->GetDirection());
+
         if (MC->PhysicsRayCast(hitResults, bulletRay, 2.3f * rigidBody_->GetLinearVelocity().Length() * timeStep, M_MAX_UNSIGNED)) {
+
             for (PhysicsRaycastResult h : hitResults) {
                 if (!h.body_->IsTrigger()) {
                     //Add effect

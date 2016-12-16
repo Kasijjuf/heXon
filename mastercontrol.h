@@ -183,9 +183,6 @@ private:
     Material* lobbyGlowGreen_;
     Material* lobbyGlowPurple_;
 
-    void SetWindowTitleAndIcon();
-    void CreateConsoleAndDebugHud();
-
     void CreateColorSets();
     void CreateScene();
     void CreateUI();
