@@ -50,9 +50,11 @@ void GUI3D::Initialize(int colorSet)
 
     Node* subNode{ node_->CreateChild("Sub") };
     subNode->SetPosition(LOBBYPOS);
-    if (MC->GetAspectRatio() < 1.6f){
+
+    if (MC->GetAspectRatio() < 1.6f) {
+
         subNode->SetScale(0.75f);
-        subNode->Translate(Vector3( (colorSet_ / 2 == 1) ? -1.6f : 1.6f,
+        subNode->Translate(Vector3( (colorSet_ / 2 == 1) ? -0.9f : 0.9f,
                                     0.0f, 0.0f));
     }
 
@@ -241,8 +243,7 @@ void GUI3D::EnterPlay(StringHash eventType, VariantMap &eventData)
     SetScore(score_);
 
     node_->SetPosition(Vector3::DOWN * 1.23f);
-    node_->SetScale(MC->GetAspectRatio() > 1.6f ? 3.6f
-                                                : 3.23f);
+    node_->SetScale(3.6f);
 }
 
 Color GUI3D::HealthToColor(float health)
