@@ -43,9 +43,9 @@ HashMap<int, int> Player::colorSets_{};
 
 Player::Player(int playerId, Context* context): Object(context),
     playerId_{playerId},
-//    autoPilot_{playerId_ != 1 && !GetSubsystem<Input>()->GetJoystickByIndex(playerId_ - 1)},
+    autoPilot_{playerId_ != 1 && !GetSubsystem<Input>()->GetJoystickByIndex(playerId_ - 1)},
 //    autoPilot_{false},
-    autoPilot_{true},
+//    autoPilot_{true},
     alive_{true},
     score_{0},
     flightScore_{0},
