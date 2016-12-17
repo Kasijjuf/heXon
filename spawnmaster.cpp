@@ -49,16 +49,16 @@ SpawnMaster::SpawnMaster(Context* context):
 void SpawnMaster::Activate()
 {
     AUDIO->SetMasterGain(SOUND_EFFECT, 0.0f);
-    for (int r{0}; r < 23; ++r) { Create<Razor>(); }
-    for (int s{0}; s < 7; ++s) { Create<Spire>(); }
-    for (int m{0}; m < 8; ++m) { Create<ChaoMine>(); }
-    for (int s{0}; s < 13; ++s) { Create<Seeker>(); }
-    for (int h{0}; h < 16; ++h) { Create<HitFX>(); }
-    for (int e{0}; e < 9; ++e) { Create<Explosion>(); }
-    for (int f{0}; f < 13; ++f) { Create<Flash>(); };
-    for (int b{0}; b < 42; ++b) { Create<Bubble>(); }
-    for (int l{0}; l < 2048; ++l) { Create<Line>(); }
-    for (int z{0}; z < 8; ++z) { Create<ChaoZap>(); }
+    for (int r{0}; r < 23; ++r) { Create<Razor>(false); }
+    for (int s{0}; s < 7; ++s) { Create<Spire>(false); }
+    for (int m{0}; m < 8; ++m) { Create<ChaoMine>(false); }
+    for (int s{0}; s < 13; ++s) { Create<Seeker>(false); }
+    for (int h{0}; h < 16; ++h) { Create<HitFX>(false); }
+    for (int e{0}; e < 9; ++e) { Create<Explosion>(false); }
+    for (int f{0}; f < 13; ++f) { Create<Flash>(false); };
+    for (int b{0}; b < 42; ++b) { Create<Bubble>(false); }
+    for (int l{0}; l < 2048; ++l) { Create<Line>(false); }
+    for (int z{0}; z < 8; ++z) { Create<ChaoZap>(false); }
     AUDIO->SetMasterGain(SOUND_EFFECT, 1.0f);
 
     SubscribeToEvent(E_SCENEUPDATE, URHO3D_HANDLER(SpawnMaster, HandleSceneUpdate));
