@@ -95,6 +95,11 @@ void Highest::SetPilot(Pilot* pilot, unsigned score)
     SetScore(score);
 
     pilot->Save(0, highestScore_);
+
+    if (highestScore_ > 0){
+        node_->SetEnabledRecursive(true);
+        highestScoreText_->SetColor(Color(0.23f, 0.75f, 1.0f, 0.75f));
+    }
 }
 
 void Highest::SetScore(unsigned score)
