@@ -66,9 +66,9 @@ void Highest::OnNodeSet(Node *node)
     highestScoreText_->SetPosition(0, ui->GetRoot()->GetHeight()/4.2f);
 
     Node* pilotNode{ node_->CreateChild("HighestPilot") };
-    Pilot* highestPilot{ pilotNode->CreateComponent<Pilot>() };
-    highestPilot->Initialize(0);
-    highestScore_ = highestPilot->GetScore();
+    highestPilot_ = pilotNode->CreateComponent<Pilot>();
+    highestPilot_->Initialize(true);
+
     if (highestScore_ == 0){
         node_->SetEnabledRecursive(false);
         highestScoreText_->SetColor(Color{0.0f, 0.0f, 0.0f, 0.0f});
@@ -83,6 +83,24 @@ void Highest::OnNodeSet(Node *node)
 
     SubscribeToEvent(E_ENTERLOBBY, URHO3D_HANDLER(Highest, EnterLobby));
     SubscribeToEvent(E_ENTERPLAY,  URHO3D_HANDLER(Highest, EnterPlay));
+}
+
+void Highest::SetPilot(Pilot* pilot, unsigned score)
+{
+    if (score <= highestScore_)
+        return;
+
+    highestPilot_->Clone(pilot);
+
+    SetScore(score);
+
+    pilot->Save(0, highestScore_);
+}
+
+void Highest::SetScore(unsigned score)
+{
+    highestScore_ = score;
+    highestScoreText_->SetText(String(highestScore_));
 }
 
 void Highest::EnterLobby(StringHash eventType, VariantMap &eventData)

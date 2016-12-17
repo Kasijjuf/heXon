@@ -66,7 +66,6 @@ void heXoCam::SetupViewport()
 
     SharedPtr<Viewport> viewport{ new Viewport(MC->GetContext(), MC->scene_, camera_) };
     viewport_ = viewport;
-//    viewport_->SetRenderPath(CACHE->GetResource<XMLFile>("RenderPaths/DeferredHWDepth.xml"));
 
     //Add anti-asliasing, bloom and a greyscale effects
     effectRenderPath_ = viewport_->GetRenderPath()->Clone();

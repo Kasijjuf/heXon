@@ -24,6 +24,8 @@
 #include "luckey.h"
 #include "mastercontrol.h"
 
+class Pilot;
+
 class Highest : public LogicComponent
 {
     URHO3D_OBJECT(Highest, LogicComponent);
@@ -31,11 +33,15 @@ public:
     Highest(Context* context);
     static void RegisterObject(Context* context);
     virtual void OnNodeSet(Node* node);
+    void SetPilot(Pilot *pilot, unsigned score);
+
     void EnterLobby(StringHash eventType, VariantMap &eventData);
     void EnterPlay(StringHash eventType, VariantMap &eventData);
+    void SetScore(unsigned score);
 private:
     unsigned highestScore_;
     Text* highestScoreText_;
+    Pilot* highestPilot_;
 };
 
 #endif // HIGHEST_H

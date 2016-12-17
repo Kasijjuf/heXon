@@ -39,6 +39,7 @@ public:
     int GetPlayerId() const { return playerId_; }
     void AddScore(int points);
     unsigned GetScore() const { return score_; }
+    void SetScore(int points);
     unsigned GetFlightScore() const { return flightScore_; }
     void Die();
     void Respawn();
@@ -61,7 +62,6 @@ private:
     int multiplier_;
 
 
-    void SetScore(int points);
 };
 
 #endif // PLAYER_H

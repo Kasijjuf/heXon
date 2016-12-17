@@ -24,6 +24,7 @@
 #include "ship.h"
 #include "door.h"
 #include "splatterpillar.h"
+#include "highest.h"
 
 #include "pilot.h"
 
@@ -34,7 +35,7 @@ void Pilot::RegisterObject(Context *context)
 
 Pilot::Pilot(Context* context) : Controllable(context),
     pickedShip_{ nullptr },
-    score_{},
+    playerId_{0},
     male_{ false },
     alive_{ true },
     deceased_{ 0.0f },
@@ -117,21 +118,19 @@ void Pilot::Update(float timeStep)
     }
 }
 
-void Pilot::Initialize(int playerId)
+void Pilot::Initialize(bool highest)
 {
-    playerId_ = playerId;
-
-    if (playerId_ == 0) {
-
+    if (highest) {
         rigidBody_->SetKinematic(true);
-    }
+        Load();
+    } else
+        Randomize();
 
-    Load();
 }
 
 void Pilot::Save(int playerID, unsigned score)
 {
-    /*using namespace std;
+    using namespace std;
     ofstream fPilot{};
     fPilot.open("Resources/.Pilot" + to_string(playerID) + ".lkp");
     fPilot << male_ << '\n';
@@ -142,12 +141,14 @@ void Pilot::Save(int playerID, unsigned score)
                << c.b_ << ' '
                << '\n';
     }
-    fPilot << score;*/
+    fPilot << score;
 }
 
 void Pilot::Load()
-{/*
+{
     using namespace std;
+
+    unsigned score{};
 
     ifstream fPilot{ "Resources/.Pilot" + to_string(playerId_) + ".lkp" };
     while (!fPilot.eof()){
@@ -180,16 +181,31 @@ void Pilot::Load()
         pilotColors_[PC_SHOES]  = Color(stof(color4_r_str), stof(color4_g_str), stof(color4_b_str));
         pilotColors_[PC_HAIR]   = Color(stof(color5_r_str), stof(color5_g_str), stof(color5_b_str));
 
-        score_ = static_cast<unsigned>(stoul(score_str, 0, 10));
+        score = static_cast<unsigned>(stoul(score_str, 0, 10));
     }
-*/
-    if (!pilotColors_.Size() || score_ == 0)
+
+    if (!pilotColors_.Size() || score == 0)
         Randomize();
+
+//    if (GetPlayer())
+//        GetPlayer()->SetScore(score);
+
+    else if (playerId_ == 0) {
+        for (Highest* highest : MC->GetComponentsInScene<Highest>()) {
+
+            highest->SetScore(score);
+        }
+    }
 
     UpdateModel();
 
     if (node_->GetName() != "HighestPilot")
         EnterLobbyThroughDoor();
+}
+
+void Pilot::HandleSetControlled()
+{
+    playerId_ = GetPlayer()->GetPlayerId();
 }
 
 void Pilot::UpdateModel()
@@ -280,6 +296,21 @@ void Pilot::Upload()
     animCtrl_->SetSpeed("Models/WalkRelax.ani", 0.0f);
     animCtrl_->SetSpeed("Models/IdleRelax.ani", 0.0f);
     rigidBody_->SetKinematic(true);
+
+    for (Highest* highest : MC->GetComponentsInScene<Highest>()) {
+
+        highest->SetPilot(this, GetPlayer()->GetScore());
+    }
+}
+
+void Pilot::Clone(Pilot* pilot)
+{
+
+    male_ = pilot->male_;
+    hairStyle_ = pilot->hairStyle_;
+    pilotColors_ = pilot->pilotColors_;
+
+    UpdateModel();
 }
 
 void Pilot::Die()
@@ -295,7 +326,8 @@ void Pilot::EnterLobbyThroughDoor()
 
     node_->SetPosition(SPAWNPOS);
     node_->SetRotation(Quaternion::IDENTITY.Inverse());
-    rigidBody_->ApplyImpulse(Vector3::BACK * 2.3f);
+    rigidBody_->ApplyImpulse(Vector3::BACK);
+
 }
 void Pilot::EnterLobbyFromShip()
 {
@@ -310,7 +342,6 @@ void Pilot::EnterLobbyFromShip()
             rigidBody_->ApplyImpulse(node_->GetDirection());
         }
     }
-
 }
 
 void Pilot::Revive()

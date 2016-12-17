@@ -322,16 +322,15 @@ void MasterControl::CreateScene()
     navMesh->SetTileSize(256);
     navMesh->Build();
 
-    for (int p{1}; p <= Max(INPUT->GetNumJoysticks(), 2); ++p){
+    for (int p{1}; p <= Max(static_cast<int>(INPUT->GetNumJoysticks()), 2); ++p){
 
         players_.Push(SharedPtr<Player>(new Player(p, context_)));
 
         Node* pilotNode{ scene_->CreateChild("Pilot") };
         pilotNode->Rotate(Quaternion(180.0f, Vector3::UP));
         Pilot* pilot{ pilotNode->CreateComponent<Pilot>() };
-
         GetSubsystem<InputMaster>()->SetPlayerControl(p, pilot);
-        pilot->Initialize( p );
+        pilot->Initialize(false);
     }
 }
 

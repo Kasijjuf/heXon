@@ -166,6 +166,7 @@ void Ship::EnterLobby(StringHash eventType, VariantMap &eventData)
     sinceLastShot_ = 0.0f;
 
     Set(initialPosition_, initialRotation_);
+    model_->GetNode()->SetPosition(Vector3::ZERO);
     rigidBody_->SetMass(0.0f);
     particleEmitter_->SetEmitting(false);
 
@@ -180,6 +181,9 @@ void Ship::SetTailsEnabled(bool enabled)
 
 void Ship::CreateTails()
 {
+//    for (TailGenerator* t : tailGens_)
+//        t->Remove();
+
     for (int t{0}; t < 3; ++t) {
         Node* tailNode{node_->CreateChild("Tail")};
         tailNode->SetPosition(Vector3(-0.85f + 0.85f * t, t==1? 0.0f : -0.5f, t==1? -0.5f : -0.23f));
@@ -189,8 +193,8 @@ void Ship::CreateTails()
         tailGen->SetTailLength(t==1? 0.05f : 0.025f);
         tailGen->SetNumTails(t==1? 13 : 7);
         tailGen->SetWidthScale(t==1? 0.5f : 0.13f);
-        tailGen->SetColorForHead(MC->colorSets_[colorSet_].colors_.first_);//colorSet_==2 ? Color(1.0f, 0.666f, 0.23f) : Color(0.8f, 0.8f, 0.2f));
-        tailGen->SetColorForTip(MC->colorSets_[colorSet_].colors_.first_);//colorSet_==2 ? Color(1.0f, 0.23f, 0.0f) : Color(0.23f, 0.6f, 0.0f));
+        tailGen->SetColorForHead(MC->colorSets_[colorSet_].colors_.first_);
+        tailGen->SetColorForTip(MC->colorSets_[colorSet_].colors_.first_);
         tailGens_.Push(tailGen);
     }
 }

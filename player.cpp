@@ -43,10 +43,10 @@ HashMap<int, int> Player::colorSets_{};
 
 Player::Player(int playerId, Context* context): Object(context),
     playerId_{playerId},
-    autoPilot_{playerId_ != 1 && !GetSubsystem<Input>()->GetJoystickByIndex(playerId_ - 1)},
+//    autoPilot_{playerId_ != 1 && !GetSubsystem<Input>()->GetJoystickByIndex(playerId_ - 1)},
 //    autoPilot_{false},
-//    autoPilot_{true},
-    alive_{false},
+    autoPilot_{true},
+    alive_{true},
     score_{0},
     flightScore_{0},
     multiplier_{1},
@@ -87,7 +87,7 @@ void Player::EnterLobby(StringHash eventType, VariantMap &eventData)
     for (Pilot* pilot : MC->GetComponentsInScene<Pilot>()) {
         if (playerId_ == pilot->GetPlayerId()){
             GetSubsystem<InputMaster>()->SetPlayerControl(playerId_, pilot);
-            if (!alive_){
+            if (!Player::colorSets_[playerId_]){
                 pilot->Revive();
             } else pilot->EnterLobbyFromShip();
         }
@@ -118,7 +118,6 @@ void Player::AddScore(int points)
         }
     }
     flightScore_ += points;
-//    toCount_ += points;
 }
 
 Vector3 Player::GetPosition()

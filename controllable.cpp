@@ -82,11 +82,6 @@ void Controllable::SetAim(Vector3 aim)
     aim_ = aim.Normalized();
 }
 
-void Controllable::HandleSetControlled()
-{
-
-}
-
 void Controllable::SetActions(std::bitset<4> actions)
 {
     if (actions == actions_)

@@ -33,6 +33,8 @@ class Pilot : public Controllable
 #define SPAWNPOS Vector3(playerId_ * 0.88f - 2.3f - Random(0.05f), 0.0f, 5.0f - Random(0.42f))
 
     URHO3D_OBJECT(Pilot, Controllable);
+    friend class Highest;
+    friend class Pilot;
     friend class Player;
     friend class MasterControl;
 public:
@@ -44,19 +46,15 @@ public:
     virtual void Update(float timeStep);
 
     void Randomize();
-    void Initialize(int playerId);
+    void Initialize(bool highest);
     int GetPlayerId() { return playerId_; }
-    unsigned GetScore() const { return score_; }
     void Upload();
     virtual void ClearControl();
     void HandleNodeCollisionStart(StringHash eventType, VariantMap& eventData);
     void EnterLobbyFromShip();
     virtual void Think();
+    void Clone(Pilot *pilot);
 private:
-    unsigned score_;
-//    unsigned flightScore_;
-//    int multiplier_;
-
     int playerId_;
     bool male_;
     bool alive_;
@@ -66,6 +64,7 @@ private:
     HashMap<int, Color> pilotColors_;
     AnimatedModel* hairModel_;
 
+    void HandleSetControlled();
     void Load();
     void UpdateModel();
     void Save(int playerID, unsigned score);
