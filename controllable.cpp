@@ -79,6 +79,8 @@ void Controllable::SetMove(Vector3 move)
 
 void Controllable::SetAim(Vector3 aim)
 {
+    aim = LucKey::Scale(aim, Vector3::ONE - Vector3::UP);
+
     aim_ = aim.Normalized();
 }
 

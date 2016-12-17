@@ -42,7 +42,8 @@ protected:
     RigidBody* rigidBody_;
     SharedPtr<Sound> sample_;
     Node* target_;
-    RibbonTrail* tailGen_;
+//    RibbonTrail* tailGen_;
+    TailGenerator* tailGen_;
 
     float age_;
     float lifeTime_;

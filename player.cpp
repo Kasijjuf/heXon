@@ -46,7 +46,7 @@ Player::Player(int playerId, Context* context): Object(context),
     autoPilot_{playerId_ != 1 && !GetSubsystem<Input>()->GetJoystickByIndex(playerId_ - 1)},
 //    autoPilot_{false},
 //    autoPilot_{true},
-    alive_{true},
+    alive_{false},
     score_{0},
     flightScore_{0},
     multiplier_{1},
@@ -87,7 +87,7 @@ void Player::EnterLobby(StringHash eventType, VariantMap &eventData)
     for (Pilot* pilot : MC->GetComponentsInScene<Pilot>()) {
         if (playerId_ == pilot->GetPlayerId()){
             GetSubsystem<InputMaster>()->SetPlayerControl(playerId_, pilot);
-            if (!Player::colorSets_[playerId_]){
+            if (!alive_){
                 pilot->Revive();
             } else pilot->EnterLobbyFromShip();
         }

@@ -34,7 +34,8 @@ Seeker::Seeker(Context* context):
     SceneObject(context),
     age_{0.0f},
     lifeTime_{7.5f},
-    damage_{2.3f}
+    damage_{2.3f},
+    tailGen_{}
 {
 
 }
@@ -140,17 +141,19 @@ void Seeker::Disable()
 
 void Seeker::AddTail()
 {
-    tailGen_ = node_->CreateComponent<RibbonTrail>();
-    tailGen_->SetStartScale(0.666f);
-    tailGen_->SetEndScale(0.0f);
-    tailGen_->SetLifetime(0.23f);
-    tailGen_->SetVertexDistance(0.5f);
-    tailGen_->SetTailColumn(3);
-    tailGen_->SetStartColor(Color(0.5f, 0.23f, 0.666f));
-    tailGen_->SetEndColor(Color(0.0f, 0.1f, 0.23f));
+    RemoveTail();
+
+    tailGen_ = node_->CreateComponent<TailGenerator>();
+    tailGen_->SetWidthScale(0.666f);
+    tailGen_->SetTailLength(0.13f);
+    tailGen_->SetNumTails(7);
+    tailGen_->SetColorForHead(Color(0.5f, 0.23f, 0.666f, 0.42f));
+    tailGen_->SetColorForTip(Color(0.0f, 0.1f, 0.23f, 0.0f));
 }
 void Seeker::RemoveTail()
 {
-    if (tailGen_)
+    if (tailGen_){
         tailGen_->Remove();
+        tailGen_ = nullptr;
+    }
 }

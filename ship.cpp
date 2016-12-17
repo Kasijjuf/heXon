@@ -70,9 +70,8 @@ void Ship::OnNodeSet(Node *node)
     gui3d_ = guiNode->CreateComponent<GUI3D>();
     gui3d_->Initialize(colorSet_);
 
-    SharedPtr<AnimatedModel> model{ model_ };
-    model->Remove();
-    node_->CreateChild("Model")->AddComponent(model, model->GetID(), LOCAL);
+    model_->Remove();
+    model_ = node_->CreateChild("Model")->CreateComponent<AnimatedModel>();
     model_->SetModel(MC->GetModel("KlåMk10"));
 
     particleEmitter_ = node_->CreateComponent<ParticleEmitter>();
@@ -110,7 +109,6 @@ void Ship::Set(const Vector3 position, const Quaternion rotation)
         initialRotation_ = rotation;
 
         SetColors();
-        CreateTails();
 
         initialized_ = true;
     }
@@ -154,7 +152,7 @@ void Ship::EnterPlay(StringHash eventType, VariantMap &eventData)
     rigidBody_->ApplyImpulse(node_->GetDirection() * 13.0f);
     particleEmitter_->SetEmitting(true);
 
-    SetTailsEnabled(true);
+    CreateTails();
 
 }
 void Ship::EnterLobby(StringHash eventType, VariantMap &eventData)
@@ -170,7 +168,7 @@ void Ship::EnterLobby(StringHash eventType, VariantMap &eventData)
     rigidBody_->SetMass(0.0f);
     particleEmitter_->SetEmitting(false);
 
-    SetTailsEnabled(false);
+    RemoveTails();
 }
 void Ship::SetTailsEnabled(bool enabled)
 {
@@ -179,17 +177,25 @@ void Ship::SetTailsEnabled(bool enabled)
     }
 }
 
+void Ship::RemoveTails()
+{
+    for (TailGenerator* t : tailGens_)
+        t->GetNode()->Remove();
+
+    tailGens_.Clear();
+}
+
 void Ship::CreateTails()
 {
-//    for (TailGenerator* t : tailGens_)
-//        t->Remove();
+    RemoveTails();
 
     for (int t{0}; t < 3; ++t) {
+
         Node* tailNode{node_->CreateChild("Tail")};
         tailNode->SetPosition(Vector3(-0.85f + 0.85f * t, t==1? 0.0f : -0.5f, t==1? -0.5f : -0.23f));
         TailGenerator* tailGen{ tailNode->CreateComponent<TailGenerator>() };
         tailGen->SetDrawHorizontal(true);
-        tailGen->SetDrawVertical(t==1?true:false);
+        tailGen->SetDrawVertical(false);
         tailGen->SetTailLength(t==1? 0.05f : 0.025f);
         tailGen->SetNumTails(t==1? 13 : 7);
         tailGen->SetWidthScale(t==1? 0.5f : 0.13f);
@@ -208,12 +214,12 @@ void Ship::Update(float timeStep)
     Controllable::Update(timeStep);
 
     //Update shield
-    Quaternion randomRotation = Quaternion(Random(360.0f),Random(360.0f),Random(360.0f));
+    Quaternion randomRotation{ Quaternion(0.0f, TIME->GetElapsedTime() * 2000.0f, 0.0f) };
     shieldNode_->SetRotation(shieldNode_->GetRotation().Slerp(randomRotation, Random(1.0f)));
-    Color shieldColor = shieldMaterial_->GetShaderParameter("MatDiffColor").GetColor();
-    Color newColor = Color(shieldColor.r_ * Random(0.6f, 0.9f),
-                           shieldColor.g_ * Random(0.7f, 0.95f),
-                           shieldColor.b_ * Random(0.8f, 0.9f));
+    Color shieldColor{ shieldMaterial_->GetShaderParameter("MatDiffColor").GetColor() };
+    Color newColor = Color(shieldColor.r_ * Random(0.5f, 0.8f),
+                           shieldColor.g_ * Random(0.6f, 0.9f),
+                           shieldColor.b_ * Random(0.7f, 0.8f));
     shieldMaterial_->SetShaderParameter("MatDiffColor", shieldColor.Lerp(newColor, Min(timeStep * 23.5f, 1.0f)));
 
     //Float
@@ -231,15 +237,14 @@ void Ship::Update(float timeStep)
         node_->LookAt(node_->GetPosition() + rigidBody_->GetLinearVelocity());
 
     //Update tails
-    for (int t{0}; t < 3; ++t) {
+    float velocityToScale{ Clamp(0.13f * rigidBody_->GetLinearVelocity().Length(), 0.0f, 1.0f) };
 
-        float velocityToScale{ Clamp(0.23f * rigidBody_->GetLinearVelocity().Length(), 0.0f, 1.0f) };
-        TailGenerator* tailGen{tailGens_[t]};
-        if (tailGen) {
-            tailGen->SetTailLength(t==1? velocityToScale * 0.1f : velocityToScale * 0.075f);
-            tailGen->SetNumTails(static_cast<int>(velocityToScale * (t==1 ? 23 : 16)));
-            tailGen->SetWidthScale(t==1? velocityToScale * 0.666f : velocityToScale * 0.23f);
-        }
+    for (TailGenerator* tailGen : tailGens_) {
+
+        bool centerTail{ tailGen->GetNode()->GetPosition().x_ == 0.0f };
+
+        tailGen->SetTailLength(velocityToScale * (centerTail ? 0.1f : 0.075f));
+        tailGen->SetWidthScale(velocityToScale * (centerTail ? 0.666f : 0.23f));
     }
 
     //Shooting
@@ -283,8 +288,6 @@ void Ship::Shoot(Vector3 aim)
         PlaySample(MC->GetSample("Shot"), 0.17f);
     }
 }
-
-
 void Ship::FireBullet(Vector3 direction)
 {
     direction.Normalize();
@@ -295,24 +298,6 @@ void Ship::FireBullet(Vector3 direction)
 
     GetSubsystem<SpawnMaster>()->Create<Bullet>()
             ->Set(position, colorSet_, direction, force, damage);
-    /*SharedPtr<Bullet> bullet{};
-    if (bullets_.Size() > 0) {
-
-        for (SharedPtr<Bullet> b : bullets_){
-            if (!b->IsEnabled()){
-                bullet = b;
-            }
-        }
-    }
-    if (bullet == nullptr) {
-
-        bullet = MC->scene_->CreateChild("Bullet")->CreateComponent<Bullet>();
-        bullets_.Push(bullet);
-    }
-    bullet->Set(node_->GetPosition() + direction + Vector3::DOWN * 0.42f);
-    bullet->node_->LookAt(bullet->node_->GetPosition() + direction * 5.0f);
-    bullet->rigidBody_->ApplyForce(direction * (1500.0f + 23.0f * weaponLevel_));
-    bullet->damage_ = 0.15f + 0.00666f * weaponLevel_;*/
 }
 void Ship::MoveMuzzle()
 {
@@ -400,7 +385,7 @@ void Ship::Hit(float damage, bool melee)
 {
     if (health_ > 10.0f){
         damage *= (melee ? 0.75f : 0.25f);
-        shieldMaterial_->SetShaderParameter("MatDiffColor", Color(2.0f, 3.0f, 5.0f, 1.0f));
+        shieldMaterial_->SetShaderParameter("MatDiffColor", Color(2.0f, 3.0f, 5.0f, 0.25f + 0.75f * (health_ - damage > 10.0f)));
         PlaySample(MC->GetSample((health_ - damage) > 10.0f ? "ShieldHit"
                                                             : "ShieldDown"), 0.23f);
     }
@@ -585,7 +570,7 @@ Vector3 Ship::Sniff(float playerFactor, Vector3& move, bool taste)
                             && node->HasComponent<ChaoBall>() && node->HasComponent<ChaoMine>()
                             && node->GetNameHash() != StringHash("PickupTrigger"))
                          smell += 0.005f * whiskerDirection * r.distance_;
-//                    else smell += 0.005f * whiskerDirection * playerFactor * playerFactor;
+                    else smell += 0.005f * whiskerDirection * playerFactor * playerFactor;
                 }
             }
             else if (!taste) smell += 0.005f * whiskerDirection * playerFactor * playerFactor;

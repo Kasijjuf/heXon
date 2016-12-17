@@ -76,6 +76,7 @@ private:
     StaticModel* shieldModel_;
     SharedPtr<Material> shieldMaterial_;
 
+    void RemoveTails();
     void CreateTails();
     void Shoot(Vector3 aim);
     void FireBullet(Vector3 direction);
