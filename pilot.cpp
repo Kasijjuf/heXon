@@ -441,7 +441,7 @@ void Pilot::Think()
     if ( pickedShip_ && (MC->AllPlayersAtZero(false) && MC->NoHumans())
                      || (MC->AllReady(true) && !MC->NoHumans())) {
 
-        navMesh->FindPath(path_, node_->GetPosition(), pickedShip_->GetPosition());
+        navMesh->FindPath(path_, node_->GetPosition(), pickedShip_->GetPosition() + pickedShip_->GetNode()->GetDirection() * 0.23f);
         path_.Push(pickedShip_->GetPosition());
 
     //Reset Score
