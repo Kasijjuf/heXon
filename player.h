@@ -48,6 +48,7 @@ public:
     bool IsAlive() const noexcept { return alive_; }
     bool IsHuman() const noexcept { return !autoPilot_; }
     void EnterLobby(StringHash eventType, VariantMap &eventData);
+    void EnterLobby();
     void EnterPlay(StringHash eventType, VariantMap &eventData);
 
     GUI3D* gui3d_;

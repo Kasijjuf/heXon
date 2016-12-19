@@ -45,14 +45,15 @@ public:
     virtual void OnNodeSet(Node* node);
     virtual void Update(float timeStep);
 
+    virtual void ClearControl();
+    virtual void Think();
+
     void Randomize();
     void Initialize(bool highest);
     int GetPlayerId() { return playerId_; }
     void Upload();
-    virtual void ClearControl();
     void HandleNodeCollisionStart(StringHash eventType, VariantMap& eventData);
     void EnterLobbyFromShip();
-    virtual void Think();
     void Clone(Pilot *pilot);
 private:
     int playerId_;

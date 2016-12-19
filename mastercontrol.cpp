@@ -69,7 +69,8 @@ MasterControl::MasterControl(Context *context):
     paused_{false},
     currentState_{GS_INTRO},
     sinceStateChange_{0.0f},
-    sinceFrameRateReport_{0.0f}
+    sinceFrameRateReport_{0.0f},
+    players_{}
 {
     instance_ = this;
 }
@@ -249,6 +250,31 @@ void MasterControl::CreateColorSets()
     }
 }
 
+void MasterControl::AddPlayer()
+{
+    int playerId{1};
+
+    Vector<int> takenIds{};
+    for (Player* player : players_)
+        takenIds.Push(player->GetPlayerId());
+
+    while (takenIds.Contains(playerId))
+        ++playerId;
+
+    Player* newPlayer{ new Player(playerId, context_) };
+
+    players_.Push(SharedPtr<Player>(newPlayer));
+
+    Node* pilotNode{ scene_->CreateChild("Pilot") };
+    pilotNode->Rotate(Quaternion(180.0f, Vector3::UP));
+    Pilot* pilot{ pilotNode->CreateComponent<Pilot>() };
+    GetSubsystem<InputMaster>()->SetPlayerControl(playerId, pilot);
+    pilot->Initialize(false);
+
+    if (GetGameState() == GS_LOBBY)
+        newPlayer->EnterLobby();
+}
+
 void MasterControl::CreateScene()
 {
     scene_ = new Scene(context_);
@@ -286,21 +312,17 @@ void MasterControl::CreateScene()
     planeObject->SetMaterial(GetMaterial("PitchBlack"));
 
     //Create camera
-    Node* cameraNode{ scene_->CreateChild("Camera") };
+    Node* cameraNode{ scene_->CreateChild("Camera", LOCAL) };
     world.camera = cameraNode->CreateComponent<heXoCam>();
 
     //Create arena
-    Node* arenaNode{ scene_->CreateChild("Arena") };
+    Node* arenaNode{ scene_->CreateChild("Arena", LOCAL) };
     arena_ = arenaNode->CreateComponent<Arena>();
 
     //Construct lobby
-    Node* lobbyNode{ scene_->CreateChild("Lobby") };
+    Node* lobbyNode{ scene_->CreateChild("Lobby", LOCAL) };
     lobby_ = lobbyNode->CreateComponent<Lobby>();
     //Create ships
-//    for (float x : { -4.2f, 4.2f }) {
-//        GetSubsystem<SpawnMaster>()->Create<Ship>()
-//                ->Set(Vector3(x, 0.6f, 0.0f), Quaternion(x < 0 ? 90.0f : -90.0f, Vector3::UP));
-//    }
     for (int s : { 3, 4, 2, 1 }) {
         GetSubsystem<SpawnMaster>()->Create<Ship>()
                 ->Set(Quaternion(60.0f + ((s % 2) * 60.0f - (s / 2) * 180.0f), Vector3::UP) * Vector3(0.0f, 0.6f, 2.3f),
@@ -322,15 +344,9 @@ void MasterControl::CreateScene()
     navMesh->SetTileSize(256);
     navMesh->Build();
 
-    for (int p{1}; p <= Max(static_cast<int>(INPUT->GetNumJoysticks()), 2); ++p){
+    for (unsigned p{1}; p <= Max(INPUT->GetNumJoysticks(), 1); ++p){
 
-        players_.Push(SharedPtr<Player>(new Player(p, context_)));
-
-        Node* pilotNode{ scene_->CreateChild("Pilot") };
-        pilotNode->Rotate(Quaternion(180.0f, Vector3::UP));
-        Pilot* pilot{ pilotNode->CreateComponent<Pilot>() };
-        GetSubsystem<InputMaster>()->SetPlayerControl(p, pilot);
-        pilot->Initialize(false);
+        AddPlayer();
     }
 }
 
@@ -350,13 +366,10 @@ void MasterControl::LeaveGameState()
     switch (currentState_) {
     case GS_INTRO : break;
     case GS_LOBBY : {
-//        lobby_->SetEnabledRecursive(false);
-//        if (highestScore_ != 0)
-//            highestScoreText_->SetColor(Color(0.23f, 0.75f, 1.0f, 0.23f));
     } break;
     case GS_PLAY : {
         GetSubsystem<SpawnMaster>()->Deactivate();
-    } break; //Eject when alive
+    } break;
     case GS_DEAD : {
         world.camera->SetGreyScale(false);
     } break;
@@ -443,6 +456,9 @@ void MasterControl::HandleSceneUpdate(StringHash eventType, VariantMap &eventDat
     switch (currentState_) {
     case GS_LOBBY: {
 
+        if (INPUT->GetKeyPress(KEY_KP_PLUS) && players_.Size() < 4)
+            AddPlayer();
+
         for (Door* d : GetComponentsInScene<Door>()){
             if (d->HidesAllPilots(false))
                 Exit();
@@ -511,11 +527,6 @@ bool MasterControl::PhysicsSphereCast(PODVector<RigidBody*> &hitResults, const V
 
 void MasterControl::Exit()
 {
-    //Save pilots and their scores
-//    player1_->SavePilot();
-//    player2_->SavePilot();
-
-    //...and exit to the left
     engine_->Exit();
 }
 
@@ -535,12 +546,13 @@ float MasterControl::SinePhase(float freq, float shift)
 }
 
 
-Player* MasterControl::GetPlayer(int playerID) const
+Player* MasterControl::GetPlayer(int playerId) const
 {
     for (Player* p : players_) {
 
-        if (p->GetPlayerId() == playerID)
+        if (p->GetPlayerId() == playerId){
             return p;
+        }
     }
     return nullptr;
 }

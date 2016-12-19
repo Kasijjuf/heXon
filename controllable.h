@@ -46,10 +46,8 @@ public:
 
     Player* GetPlayer();
 protected:
-//    float randomizer_;
     PODVector<Vector3> path_;
 
-    bool controlled_;
     Vector3 move_;
     Vector3 aim_;
     float thrust_;

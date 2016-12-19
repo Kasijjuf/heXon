@@ -36,7 +36,7 @@ void Lobby::OnNodeSet(Node *node)
 { (void)node;
 
     node_->Rotate(Quaternion(0.0f, 0.0f, 0.0f));
-    Node* chamberNode{ node_->CreateChild("Chamber") };
+    Node* chamberNode{ node_->CreateChild("Chamber", LOCAL) };
     StaticModel* chamberModel{ chamberNode->CreateComponent<StaticModel>() };
     chamberModel->SetModel(MC->GetModel("Chamber"));
     chamberModel->SetMaterial(0, MC->GetMaterial("Marble"));
@@ -65,12 +65,12 @@ void Lobby::OnNodeSet(Node *node)
         spotLight->SetCastShadows(true);
         spotLight->SetShadowBias(BiasParameters(0.0001f, 0.001f));
     }
-    //Create doors and splatterpillars
-    Node* doorNode{ node_->CreateChild("Door") };
+    //Create door and splatterpillar
+    Node* doorNode{ node_->CreateChild("Door", LOCAL) };
     doorNode->SetPosition(Vector3( 0.0f, 0.0f, 5.21843f));
     doorNode->CreateComponent<Door>();
 
-    Node* splatterPillarNode{ node_->CreateChild("SplatterPillar") };
+    Node* splatterPillarNode{ node_->CreateChild("SplatterPillar", LOCAL) };
     splatterPillarNode->SetPosition(Vector3( 0.0f, 0.0f, -4.36142));
     splatterPillarNode->CreateComponent<SplatterPillar>();
 
@@ -78,7 +78,7 @@ void Lobby::OnNodeSet(Node *node)
     SubscribeToEvent(E_ENTERPLAY,  URHO3D_HANDLER(Lobby, EnterPlay));
 
     //Create highest
-    Node* highestNode{ node_->CreateChild("Highest") };
+    Node* highestNode{ node_->CreateChild("Highest", LOCAL) };
     highest_ = highestNode->CreateComponent<Highest>();
 }
 

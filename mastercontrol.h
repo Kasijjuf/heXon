@@ -119,7 +119,7 @@ public:
     Sound* GetMusic(String name) const;
     Sound* GetSample(String name) const;
 
-    Player* GetPlayer(int playerID) const;
+    Player* GetPlayer(int playerId) const;
     Player* GetPlayerByColorSet(int colorSet);
     Player* GetNearestPlayer(Vector3 pos);
     Vector< SharedPtr<Player> > GetPlayers() { return players_; }
@@ -199,6 +199,7 @@ private:
     float secondsPerFrame_;
     float sinceFrameRateReport_;
     float SinePhase(float freq, float shift);
+    void AddPlayer();
 };
 
 #endif // MASTERCONTROL_H

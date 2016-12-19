@@ -22,7 +22,6 @@
 
 Controllable::Controllable(Context* context) : SceneObject(context),
     path_{},
-    controlled_{false},
     move_{},
     aim_{},
     maxPitch_{90.0f},
@@ -56,17 +55,18 @@ void Controllable::OnNodeSet(Node *node)
 }
 void Controllable::Update(float timeStep)
 {
-    if (!GetPlayer())
+
+    if (GetPlayer() == nullptr)
         return;
 
-    if (GetPlayer()->IsHuman())
-        for (int a{0}; a < static_cast<int>(actions_.size()); ++a){
+    if (!GetPlayer()->IsHuman())
+        Think();
+    else {
+        for (unsigned a{0}; a < actions_.size(); ++a){
 
             if (actions_[a])
                 actionSince_[a] += timeStep;
         }
-    else {
-        Think();
     }
 }
 
@@ -144,13 +144,18 @@ void Controllable::Think()
 {
     if (!path_.Size())
         return;
-    else if (LucKey::Distance(node_->GetPosition(), path_[0]) < (0.1f + 0.23f * (path_.Size() > 1)))
-        path_.Erase(0);
-    else
-        SetMove(path_[0] - node_->GetPosition());
+
+    else {
+        if (LucKey::Distance(node_->GetPosition(), path_[0])
+                < (0.1f + 0.23f * (path_.Size() > 1)))
+        {
+            path_.Erase(0);
+        } else
+            SetMove(path_[0] - node_->GetPosition());
+    }
 }
 
 Player* Controllable::GetPlayer()
 {
-    GetSubsystem<InputMaster>()->GetPlayerByControllable(this);
+    return GetSubsystem<InputMaster>()->GetPlayerByControllable(this);
 }

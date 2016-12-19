@@ -22,7 +22,8 @@
 #include "ship.h"
 
 InputMaster::InputMaster(Context* context):
-    Object(context)
+    Object(context),
+    controlledByPlayer_{}
 {
     keyBindingsMaster_[KEY_UP]     = buttonBindingsMaster_[static_cast<int>(SB_DPAD_UP)]    = MasterInputAction::UP;
     keyBindingsMaster_[KEY_DOWN]   = buttonBindingsMaster_[static_cast<int>(SB_DPAD_DOWN)]  = MasterInputAction::DOWN;
@@ -114,7 +115,7 @@ void InputMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
                 if (!activeActions.player_[pId].Contains(action))
                     activeActions.player_[pId].Push(action);
             }
-
+        //Handle eject
         if (pressedButtons.Contains(SB_L2) && pressedButtons.Contains(SB_R2))
             if (p->GetShip())
                 p->GetShip()->Eject();
@@ -142,6 +143,7 @@ Player* InputMaster::GetPlayerByControllable(Controllable* controllable)
 {
     for (int k : controlledByPlayer_.Keys())
     {
+
         if (controlledByPlayer_[k] == controllable)
             return MC->GetPlayer(k);
     }
@@ -176,7 +178,7 @@ void InputMaster::HandleActions(const InputActions& actions)
         auto playerInputActions = actions.player_[pId];
 
         Controllable* controlled{ controlledByPlayer_[pId] };
-        if (controlled){
+        if (controlled && controlled->GetPlayer()->IsHuman()){
 
             Vector3 stickMove{ Vector3(leftStickPosition_[pId-1].x_, 0.0f, leftStickPosition_[pId-1].y_) };
             Vector3 stickAim{  Vector3(rightStickPosition_[pId-1].x_, 0.0f, rightStickPosition_[pId-1].y_) };

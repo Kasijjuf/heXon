@@ -84,6 +84,10 @@ void Player::ResetScore()
 void Player::EnterLobby(StringHash eventType, VariantMap &eventData)
 { (void)eventType; (void)eventData;
 
+    EnterLobby();
+}
+void Player::EnterLobby()
+{
     for (Pilot* pilot : MC->GetComponentsInScene<Pilot>()) {
         if (playerId_ == pilot->GetPlayerId()){
             GetSubsystem<InputMaster>()->SetPlayerControl(playerId_, pilot);
@@ -93,6 +97,7 @@ void Player::EnterLobby(StringHash eventType, VariantMap &eventData)
         }
     }
 }
+
 void Player::EnterPlay(StringHash eventType, VariantMap &eventData)
 {
     flightScore_ = 0;

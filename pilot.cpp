@@ -123,9 +123,9 @@ void Pilot::Initialize(bool highest)
     if (highest) {
         rigidBody_->SetKinematic(true);
         Load();
-    } else
+    } else {
         Randomize();
-
+    }
 }
 
 void Pilot::Save(int playerID, unsigned score)

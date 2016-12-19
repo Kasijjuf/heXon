@@ -75,15 +75,18 @@ void Door::OnNodeSet(Node *node)
 void Door::Open(StringHash eventType, VariantMap& eventData)
 { (void)eventType; (void)eventData;
 
-    node_->GetComponent<SoundSource>()->Play(MC->GetSample("Door"));
-    open_ = true;
+    if (!open_) {
+
+        node_->GetComponent<SoundSource>()->Play(MC->GetSample("Door"));
+        open_ = true;
+    }
 }
 void Door::Close(StringHash eventType, VariantMap& eventData)
 { (void)eventType; (void)eventData;
 
     PODVector<RigidBody*> colliders{};
     node_->GetComponent<RigidBody>()->GetCollidingBodies(colliders);
-    if (!colliders.Size()) {
+    if (!colliders.Size() && open_) {
 
         node_->GetComponent<SoundSource>()->Play(MC->GetSample("Door"));
         open_ = false;

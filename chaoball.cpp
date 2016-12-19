@@ -16,9 +16,10 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "chaoball.h"
-
+#include "ship.h"
 #include "spawnmaster.h"
+
+#include "chaoball.h"
 
 void ChaoBall::RegisterObject(Context *context)
 {
@@ -70,14 +71,22 @@ void ChaoBall::Update(float timeStep)
     float floatFactor = 0.5f - Min(0.5f, 0.5f * Abs(node_->GetPosition().y_));
     graphicsNode_->SetPosition(Vector3::UP * MC->Sine(0.5f, -floatFactor, floatFactor, 0.23f));
 
-    Player* player1 = MC->GetPlayer(1);
-    Player* player2 = MC->GetPlayer(2);
+    Vector<Ship*> ships{ MC->GetComponentsInScene<Ship>() };
+    for (Ship* ship : ships) {
+
+        if (!ship->IsEnabled())
+            ships.Remove(ship);
+    }
+
+    Vector3 averageShipPos{};
+    for (Ship* ship : ships) {
+
+        averageShipPos += ship->GetPosition();
+    }
+    averageShipPos /= Max(ships.Size(), 1);
 
     if (IsEmerged() && MC->GetGameState() == GS_PLAY){
-        Vector3 force{};
-        force += player1->IsAlive() * -3.0f*player1->GetPosition() - rigidBody_->GetLinearVelocity();
-        force += player2->IsAlive() * -3.0f*player2->GetPosition() - rigidBody_->GetLinearVelocity();
-        rigidBody_->ApplyForce(force);
+        rigidBody_->ApplyForce(ships.Size() * (-5.0f * averageShipPos - rigidBody_->GetLinearVelocity()));
     }
 }
 

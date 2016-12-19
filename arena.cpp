@@ -51,14 +51,14 @@ void Arena::OnNodeSet(Node *node)
                     i - 1 > (bigHexSize / 4) - ((bigHexSize - j + 2) / 2)) {                //Exclude top left
                 Vector3 tilePos = Vector3((-bigHexSize / 2.0f + i) * 2.0f + j % 2, -0.1f, (-bigHexSize / 2.0f + j + 0.5f) * 1.8f);
 
-                Node* tileNode{ node_->CreateChild("Tile") };
+                Node* tileNode{ node_->CreateChild("Tile", LOCAL) };
                 tileNode->SetPosition(tilePos);
                 tiles_.Push(tileNode->CreateComponent<Tile>());
             }
         }
     }
     //Add a directional light to the arena.
-    Node* lightNode = node_->CreateChild("Sun");
+    Node* lightNode = node_->CreateChild("Sun", LOCAL);
     lightNode->SetPosition(Vector3::UP*5.0f);
     lightNode->SetRotation(Quaternion(90.0f, 0.0f, 0.0f));
     playLight_ = lightNode->CreateComponent<Light>();
@@ -69,7 +69,7 @@ void Arena::OnNodeSet(Node *node)
     playLight_->SetCastShadows(false);
 
     //Create heXon logo
-    logoNode_ = node_->CreateChild("heXon");
+    logoNode_ = node_->CreateChild("heXon", LOCAL);
     logoNode_->SetPosition(Vector3(0.0f, -4.0f, 0.0f));
     logoNode_->SetRotation(Quaternion(0.0f, 180.0f, 0.0f));
     logoNode_->SetScale(16.0f);
