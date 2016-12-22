@@ -214,6 +214,7 @@ void MasterControl::PreloadSamples()
     CACHE->GetResources<Sound>(sounds);
 
     for (Sound* sound : sounds) {
+        if (sound->GetName().Contains("Samples"))
         samples_.Push(SharedPtr<Sound>(sound));
     }
 }
