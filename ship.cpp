@@ -168,6 +168,8 @@ void Ship::EnterLobby(StringHash eventType, VariantMap &eventData)
     rigidBody_->SetMass(0.0f);
     particleEmitter_->SetEmitting(false);
 
+    shieldMaterial_->SetShaderParameter("MatDiffColor", Color::BLACK);
+
     RemoveTails();
 }
 void Ship::SetTailsEnabled(bool enabled)
