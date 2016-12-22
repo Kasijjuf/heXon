@@ -52,7 +52,6 @@ protected:
     SharedPtr<Light> light_;
 private:
     int playerID_;
-    SharedPtr<Sound> sample_;
     SharedPtr<SoundSource> sampleSource_;
     float initialMass_;
     float initialBrightness_;

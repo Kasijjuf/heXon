@@ -50,8 +50,6 @@ void Explosion::OnNodeSet(Node *node)
 
     particleEmitter_->SetEffect(CACHE->GetResource<ParticleEffect>("Particles/Explosion.xml"));
 
-    sample_ = CACHE->GetResource<Sound>("Samples/Explode.ogg");
-    sample_->SetLooped(false);
     sampleSource_ = node_->CreateComponent<SoundSource>();
     sampleSource_->SetSoundType(SOUND_EFFECT);
 }
@@ -117,7 +115,7 @@ void Explosion::Set(const Vector3 position, const Color color, const float size,
     particleEffect->SetColorFrames(colorFrames);
 
     sampleSource_->SetGain(Min(0.5f * size, 1.0f));
-    sampleSource_->Play(sample_);
+    sampleSource_->Play(MC->GetSample("Explode"));
 
     MC->arena_->AddToAffectors(WeakPtr<Node>(node_), WeakPtr<RigidBody>(rigidBody_));
 

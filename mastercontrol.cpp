@@ -199,8 +199,23 @@ Sound* MasterControl::GetMusic(String name) const {
     return song;
 }
 Sound* MasterControl::GetSample(String name) const {
+
+    for (SharedPtr<Sound> sound : samples_)
+        if (sound->GetName().Contains(name))
+            return sound.Get();
+
     Sound* sample{ CACHE->GetResource<Sound>("Samples/"+name+".ogg") };
     return sample;
+}
+
+void MasterControl::PreloadSamples()
+{
+    PODVector<Sound*> sounds{};
+    CACHE->GetResources<Sound>(sounds);
+
+    for (Sound* sound : sounds) {
+        samples_.Push(SharedPtr<Sound>(sound));
+    }
 }
 
 void MasterControl::CreateColorSets()
@@ -291,7 +306,7 @@ void MasterControl::RemovePlayer(Player* player)
     if (player->gui3d_)
         player->gui3d_->SetScore(0);
 
-    Player::colorSets_.Erase(player->GetPlayerId());
+    Player::takenColorSets_.Erase(player->GetPlayerId());
     InputMaster* inputMaster{ GetSubsystem<InputMaster>() };
     Controllable* controllable{ inputMaster->GetControllableByPlayer(player->GetPlayerId()) };
     controllable->ClearControl();

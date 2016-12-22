@@ -31,7 +31,7 @@ class Player : public Object
     URHO3D_OBJECT(Player, Object);
 public:
     Player(int playerId, Context* context);
-    static HashMap< int, int > colorSets_;
+    static HashMap< int, int > takenColorSets_;
 
     Vector3 GetPosition();
     Ship* GetShip();

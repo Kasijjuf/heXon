@@ -353,7 +353,7 @@ void Pilot::EnterLobbyFromShip()
 
     for (Ship* s : MC->GetComponentsInScene<Ship>()) {
 
-        if (s->GetColorSet() == Player::colorSets_[playerId_]) {
+        if (s->GetColorSet() == Player::takenColorSets_[playerId_]) {
 
             Set(LucKey::Scale(s->GetPosition(), Vector3(1.7f, 0.0f, 1.7f)),
                 s->GetNode()->GetRotation());
@@ -401,16 +401,16 @@ void Pilot::HandleNodeCollisionStart(StringHash eventType, VariantMap& eventData
     Ship* ship{ otherNode->GetComponent<Ship>() };
     if (ship) {
 
-        for (int p : Player::colorSets_.Keys()){
+        for (int p : Player::takenColorSets_.Keys()){
             //Don't get in if the pilot has a ship and this is not the pilot's ship
             if (p == playerId_) {
 
-                if ( Player::colorSets_[p] != ship->GetColorSet()) {
+                if ( Player::takenColorSets_[p] != ship->GetColorSet()) {
                     return;
                 }
 
             //Don't get in if the ship is taken by another player
-            } else if (Player::colorSets_[p] == ship->GetColorSet()) {
+            } else if (Player::takenColorSets_[p] == ship->GetColorSet()) {
                 return;
             }
         }
@@ -435,9 +435,9 @@ void Pilot::Think()
 
     bool splatterPillarIdle{ splatterPillar->IsIdle() };
 
-    if (Player::colorSets_.Contains(GetPlayerId())) {
+    if (Player::takenColorSets_.Contains(GetPlayerId())) {
 
-        pickedShip_ = MC->GetShipByColorSet(Player::colorSets_[GetPlayerId()]);
+        pickedShip_ = MC->GetShipByColorSet(Player::takenColorSets_[GetPlayerId()]);
 
     } else {
         for (Ship* ship : MC->GetComponentsInScene<Ship>()) {
@@ -445,7 +445,7 @@ void Pilot::Think()
             if (ShipPicked(ship))
                 continue;
 
-            if (!Player::colorSets_.Values().Contains(ship->GetColorSet())) {
+            if (!Player::takenColorSets_.Values().Contains(ship->GetColorSet())) {
 
                 pickedShip_ = ship;
                 break;

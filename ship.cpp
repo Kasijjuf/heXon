@@ -133,7 +133,7 @@ void Ship::SetColors()
 void Ship::HandleSetControlled()
 {
     GetPlayer()->gui3d_ = gui3d_;
-    Player::colorSets_[GetPlayer()->GetPlayerId()] = colorSet_;
+    Player::takenColorSets_[GetPlayer()->GetPlayerId()] = colorSet_;
 }
 
 void Ship::EnterPlay(StringHash eventType, VariantMap &eventData)

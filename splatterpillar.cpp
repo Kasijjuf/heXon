@@ -88,16 +88,18 @@ void SplatterPillar::OnNodeSet(Node *node)
 void SplatterPillar::Trigger(StringHash eventType, VariantMap& eventData)
 { (void)eventType;
 
-    rotationSpeed_ = Random(-1.0f, 1.0f);
-    lastTriggered_ = MC->scene_->GetElapsedTime();
-    bloodNode_->Rotate(Quaternion(Random(360.0f), Vector3::UP));
-    blood_->SetEnabled(true);
-    splatEmitter_->SetEmitting(true);
-    soundSource_->Play(CACHE->GetResource<Sound>("Samples/Splatter" + String(Random(1, 6)) + ".ogg"));
-
     Node* otherNode{ static_cast<Node*>(eventData[NodeCollisionStart::P_OTHERNODE].GetPtr()) };
-    if (otherNode->HasComponent<Pilot>())
+    if (otherNode->HasComponent<Pilot>()) {
+
         otherNode->GetComponent<Pilot>()->Upload();
+
+        rotationSpeed_ = Random(-1.0f, 1.0f);
+        lastTriggered_ = MC->scene_->GetElapsedTime();
+        bloodNode_->Rotate(Quaternion(Random(360.0f), Vector3::UP));
+        blood_->SetEnabled(true);
+        splatEmitter_->SetEmitting(true);
+        soundSource_->Play(MC->GetSample("Splatter" + String(Random(1, 6))));
+    }
 }
 
 void SplatterPillar::Update(float timeStep)

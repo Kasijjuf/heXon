@@ -102,6 +102,8 @@ public:
     Vector< SharedPtr<Player> > players_;
     HashMap< int, ColorSet > colorSets_;
 
+    Vector< SharedPtr<Sound> > samples_;
+
     Apple* apple_;
     Heart* heart_;
     ChaoBall* chaoBall_;
@@ -187,6 +189,7 @@ private:
     Material* lobbyGlowGreen_;
     Material* lobbyGlowPurple_;
 
+    void PreloadSamples();
     void CreateColorSets();
     void CreateScene();
     void CreateUI();

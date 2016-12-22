@@ -39,7 +39,7 @@
 #include "phaser.h"
 #include "gui3d.h"
 
-HashMap<int, int> Player::colorSets_{};
+HashMap<int, int> Player::takenColorSets_{};
 
 Player::Player(int playerId, Context* context): Object(context),
     playerId_{playerId},
@@ -63,7 +63,7 @@ void Player::Die()
 void Player::Respawn()
 {
     ResetScore();
-    colorSets_.Erase(playerId_);
+    takenColorSets_.Erase(playerId_);
 
     alive_ = true;
 }
