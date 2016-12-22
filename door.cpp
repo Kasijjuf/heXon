@@ -59,7 +59,7 @@ void Door::OnNodeSet(Node *node)
     RigidBody* triggerBody{ node_->CreateComponent<RigidBody>() };
     triggerBody->SetTrigger(true);
     CollisionShape* trigger{ node_->CreateComponent<CollisionShape>() };
-    trigger->SetBox(Vector3(3.4f, 2.3f, 0.666f), Vector3::BACK * 0.34f);
+    trigger->SetBox(Vector3(3.4f, 2.3f, 1.0f));
 
     /*node_->CreateComponent<RigidBody>();
     for (float x : { -2.05f, 2.05f }){

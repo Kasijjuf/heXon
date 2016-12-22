@@ -340,7 +340,7 @@ void Pilot::EnterLobbyThroughDoor()
 
     node_->SetPosition(SPAWNPOS);
     node_->SetRotation(Quaternion(180.0f, Vector3::UP));
-    rigidBody_->ApplyImpulse(Vector3::BACK * 2.3f);
+    rigidBody_->ApplyImpulse(Vector3::BACK);
 
     NAVMESH->FindPath(path_, node_->GetPosition(), node_->GetPosition() + Vector3::BACK * 3.0f);
 
