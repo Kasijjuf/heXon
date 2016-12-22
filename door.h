@@ -35,6 +35,7 @@ public:
     virtual void Update(float timeStep);
 
     bool HidesAllPilots(bool onlyHuman) const;
+    bool hasBeenOpen_;
 private:
     AnimatedModel* model_;
 

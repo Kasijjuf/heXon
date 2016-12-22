@@ -59,7 +59,7 @@ void Controllable::Update(float timeStep)
     if (GetPlayer() == nullptr)
         return;
 
-    if (!GetPlayer()->IsHuman())
+    if (!GetPlayer()->IsHuman() || path_.Size())
         Think();
     else {
         for (unsigned a{0}; a < actions_.size(); ++a){
@@ -100,9 +100,6 @@ void Controllable::SetActions(std::bitset<4> actions)
                     actionSince_[i] = 0.0f;
             }
         }
-}
-void Controllable::HandleAction(int actionId)
-{ (void)actionId;
 }
 
 void Controllable::AlignWithMovement(float timeStep)

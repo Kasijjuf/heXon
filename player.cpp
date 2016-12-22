@@ -63,7 +63,6 @@ void Player::Die()
 void Player::Respawn()
 {
     ResetScore();
-    multiplier_ = 1;
     colorSets_.Erase(playerId_);
 
     alive_ = true;
@@ -88,6 +87,8 @@ void Player::EnterLobby(StringHash eventType, VariantMap &eventData)
 }
 void Player::EnterLobby()
 {
+    multiplier_ = 1;
+
     for (Pilot* pilot : MC->GetComponentsInScene<Pilot>()) {
         if (playerId_ == pilot->GetPlayerId()){
             GetSubsystem<InputMaster>()->SetPlayerControl(playerId_, pilot);

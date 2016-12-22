@@ -51,6 +51,7 @@ void Seeker::OnNodeSet(Node *node)
     rigidBody_->SetMass(2.3f);
     rigidBody_->SetLinearDamping(0.23f);
     rigidBody_->SetTrigger(true);
+    rigidBody_->SetLinearFactor(Vector3::ONE - Vector3::UP);
 
     CollisionShape* trigger{ node_->CreateComponent<CollisionShape>() };
     trigger->SetSphere(1.0f);

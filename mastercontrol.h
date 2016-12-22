@@ -82,6 +82,7 @@ enum PickupType {PT_RESET, PT_APPLE, PT_HEART, PT_CHAOBALL};
 
 #define MC MasterControl::GetInstance()
 
+#define NAVMESH MC->scene_->GetComponent<NavigationMesh>()
 
 class MasterControl : public Application
 {
@@ -119,6 +120,8 @@ public:
     Sound* GetMusic(String name) const;
     Sound* GetSample(String name) const;
 
+    void AddPlayer();
+    void RemoveAutoPilot();
     Player* GetPlayer(int playerId) const;
     Player* GetPlayerByColorSet(int colorSet);
     Player* GetNearestPlayer(Vector3 pos);
@@ -164,6 +167,7 @@ public:
     bool AllPlayersAtZero(bool onlyHuman);
 
     void HandlePostRenderUpdate(StringHash eventType, VariantMap &eventData);
+    void RemovePlayer(Player *player);
 private:
     static MasterControl* instance_;
 
@@ -199,7 +203,6 @@ private:
     float secondsPerFrame_;
     float sinceFrameRateReport_;
     float SinePhase(float freq, float shift);
-    void AddPlayer();
 };
 
 #endif // MASTERCONTROL_H

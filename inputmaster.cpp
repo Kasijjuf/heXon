@@ -125,18 +125,24 @@ void InputMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
     HandleActions(activeActions);
 }
 
-void InputMaster::SetPlayerControl(int player, Controllable* controllable)
+void InputMaster::SetPlayerControl(int playerId, Controllable* controllable)
 {
 
-    if (controlledByPlayer_.Contains(player)){
-        if (controlledByPlayer_[player] == controllable)
+    if (controlledByPlayer_.Contains(playerId)){
+        if (controlledByPlayer_[playerId] == controllable)
             return;
         else
-            controlledByPlayer_[player]->ClearControl();
+            controlledByPlayer_[playerId]->ClearControl();
     }
 
-    controlledByPlayer_[player] = controllable;
-    controllable->HandleSetControlled();
+    if (controllable != nullptr){
+
+        controlledByPlayer_[playerId] = controllable;
+        controllable->HandleSetControlled();
+
+    } else
+
+        controlledByPlayer_.Erase(playerId);
 }
 
 Player* InputMaster::GetPlayerByControllable(Controllable* controllable)

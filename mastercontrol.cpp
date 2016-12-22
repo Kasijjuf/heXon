@@ -79,28 +79,28 @@ void MasterControl::Setup()
 {
     SetRandomSeed(TIME->GetSystemTime());
 
-    engineParameters_["LogName"] = GetSubsystem<FileSystem>()->GetAppPreferencesDir("urho3d", "logs")+"heXon.log";
-    engineParameters_["WindowTitle"] = "heXon";
-    engineParameters_["WindowIcon"] = "icon.png";
+    engineParameters_[EP_LOG_NAME] = GetSubsystem<FileSystem>()->GetAppPreferencesDir("luckey", "logs")+"heXon.log";
+    engineParameters_[EP_WINDOW_TITLE] = "heXon";
+    engineParameters_[EP_WINDOW_ICON] = "icon.png";
 
     //Add resource path
 //    Vector<String> resourcePaths{};
 //    resourcePaths.Push(FILES->GetAppPreferencesDir("luckey", "hexon"));
-    engineParameters_["ResourcePaths"] = "Resources;";
+    engineParameters_[EP_RESOURCE_PATHS] = "Resources;";
     /*resourcePaths.Push(String("Resources"));
     resourcePaths.Push(String("../heXon/Resources"));
 
     for (String path : resourcePaths)
         if (FILES->DirExists(path)){
-            engineParameters_["ResourcePaths"] = path;
+            engineParameters_[EP_RESOURCE_PATHS] = path;
             break;
         }*/
-//    engineParameters_["VSync"] = true;
-//    engineParameters_["FullScreen"] = false;
-//    engineParameters_["Headless"] = true;
-//    engineParameters_["WindowWidth"] = 1920/2;
-//    engineParameters_["WindowHeight"] = 1080/2;
-//    engineParameters_["borderless"] = true;
+//    engineParameters_[EP_VSYNC] = true;
+//    engineParameters_[EP_FULL_SCREEN] = false;
+//    engineParameters_[EP_HEADLESS] = true;
+//    engineParameters_[EP_WINDOW_WIDTH] = 1920/2;
+//    engineParameters_[EP_WINDOW_HEIGHT] = 1080/2;
+//    engineParameters_[EP_BORDERLESS] = true;
 }
 void MasterControl::Start()
 {
@@ -200,7 +200,6 @@ Sound* MasterControl::GetMusic(String name) const {
 }
 Sound* MasterControl::GetSample(String name) const {
     Sound* sample{ CACHE->GetResource<Sound>("Samples/"+name+".ogg") };
-//    sample->SetLooped(false);
     return sample;
 }
 
@@ -252,27 +251,56 @@ void MasterControl::CreateColorSets()
 
 void MasterControl::AddPlayer()
 {
+    if (players_.Size() >= 4)
+        return;
+
     int playerId{1};
 
     Vector<int> takenIds{};
-    for (Player* player : players_)
-        takenIds.Push(player->GetPlayerId());
+    for (SharedPtr<Player> player : players_)
+        takenIds.Push(player.Get()->GetPlayerId());
 
     while (takenIds.Contains(playerId))
         ++playerId;
 
     Player* newPlayer{ new Player(playerId, context_) };
-
     players_.Push(SharedPtr<Player>(newPlayer));
 
-    Node* pilotNode{ scene_->CreateChild("Pilot") };
-    pilotNode->Rotate(Quaternion(180.0f, Vector3::UP));
-    Pilot* pilot{ pilotNode->CreateComponent<Pilot>() };
+    Pilot* pilot{ GetSubsystem<SpawnMaster>()->Create<Pilot>(GetGameState() == GS_LOBBY) };
     GetSubsystem<InputMaster>()->SetPlayerControl(playerId, pilot);
     pilot->Initialize(false);
 
     if (GetGameState() == GS_LOBBY)
         newPlayer->EnterLobby();
+}
+
+void MasterControl::RemoveAutoPilot()
+{
+    if (players_.Size() > 1 || NoHumans())
+        for (Pilot* pilot : GetComponentsInScene<Pilot>()) {
+            Player* player{ pilot->GetPlayer() };
+            if (player && !player->IsHuman()){
+                pilot->LeaveLobby();
+                return;
+            }
+        }
+}
+
+void MasterControl::RemovePlayer(Player* player)
+{
+    if (player->gui3d_)
+        player->gui3d_->SetScore(0);
+
+    Player::colorSets_.Erase(player->GetPlayerId());
+    InputMaster* inputMaster{ GetSubsystem<InputMaster>() };
+    Controllable* controllable{ inputMaster->GetControllableByPlayer(player->GetPlayerId()) };
+    controllable->ClearControl();
+    inputMaster->SetPlayerControl(player->GetPlayerId(), nullptr);
+
+    for (SharedPtr<Player> pPointer : players_) {
+        if (pPointer.Get() == player)
+            players_.Remove(pPointer);
+    }
 }
 
 void MasterControl::CreateScene()
@@ -282,7 +310,7 @@ void MasterControl::CreateScene()
 
     world.octree = scene_->CreateComponent<Octree>();
     physicsWorld_ = scene_->CreateComponent<PhysicsWorld>();
-    physicsWorld_->SetGravity(Vector3::ZERO);
+//    physicsWorld_->SetGravity(Vector3::ZERO);
     scene_->CreateComponent<DebugRenderer>();
 
     //Create a Zone component for fog control
@@ -337,14 +365,14 @@ void MasterControl::CreateScene()
     chaoBall_ = chaoBallNode->CreateComponent<ChaoBall>();
 
     NavigationMesh* navMesh{ scene_->CreateComponent<NavigationMesh>() };
-    navMesh->SetAgentRadius(0.42f);
+    navMesh->SetAgentRadius(0.23f);
     navMesh->SetPadding(Vector3::UP);
-    navMesh->SetAgentMaxClimb(0.05f);
+    navMesh->SetAgentMaxClimb(0.23f);
     navMesh->SetCellSize(0.05f);
     navMesh->SetTileSize(256);
     navMesh->Build();
 
-    for (unsigned p{1}; p <= Max(INPUT->GetNumJoysticks(), 1); ++p){
+    for (unsigned p{1}; p <= Max(INPUT->GetNumJoysticks(), 3); ++p){
 
         AddPlayer();
     }
@@ -455,9 +483,6 @@ void MasterControl::HandleSceneUpdate(StringHash eventType, VariantMap &eventDat
 
     switch (currentState_) {
     case GS_LOBBY: {
-
-        if (INPUT->GetKeyPress(KEY_KP_PLUS) && players_.Size() < 4)
-            AddPlayer();
 
         for (Door* d : GetComponentsInScene<Door>()){
             if (d->HidesAllPilots(false))
@@ -617,7 +642,10 @@ bool MasterControl::NoHumans()
 
 void MasterControl::HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 {
-//    physicsWorld_->DrawDebugGeometry(true);
-//    scene_->GetComponent<NavigationMesh>()->DrawDebugGeometry(false);
+    return;
+
+    physicsWorld_->DrawDebugGeometry(true);
+    if (GetGameState() == GS_LOBBY)
+        scene_->GetComponent<NavigationMesh>()->DrawDebugGeometry(false);
 }
 

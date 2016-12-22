@@ -28,7 +28,8 @@ void Door::RegisterObject(Context *context)
 
 Door::Door(Context* context) :
     LogicComponent(context),
-    open_{false}
+    open_{false},
+    hasBeenOpen_{false}
 {
 }
 
@@ -58,7 +59,7 @@ void Door::OnNodeSet(Node *node)
     RigidBody* triggerBody{ node_->CreateComponent<RigidBody>() };
     triggerBody->SetTrigger(true);
     CollisionShape* trigger{ node_->CreateComponent<CollisionShape>() };
-    trigger->SetBox(Vector3(4.23f, 3.0f, 1.0f), Vector3::BACK * 0.34f);
+    trigger->SetBox(Vector3(3.4f, 2.3f, 0.666f), Vector3::BACK * 0.34f);
 
     /*node_->CreateComponent<RigidBody>();
     for (float x : { -2.05f, 2.05f }){
@@ -90,18 +91,22 @@ void Door::Close(StringHash eventType, VariantMap& eventData)
 
         node_->GetComponent<SoundSource>()->Play(MC->GetSample("Door"));
         open_ = false;
+        hasBeenOpen_ = true;
     }
 }
 
 bool Door::HidesAllPilots(bool onlyHuman) const
 {
+    if (!hasBeenOpen_)
+        return false;
+
     Vector<Controllable*> controllables{ GetSubsystem<InputMaster>()->GetControlled() };
 
     for (Controllable* c : controllables) {
 
             if (c->IsInstanceOf<Pilot>()) {
 
-                if (c->GetPosition().z_ < node_->GetPosition().z_) {
+                if (c->GetPosition().z_ < node_->GetPosition().z_ + 0.333f) {
 
                     if (c->GetPlayer()->IsHuman() || !onlyHuman)
                     return false;

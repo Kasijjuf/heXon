@@ -43,7 +43,7 @@ Pilot::Pilot(Context* context) : Controllable(context),
     hairStyle_{ 0 },
     pilotColors_{}
 {
-    thrust_ = 256.0f;
+    thrust_ = 512.0f;
     maxSpeed_ = 1.23f;
 }
 
@@ -60,12 +60,11 @@ void Pilot::OnNodeSet(Node *node)
     rigidBody_->SetFriction(0.0f);
     rigidBody_->SetMass(1.0f);
     rigidBody_->SetRestitution(0.0f);
-    rigidBody_->SetLinearFactor(Vector3::ONE - Vector3::UP);
     rigidBody_->SetLinearDamping(0.88f);
     rigidBody_->SetLinearRestThreshold(0.0f);
     rigidBody_->SetAngularFactor(Vector3::ZERO);
     rigidBody_->SetAngularRestThreshold(0.0f);
-    collisionShape_->SetCapsule(0.42f, 0.5f, Vector3::UP * 0.32f);
+    collisionShape_->SetCapsule(0.42f, 0.5f, Vector3::UP * 0.3f);
 
     //Also animates highest
     animCtrl_->PlayExclusive("Models/IdleAlert.ani", 0, true);
@@ -120,6 +119,8 @@ void Pilot::Update(float timeStep)
 
 void Pilot::Initialize(bool highest)
 {
+    pickedShip_ = nullptr;
+
     if (highest) {
         rigidBody_->SetKinematic(true);
         Load();
@@ -223,13 +224,13 @@ void Pilot::UpdateModel()
         Color diffColor{ pilotColors_[c] };
         if (c == 4){
 
-            if (hairStyle_ == HAIR_BALD)
+            if (hairStyle_ == HAIR_BALD || hairStyle_ == HAIR_SANTAHAT)
                 diffColor = pilotColors_[0];
             else if (hairStyle_ == HAIR_MOHAWK)
                 diffColor = LucKey::RandomHairColor(true);
         }
         model_->GetMaterial(c)->SetShaderParameter("MatDiffColor", diffColor);
-        Color specColor{ diffColor * (1.0f-0.1f*c) };
+        Color specColor{ diffColor * (1.0f - 0.1f * c) };
         specColor.a_ = 23.0f - 4.0f * c;
         model_->GetMaterial(c)->SetShaderParameter("MatSpecColor", specColor);
     }
@@ -250,16 +251,24 @@ void Pilot::UpdateModel()
         break;
     case HAIR_FLATTOP: hairModel_->SetModel(MC->GetModel("Flattop"));
         break;
+    case HAIR_SANTAHAT: hairModel_->SetModel(MC->GetModel("SantaHat"));
+        break;
     }
     //Set hair color
-    if (hairStyle_ != HAIR_BALD && hairStyle_ != HAIR_SHORT)
+    if (hairStyle_ == HAIR_SANTAHAT) {
+
+        hairModel_->SetMaterial(MC->GetMaterial("VCol"));
+
+    } else if (hairStyle_ != HAIR_BALD && hairStyle_ != HAIR_SHORT)
     {
         hairModel_->SetMorphWeight(0, Random());
 
         //Set color for hair model
         hairModel_->SetMaterial(MC->GetMaterial("Basic")->Clone());
+
         Color diffColor{ pilotColors_[4] };
         hairModel_->GetMaterial()->SetShaderParameter("MatDiffColor", diffColor);
+
         Color specColor{ diffColor * 0.23f };
         specColor.a_ = 23.0f;
         hairModel_->GetMaterial()->SetShaderParameter("MatSpecColor", specColor);
@@ -269,7 +278,12 @@ void Pilot::UpdateModel()
 void Pilot::Randomize()
 {
     male_ = Random(2);
-    hairStyle_ = Random(static_cast<int>(HAIR_ALL));
+
+    if (TIME->GetTimeStamp().Contains("Dec") && GetPlayer() && GetPlayer()->IsHuman())
+
+        hairStyle_ = HAIR_SANTAHAT;
+    else
+        hairStyle_ = Random(static_cast<int>(HAIR_ALL));
 
     for (int c{PC_SKIN}; c < PC_ALL; ++c) {
         switch (c){
@@ -325,8 +339,12 @@ void Pilot::EnterLobbyThroughDoor()
     node_->SetEnabledRecursive(true);
 
     node_->SetPosition(SPAWNPOS);
-    node_->SetRotation(Quaternion::IDENTITY.Inverse());
-    rigidBody_->ApplyImpulse(Vector3::BACK);
+    node_->SetRotation(Quaternion(180.0f, Vector3::UP));
+    rigidBody_->ApplyImpulse(Vector3::BACK * 2.3f);
+
+    NAVMESH->FindPath(path_, node_->GetPosition(), node_->GetPosition() + Vector3::BACK * 3.0f);
+
+    MC->GetComponentsInScene<Door>()[0]->hasBeenOpen_ = false;
 
 }
 void Pilot::EnterLobbyFromShip()
@@ -375,7 +393,9 @@ void Pilot::ClearControl()
 void Pilot::HandleNodeCollisionStart(StringHash eventType, VariantMap& eventData)
 { (void)eventType;
 
-    path_.Clear();
+//    if (!static_cast<RigidBody*>(eventData[NodeCollisionStart::P_OTHERBODY].GetPtr())->IsTrigger())
+//        path_.Clear();
+
     Node* otherNode{ static_cast<Node*>(eventData[NodeCollisionStart::P_OTHERNODE].GetPtr()) };
 
     Ship* ship{ otherNode->GetComponent<Ship>() };
@@ -406,10 +426,8 @@ void Pilot::Think()
     Controllable::Think();
 
     //Walk if there are pathnodes left
-    if (path_.Size())
+    if (path_.Size() || GetPlayer()->IsHuman())
         return;
-
-    NavigationMesh* navMesh{ MC->scene_->GetComponent<NavigationMesh>() };
 
     SplatterPillar* splatterPillar{};
     for (SplatterPillar* s : MC->GetComponentsInScene<SplatterPillar>())
@@ -438,33 +456,47 @@ void Pilot::Think()
     //Pick a destination
 
     //Enter play
-    if ( pickedShip_ && (MC->AllPlayersAtZero(false) && MC->NoHumans())
-                     || (MC->AllReady(true) && !MC->NoHumans())) {
+    if ( pickedShip_ && ((MC->AllPlayersAtZero(false) && MC->NoHumans())
+                     || (MC->AllReady(true) && !MC->NoHumans()))) {
 
-        navMesh->FindPath(path_, node_->GetPosition(), pickedShip_->GetPosition() + pickedShip_->GetNode()->GetDirection() * 0.23f);
+        NAVMESH->FindPath(path_, node_->GetPosition(), pickedShip_->GetPosition() + pickedShip_->GetNode()->GetDirection() * 0.23f);
         path_.Push(pickedShip_->GetPosition());
 
     //Reset Score
     } else if (GetPlayer()->GetScore() != 0 && (MC->NoHumans() || MC->AllPlayersAtZero(true))
             && splatterPillarIdle) {
 
-        navMesh->FindPath(path_, node_->GetPosition(), splatterPillar->GetPosition());
+        NAVMESH->FindPath(path_, node_->GetPosition(), splatterPillar->GetPosition());
 
     //Exit
     } else if (!MC->NoHumans() && MC->GetDoor()->HidesAllPilots(true)) {
 
-        navMesh->FindPath(path_, node_->GetPosition(), SPAWNPOS);
-        path_.Push(SPAWNPOS + Vector3::FORWARD * 2.3f);
+        LeaveLobby();
 
+    } else if (node_->GetPosition().z_ > 4.2f){
+        MC->RemovePlayer(GetPlayer());
+    }
     //Stay put
-    } else
+    else
         SetMove(Vector3::ZERO);
 
     SetAim(Vector3::ZERO);
 }
 
+void Pilot::LeaveLobby()
+{
+    NAVMESH->FindPath(path_, node_->GetPosition(), SPAWNPOS);
+}
+
 bool Pilot::ShipPicked(Ship* ship)
 {
+    /*for (int p : Player::colorSets_.Keys()) {
+        int colorSet{};
+        if (p != GetPlayerId() && Player::colorSets_.TryGetValue(p, colorSet) && colorSet == ship->GetColorSet())
+
+            return true;
+    }*/
+
     for (Pilot* p : MC->GetComponentsInScene<Pilot>())
         if (p != this && p->pickedShip_ == ship)
             return true;

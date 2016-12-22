@@ -26,11 +26,11 @@
 class Ship;
 
 enum PilotColor { PC_SKIN, PC_SHIRT, PC_PANTS, PC_SHOES, PC_HAIR, PC_ALL };
-enum Hair{HAIR_BALD, HAIR_SHORT, HAIR_MOHAWK, HAIR_SEAGULL, HAIR_MUSTAIN, HAIR_FROTOAD, HAIR_FLATTOP, HAIR_ALL};
+enum Hair{HAIR_BALD, HAIR_SHORT, HAIR_MOHAWK, HAIR_SEAGULL, HAIR_MUSTAIN, HAIR_FROTOAD, HAIR_FLATTOP, HAIR_ALL, HAIR_SANTAHAT};
 
 class Pilot : public Controllable
 {
-#define SPAWNPOS Vector3(playerId_ * 0.88f - 2.3f - Random(0.05f), 0.0f, 5.0f - Random(0.42f))
+#define SPAWNPOS Vector3(playerId_ * 0.8f - 2.1f - Random(0.05f), 0.0f, 7.0f)
 
     URHO3D_OBJECT(Pilot, Controllable);
     friend class Highest;
@@ -54,6 +54,7 @@ public:
     void Upload();
     void HandleNodeCollisionStart(StringHash eventType, VariantMap& eventData);
     void EnterLobbyFromShip();
+    void LeaveLobby();
     void Clone(Pilot *pilot);
 private:
     int playerId_;

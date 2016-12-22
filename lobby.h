@@ -36,6 +36,9 @@ public:
     virtual void Update(float timeStep);
     void EnterLobby(StringHash eventType, VariantMap &eventData);
     void EnterPlay(StringHash eventType, VariantMap &eventData);
+
+    void AddButtonPressed(StringHash eventType, VariantMap &eventData);
+    void RemoveButtonPressed(StringHash eventType, VariantMap &eventData);
 private:
     Highest* highest_;
 };

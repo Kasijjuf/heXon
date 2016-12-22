@@ -80,6 +80,24 @@ void Lobby::OnNodeSet(Node *node)
     //Create highest
     Node* highestNode{ node_->CreateChild("Highest", LOCAL) };
     highest_ = highestNode->CreateComponent<Highest>();
+
+    //Add pilot button
+    Node* addButton{ node_->CreateChild("AddButton") };
+    addButton->SetPosition(Vector3(2.34f, 0.23f, 5.0f));
+    addButton->CreateComponent<RigidBody>()->SetTrigger(true);
+    addButton->CreateComponent<CollisionShape>()->SetSphere(0.5f);
+
+    SubscribeToEvent(addButton, E_NODECOLLISIONSTART, URHO3D_HANDLER(Lobby, AddButtonPressed));
+
+    //Remove pilot button
+    Node* removeButton{ node_->CreateChild("RemoveButton") };
+    removeButton->SetPosition(Vector3(-2.34f, 0.23f, 5.0f));
+    removeButton->CreateComponent<RigidBody>()->SetTrigger(true);
+    removeButton->CreateComponent<CollisionShape>()->SetSphere(0.5f);
+
+    SubscribeToEvent(removeButton, E_NODECOLLISIONSTART, URHO3D_HANDLER(Lobby, RemoveButtonPressed));
+
+    //Remove pilot button
 }
 
 void Lobby::Update(float timeStep)
@@ -101,4 +119,15 @@ void Lobby::EnterLobby(StringHash eventType, VariantMap &eventData)
 void Lobby::EnterPlay(StringHash eventType, VariantMap &eventData)
 {
     node_->SetEnabledRecursive(false);
+}
+
+void Lobby::AddButtonPressed(StringHash eventType, VariantMap &eventData)
+{ (void)eventType; (void)eventData;
+
+    MC->AddPlayer();
+}
+void Lobby::RemoveButtonPressed(StringHash eventType, VariantMap &eventData)
+{ (void)eventType; (void)eventData;
+
+    MC->RemoveAutoPilot();
 }
