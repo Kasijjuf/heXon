@@ -372,7 +372,7 @@ void MasterControl::CreateScene()
     navMesh->SetTileSize(256);
     navMesh->Build();
 
-    for (unsigned p{1}; p <= Max(INPUT->GetNumJoysticks(), 3); ++p){
+    for (unsigned p{1}; p <= Max(INPUT->GetNumJoysticks(), 1); ++p){
 
         AddPlayer();
     }
