@@ -31,7 +31,7 @@ Highest::Highest(Context* context) : LogicComponent(context),
 }
 
 void Highest::OnNodeSet(Node *node)
-{ (void)node;
+{ if (!node) return;
 
     node_->Translate(Vector3(0.0f, 2.3f, -3.4f));
     node_->Rotate(Quaternion(45.0f, Vector3::RIGHT));

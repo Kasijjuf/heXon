@@ -29,7 +29,7 @@ heXoCam::heXoCam(Context* context):
 }
 
 void heXoCam::OnNodeSet(Node *node)
-{ (void)node;
+{ if (!node) return;
 
     /* Ready for VR :)
     Node* leftEye{ node_->CreateChild("Left Eye") };

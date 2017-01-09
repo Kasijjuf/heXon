@@ -26,7 +26,8 @@ Effect::Effect(Context* context):
 }
 
 void Effect::OnNodeSet(Node *node)
-{
+{ if (!node) return;
+
     SceneObject::OnNodeSet(node);
 
     blink_ = false;

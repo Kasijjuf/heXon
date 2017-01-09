@@ -31,7 +31,7 @@ Tile::Tile(Context* context):
 }
 
 void Tile::OnNodeSet(Node *node)
-{ (void)node;
+{ if (!node) return;
 
     node_->SetScale(1.1f);
     model_ = node_->CreateComponent<StaticModel>();
@@ -53,7 +53,7 @@ void Tile::HandleUpdate(StringHash eventType, VariantMap &eventData)
 
     //Switch curcuit
     if (Random(23) == 5)
-        node_->SetRotation(Quaternion(Random(3)*120.0f + 60.0f*flipped_, Vector3::UP));
+        node_->SetRotation(Quaternion(Random(3) * 120.0f + 60.0f * flipped_, Vector3::UP));
 
     //Calculate periodic tile movement
     wave_ = 6.0f * pow(LucKey::Sine(Abs(centerDistExp_ - elapsedTime * 5.2625f)), 4.0f);
@@ -86,6 +86,8 @@ void Tile::HandleUpdate(StringHash eventType, VariantMap &eventData)
 
     bool lobby{ MC->GetGameState() == GS_LOBBY };
     float brightness{ Clamp((0.23f * offsetY) + 0.25f, 0.0f, 1.0f) + 0.42f*static_cast<float>(lobby) };
-    Color color{ brightness +  offsetY * lobby, brightness + offsetY * 0.00042f * (MC->Sine(23.0f, -23.0f - 1000.0f * lobby, 23.0f + 1000.0f * lobby, 23.0f) * wave_), brightness - Random(0.23f) * lobby, brightness + (0.023f * wave_) };
+    Color color{ brightness + offsetY * lobby,
+                 brightness + offsetY * 0.00042f * (MC->Sine(23.0f, -23.0f - 1000.0f * lobby, 23.0f + 1000.0f * lobby, 23.0f) * wave_),
+                 brightness - Random(0.23f) * lobby, brightness + (0.023f * wave_) };
     model_->GetMaterial(0)->SetShaderParameter("MatDiffColor", color);
 }

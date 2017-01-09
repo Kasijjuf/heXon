@@ -40,7 +40,7 @@ SplatterPillar::SplatterPillar(Context* context):
 }
 
 void SplatterPillar::OnNodeSet(Node *node)
-{ (void)node;
+{ if (!node) return;
 
     playerId_ = node_->GetPosition().x_ < 0.0f ? 1 : 2;
 

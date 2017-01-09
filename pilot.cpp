@@ -48,7 +48,8 @@ Pilot::Pilot(Context* context) : Controllable(context),
 }
 
 void Pilot::OnNodeSet(Node *node)
-{
+{ if (!node) return;
+
     Controllable::OnNodeSet(node);
 
     model_->SetModel(MC->GetModel("Male"));

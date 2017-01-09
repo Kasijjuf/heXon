@@ -31,7 +31,7 @@ SceneObject::SceneObject(Context* context):
 }
 
 void SceneObject::OnNodeSet(Node *node)
-{ (void)node;
+{ if (!node) return;
 
     for (int i{0}; i < 5; ++i){
         SoundSource* sampleSource{ node_->CreateComponent<SoundSource>() };

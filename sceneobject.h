@@ -37,9 +37,9 @@ class SceneObject : public LogicComponent
 public:
     SceneObject(Context* context);
     virtual void OnNodeSet(Node* node);
-    void Set(const Vector3 position);
-    void Set(const Vector3 position, const Quaternion rotation);
-    void Disable();
+    virtual void Set(const Vector3 position);
+    virtual void Set(const Vector3 position, const Quaternion rotation);
+    virtual void Disable();
 
     Vector3 GetPosition() const { return node_->GetPosition(); }
     bool IsEmerged() const { return GetPosition().y_ > -0.042f; }

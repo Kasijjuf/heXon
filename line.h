@@ -29,10 +29,10 @@ public:
     Line(Context* context);
     static void RegisterObject(Context* context);
     virtual void OnNodeSet(Node* node);
-
+    virtual void Set(int colorSet);
     virtual void Update(float timeStep);
-    void Set(int colorSet);
-    void Disable();
+    virtual void Disable();
+
     bool IsEnabled() { return node_->IsEnabled(); }
 private:
     float baseScale_;

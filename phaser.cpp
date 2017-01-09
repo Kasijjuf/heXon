@@ -34,7 +34,8 @@ Phaser::Phaser(Context* context) : Effect(context),
 }
 
 void Phaser::OnNodeSet(Node *node)
-{
+{ if (!node) return;
+
     Effect::OnNodeSet(node);
 
     node_->SetName("Phaser");

@@ -139,6 +139,8 @@ void MasterControl::Start()
     Explosion::RegisterObject(context_);
     Line::RegisterObject(context_);
 
+    CreateColorSets();
+
     context_->RegisterSubsystem(new EffectMaster(context_));
     context_->RegisterSubsystem(new InputMaster(context_));
     context_->RegisterSubsystem(new SpawnMaster(context_));
@@ -148,7 +150,6 @@ void MasterControl::Start()
         CreateUI();
     }
 
-    CreateColorSets();
     CreateScene();
 
     Node* announcerNode{ scene_->CreateChild("Announcer") };

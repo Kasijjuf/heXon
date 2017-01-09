@@ -59,7 +59,8 @@ Ship::Ship(Context* context) : Controllable(context),
 }
 
 void Ship::OnNodeSet(Node *node)
-{
+{ if (!node) return;
+
     Controllable::OnNodeSet(node);
 
     PODVector<Node*> ships{};

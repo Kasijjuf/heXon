@@ -30,7 +30,7 @@ Line::Line(Context* context) :
 }
 
 void Line::OnNodeSet(Node *node)
-{ (void)node;
+{ if (!node) return;
 
     Effect::OnNodeSet(node_);
 

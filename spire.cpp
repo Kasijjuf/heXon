@@ -37,7 +37,8 @@ Spire::Spire(Context* context):
 }
 
 void Spire::OnNodeSet(Node *node)
-{
+{ if (!node) return;
+
     Enemy::OnNodeSet(node);
 
     node_->SetName("Spire");

@@ -31,8 +31,9 @@ Razor::Razor(Context* context):
 
 }
 
-void Razor::OnNodeSet(Node *node)
-{
+void Razor::OnNodeSet(Node* node)
+{ if (!node) return;
+
     Enemy::OnNodeSet(node);
 
     node_->SetName("Razor");
@@ -61,8 +62,8 @@ void Razor::Update(float timeStep)
     Enemy::Update(timeStep);
 
     //Spin
-    topNode_->Rotate(Quaternion(0.0f, timeStep*50.0f*aimSpeed_, 0.0f));
-    bottomNode_->Rotate(Quaternion(0.0f, timeStep*-50.0f*aimSpeed_, 0.0f));
+    topNode_->Rotate(Quaternion(0.0f, timeStep * 50.0f * aimSpeed_, 0.0f));
+    bottomNode_->Rotate(Quaternion(0.0f, timeStep * -50.0f * aimSpeed_, 0.0f));
     //Pulse
     topModel_->GetMaterial(0)->SetShaderParameter("MatEmissiveColor", GetGlowColor());
     //Get moving

@@ -31,8 +31,8 @@ class Effect : public SceneObject
 public:
     Effect(Context* context);
     virtual void Update(float timeStep);
-    void Set(const Vector3 position);
-    void Disable();
+    virtual void Set(const Vector3 position);
+    virtual void Disable();
     virtual void OnNodeSet(Node* node);
 protected:
     SharedPtr<ParticleEmitter> particleEmitter_;

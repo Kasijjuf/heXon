@@ -37,7 +37,8 @@ Enemy::Enemy(Context* context):
 }
 
 void Enemy::OnNodeSet(Node *node)
-{
+{ if (!node) return;
+
     SceneObject::OnNodeSet(node);
 
     node_->SetName("Enemy");

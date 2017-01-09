@@ -39,7 +39,7 @@ void GUI3D::RegisterObject(Context* context)
 
 
 void GUI3D::OnNodeSet(Node* node)
-{ (void)node;
+{ if (!node) return;
 
     SubscribeToEvent(E_ENTERLOBBY, URHO3D_HANDLER(GUI3D, EnterLobby));
     SubscribeToEvent(E_ENTERPLAY,  URHO3D_HANDLER(GUI3D, EnterPlay));

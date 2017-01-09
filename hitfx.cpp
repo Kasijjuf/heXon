@@ -30,7 +30,8 @@ HitFX::HitFX(Context* context):
 }
 
 void HitFX::OnNodeSet(Node *node)
-{
+{ if (!node) return;
+
     Effect::OnNodeSet(node);
 
     particleEmitter_ = node_->CreateComponent<ParticleEmitter>();

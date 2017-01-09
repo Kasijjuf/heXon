@@ -33,7 +33,8 @@ Flash::Flash(Context* context):
 }
 
 void Flash::OnNodeSet(Node *node)
-{
+{ if (!node) return;
+
     Effect::OnNodeSet(node);
 
     node_->SetName("Flash");

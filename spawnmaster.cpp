@@ -76,7 +76,7 @@ void SpawnMaster::Clear()
         for (Component* c : n->GetComponents()) {
             if (c->IsInstanceOf<Enemy>()
              || c->IsInstanceOf<Effect>()
-             || c->IsInstanceOf<Seeker>()){
+             || c->IsInstanceOf<Seeker>()) {
                 SceneObject* s{ static_cast<SceneObject*>(c) };
                 s->Disable();
             }

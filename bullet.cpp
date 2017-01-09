@@ -18,6 +18,8 @@
 
 #include "bullet.h"
 
+HashMap<int, StaticModelGroup*> Bullet::bulletGroups_{};
+
 void Bullet::RegisterObject(Context *context)
 {
     context->RegisterFactory<Bullet>();
@@ -25,7 +27,7 @@ void Bullet::RegisterObject(Context *context)
 
 Bullet::Bullet(Context* context):
     SceneObject(context),
-    colorSet_{1},
+    colorSet_{},
     lifeTime_{1.0f},
     damage_{0.0f}
 {
@@ -38,25 +40,31 @@ void Bullet::OnNodeSet(Node *node)
     node_->SetName("Bullet");
     node_->SetEnabled(false);
     node_->SetScale(Vector3(1.0f + damage_, 1.0f + damage_, 0.1f));
-    model_ = node_->CreateComponent<StaticModel>();
-    model_->SetModel(MC->GetModel("Bullet"));
 
     rigidBody_ = node_->CreateComponent<RigidBody>();
     rigidBody_->SetMass(0.5f);
     rigidBody_->SetLinearFactor(Vector3::ONE - Vector3::UP);
     rigidBody_->SetFriction(0.0f);
 
-    Light* light = node_->CreateComponent<Light>();
+    Light* light{ node_->CreateComponent<Light>() };
     light->SetBrightness(4.2f);
     light->SetRange(5.5f);
+
+    if (bulletGroups_.Empty()) {
+        for (unsigned c{0}; c < MC->colorSets_.Size(); ++c) {
+            bulletGroups_[c] = MC->scene_->CreateComponent<StaticModelGroup>();
+            bulletGroups_[c]->SetModel(MC->GetModel("Bullet"));
+            bulletGroups_[c]->SetMaterial(MC->colorSets_[c].bulletMaterial_);
+        }
+    }
 }
 
 void Bullet::Update(float timeStep)
 {
     age_ += timeStep;
-    node_->SetScale(Vector3(Max(1.75f - 10.0f*age_, 1.0f+damage_),
-                                Max(1.75f - 10.0f*age_, 1.0f+damage_),
-                                Min(Min(35.0f*age_, 2.0f), Max(2.0f-timeSinceHit_*42.0f, 0.1f))
+    node_->SetScale(Vector3(Max(1.75f - 10.0f * age_, 1.0f + damage_),
+                                Max(1.75f - 10.0f * age_, 1.0f + damage_),
+                                Min(Min(35.0f * age_, 2.0f), Max(2.0f - timeSinceHit_ * 42.0f, 0.1f))
                                 ));
     if (age_ > lifeTime_) {
         Disable();
@@ -76,20 +84,24 @@ void Bullet::Set(Vector3 position, int colorSet, Vector3 direction, Vector3 forc
     Light* light{ node_->GetComponent<Light>() };
     light->SetColor( MC->colorSets_[colorSet].colors_.first_ * (1.0f + damage_) );// colorSet_ == 2 ? Color(1.0f + damage_, 0.6f, 0.2f) : Color(0.6f, 1.0f+damage_, 0.2f));
     light->SetBrightness(3.4f + damage_ * 2.3f);
-    model_->SetMaterial(MC->colorSets_[colorSet].bulletMaterial_);
 
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
     rigidBody_->ResetForces();
     SceneObject::Set(position);
     rigidBody_->ApplyForce(force);
     node_->LookAt(node_->GetPosition() + direction);
+
+    bulletGroups_[colorSet]->AddInstanceNode(node_);
 }
 
 void Bullet::Disable()
 {
+    bulletGroups_[colorSet_]->RemoveInstanceNode(node_);
+
     fading_ = true;
     SceneObject::Disable();
     UnsubscribeFromEvent(E_SCENEUPDATE);
+
 }
 
 void Bullet::HitCheck(float timeStep)

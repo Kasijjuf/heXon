@@ -35,7 +35,8 @@ Explosion::Explosion(Context* context):
 }
 
 void Explosion::OnNodeSet(Node *node)
-{
+{ if (!node) return;
+
     Effect::OnNodeSet(node);
 
     node_->SetName("Explosion");

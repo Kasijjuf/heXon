@@ -34,7 +34,7 @@ Door::Door(Context* context) :
 }
 
 void Door::OnNodeSet(Node *node)
-{ (void)node;
+{ if (!node) return;
 
     model_ = node_->CreateComponent<AnimatedModel>();
     model_->SetModel(MC->GetModel("Door"));

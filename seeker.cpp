@@ -41,7 +41,7 @@ Seeker::Seeker(Context* context):
 }
 
 void Seeker::OnNodeSet(Node *node)
-{
+{ if (!node) return;
     SceneObject::OnNodeSet(node);
 
     node_->SetName("Seeker");

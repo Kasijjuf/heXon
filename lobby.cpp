@@ -33,7 +33,7 @@ Lobby::Lobby(Context* context) : LogicComponent(context)
 }
 
 void Lobby::OnNodeSet(Node *node)
-{ (void)node;
+{ if (!node) return;
 
     node_->Rotate(Quaternion(0.0f, 0.0f, 0.0f));
     Node* chamberNode{ node_->CreateChild("Chamber", LOCAL) };

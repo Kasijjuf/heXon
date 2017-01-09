@@ -29,7 +29,8 @@ Heart::Heart(Context* context):
 }
 
 void Heart::OnNodeSet(Node *node)
-{
+{ if (!node) return;
+
     Pickup::OnNodeSet(node);
 
     node_->SetName("Heart");
