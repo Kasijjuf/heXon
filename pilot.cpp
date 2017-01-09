@@ -217,6 +217,8 @@ void Pilot::UpdateModel()
     if (male_)  model_->SetModel(MC->GetModel("Male"));
     else        model_->SetModel(MC->GetModel("Female"));
 
+    model_->SetMorphWeight(0, Random());
+
     //Set colors for body model
     for (unsigned c{PC_SKIN}; c < PC_ALL; ++c){
 
@@ -239,19 +241,26 @@ void Pilot::UpdateModel()
     hairModel_->GetNode()->SetScale(1.0f - (0.1f * !male_));
 
     switch (hairStyle_){
-    default: case HAIR_BALD: case HAIR_SHORT: hairModel_->SetModel(nullptr);
+    default: case HAIR_BALD: case HAIR_SHORT:
+        hairModel_->SetModel(nullptr);
         break;
-    case HAIR_MOHAWK: hairModel_->SetModel(MC->GetModel("Mohawk"));
+    case HAIR_MOHAWK:
+        hairModel_->SetModel(MC->GetModel("Mohawk"));
         break;
-    case HAIR_SEAGULL: hairModel_->SetModel(MC->GetModel("Seagull"));
+    case HAIR_SEAGULL:
+        hairModel_->SetModel(MC->GetModel("Seagull"));
         break;
-    case HAIR_MUSTAIN: hairModel_->SetModel(MC->GetModel("Mustain"));
+    case HAIR_MUSTAIN:
+        hairModel_->SetModel(MC->GetModel("Mustain"));
         break;
-    case HAIR_FROTOAD: hairModel_->SetModel(MC->GetModel("Frotoad"));
+    case HAIR_FROTOAD:
+        hairModel_->SetModel(MC->GetModel("Frotoad"));
         break;
-    case HAIR_FLATTOP: hairModel_->SetModel(MC->GetModel("Flattop"));
+    case HAIR_FLATTOP:
+        hairModel_->SetModel(MC->GetModel("Flattop"));
         break;
-    case HAIR_SANTAHAT: hairModel_->SetModel(MC->GetModel("SantaHat"));
+    case HAIR_SANTAHAT:
+        hairModel_->SetModel(MC->GetModel("SantaHat"));
         break;
     }
     //Set hair color
@@ -473,7 +482,7 @@ void Pilot::Think()
 
         LeaveLobby();
 
-    } else if (node_->GetPosition().z_ > 4.2f){
+    } else if (node_->GetPosition().z_ > 6.0f){
         MC->RemovePlayer(GetPlayer());
     }
     //Stay put

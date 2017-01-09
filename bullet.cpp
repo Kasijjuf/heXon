@@ -109,12 +109,10 @@ void Bullet::HitCheck(float timeStep)
                     hitFx->Set(h.position_, colorSet_, true);
 
                     //Deal damage
-                    for (Component* c : h.body_->GetNode()->GetComponents()){
-                        if (c->IsInstanceOf<Enemy>()){
-                            Enemy* e{ static_cast<Enemy*>(c) };
-                                e->Hit(damage_, colorSet_);
-                            }
-                    }
+                    Enemy* e{ h.body_->GetNode()->GetDerivedComponent<Enemy>() };
+                    if (e)
+                        e->Hit(damage_, colorSet_);
+
                     Disable();
                 }
             }

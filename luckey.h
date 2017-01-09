@@ -52,6 +52,7 @@
 #include <Urho3D/Graphics/RibbonTrail.h>
 #include <Urho3D/Graphics/Skybox.h>
 #include <Urho3D/Graphics/StaticModel.h>
+#include <Urho3D/Graphics/StaticModelGroup.h>
 #include <Urho3D/Graphics/Viewport.h>
 #include <Urho3D/Graphics/Zone.h>
 #include <Urho3D/Input/InputEvents.h>
@@ -66,6 +67,7 @@
 #include <Urho3D/Math/Vector3.h>
 #include <Urho3D/Navigation/NavigationMesh.h>
 #include <Urho3D/Navigation/Navigable.h>
+#include <Urho3D/Network/Network.h>
 #include <Urho3D/Physics/CollisionShape.h>
 #include <Urho3D/Physics/Constraint.h>
 #include <Urho3D/Physics/PhysicsEvents.h>

@@ -83,11 +83,10 @@ void Explosion::Update(float timeStep)
                     //Deal damage
                     float damage{rigidBody_->GetMass() * timeStep};
 
-                    for (Component* c : h->GetNode()->GetComponents()){
-                        if (c->IsInstanceOf<Enemy>() && !c->IsInstanceOf<ChaoMine>()){
-                            Enemy* e{ static_cast<Enemy*>(c) };
-                                e->Hit(damage, playerID_);
-                            }
+                    Enemy* e{ h->GetNode()->GetDerivedComponent<Enemy>() };
+                    if (e && !e->IsInstanceOf<ChaoMine>()) {
+
+                        e->Hit(damage, playerID_);
                     }
                 }
             }

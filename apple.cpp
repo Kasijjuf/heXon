@@ -29,7 +29,8 @@ Apple::Apple(Context* context) : Pickup(context)
 }
 
 void Apple::OnNodeSet(Node *node)
-{
+{ if (!node) return;
+
     Pickup::OnNodeSet(node);
 
     node_->SetName("Apple");

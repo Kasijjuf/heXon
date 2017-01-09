@@ -206,14 +206,20 @@ void GUI3D::SetScore(unsigned score)
 }
 void GUI3D::CountScore()
 {
-    int threshold{ 666 / Max(MC->GetPlayers().Size(), 2) };
-    int lines{ GetSubsystem<SpawnMaster>()->CountActive<Line>() };
+    int maxLines{ 666 };
+    int threshold{ maxLines / Max(MC->GetPlayers().Size(), 2) };
 
-    while (toCount_ > 0 && lines < threshold) {
+    int lines{ GetSubsystem<SpawnMaster>()->CountActive<Line>() };
+    int counted{};
+
+    while (toCount_ > 0
+           && lines < maxLines
+           && counted < threshold) {
 
         GetSubsystem<SpawnMaster>()->Create<Line>()->Set(colorSet_);
         --toCount_;
         ++lines;
+        ++counted;
     }
 }
 

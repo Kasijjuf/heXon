@@ -97,10 +97,10 @@ void ChaoZap::Set(const Vector3 position, int colorSet)
                 MC->GetPlayerByColorSet(colorSet)->AddScore(Random(2, 3));
                 hitNode->GetComponent<Seeker>()->Disable();
 
-            } else for (Component* c : hitNode->GetComponents()) {
-                if (c->IsInstanceOf<Enemy>() && !c->IsInstanceOf<ChaoMine>()){
+            } else {
+                Enemy* e{ hitNode->GetDerivedComponent<Enemy>() };
+                if (e && !e->IsInstanceOf<ChaoMine>()) {
 
-                    Enemy* e{ static_cast<Enemy*>(c) };
                     MC->GetPlayerByColorSet(colorSet)->AddScore(Random(2, 3) * e->GetWorth());
                     e->Hit(e->GetHealth(), colorSet);
                 }

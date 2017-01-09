@@ -18,9 +18,12 @@
 
 #include "bubble.h"
 
+StaticModelGroup* Bubble::bubbleGroup_{};
+
 void Bubble::RegisterObject(Context *context)
 {
     context->RegisterFactory<Bubble>();
+
 }
 
 Bubble::Bubble(Context* context):
@@ -32,20 +35,30 @@ Bubble::Bubble(Context* context):
 }
 
 void Bubble::OnNodeSet(Node *node)
-{void node();
+{ if (!node) return;
 
     Effect::OnNodeSet(node_);
 
     baseScale_ *= baseScale_;
     node_->SetName("Bubble");
-    StaticModel* model = node_->CreateComponent<StaticModel>();
-    model->SetModel(MC->GetModel("Box"));
-    model->SetMaterial(MC->GetMaterial("Bubble"));
+
+    if (!bubbleGroup_) {
+        bubbleGroup_ = MC->scene_->CreateComponent<StaticModelGroup>();
+        bubbleGroup_->SetModel(MC->GetModel("Box"));
+        bubbleGroup_->SetMaterial(MC->GetMaterial("Bubble"));
+    }
+}
+
+void Bubble::Set(const Vector3 position)
+{
+    bubbleGroup_->AddInstanceNode(node_);
+
+    Effect::Set(position);
 }
 
 void Bubble::Update(float timeStep)
 {
-    if (!node_->GetComponent<StaticModel>()->IsInView() && node_->GetPosition().y_ > 5.0f)
+    if (node_->GetPosition().y_ > 23.0f)
         Disable();
 
     node_->Translate(Vector3::UP * timeStep * (6.66f + MC->SinceLastReset() * 0.0023f), TS_WORLD);
@@ -53,4 +66,10 @@ void Bubble::Update(float timeStep)
     node_->SetWorldScale(Vector3(MC->Sine(2.0f - baseScale_, baseScale_*0.88f, baseScale_*1.23f, spinVelocity_),
                                      MC->Sine(3.0f - baseScale_, baseScale_*0.88f, baseScale_*1.23f, spinVelocity_ + 2.0f),
                                      MC->Sine(2.3f - baseScale_, baseScale_*0.88f, baseScale_*1.23f, spinVelocity_ + 3.0f)));
+}
+
+void Bubble::Disable()
+{
+    bubbleGroup_->RemoveInstanceNode(node_);
+    Effect::Disable();
 }

@@ -59,7 +59,9 @@ void Highest::OnNodeSet(Node *node)
     highestScoreText_ = ui->GetRoot()->CreateChild<Text>();
     highestScoreText_->SetName("HighestScore");
     highestScoreText_->SetText("0");
-    highestScoreText_->SetFont(CACHE->GetResource<Font>("Fonts/skirmishergrad.ttf"), GRAPHICS->GetHeight() / 50);
+    if (GRAPHICS){
+        highestScoreText_->SetFont(CACHE->GetResource<Font>("Fonts/skirmishergrad.ttf"), GRAPHICS->GetHeight() / 50);
+    }
     highestScoreText_->SetColor(Color(0.23f, 0.75f, 1.0f, 1.0f));
     highestScoreText_->SetHorizontalAlignment(HA_CENTER);
     highestScoreText_->SetVerticalAlignment(VA_CENTER);
@@ -75,7 +77,7 @@ void Highest::OnNodeSet(Node *node)
 
     } else {
         podiumNode->SetRotation(Quaternion::IDENTITY);
-        podiumNode->Rotate(Quaternion(LucKey::RandomSign() * 30.0f, Vector3::UP));
+        podiumNode->Rotate(Quaternion(LucKey::RandomSign() * 60.0f, Vector3::UP));
         node_->SetEnabledRecursive(true);
         highestScoreText_->SetText(String(highestScore_));
         highestScoreText_->SetColor(Color(0.23f, 0.75f, 1.0f, 0.75f));
@@ -109,12 +111,14 @@ void Highest::SetScore(unsigned score)
 }
 
 void Highest::EnterLobby(StringHash eventType, VariantMap &eventData)
-{
+{ (void)eventType; (void)eventData;
+
     node_->SetEnabledRecursive(highestScore_ != 0);
     highestScoreText_->SetColor(Color(0.23f, 0.75f, 1.0f, 0.75f) * static_cast<float>(highestScore_ != 0));
 }
 void Highest::EnterPlay(StringHash eventType, VariantMap &eventData)
-{
+{ (void)eventType; (void)eventData;
+
     node_->SetEnabledRecursive(false);
     highestScoreText_->SetColor(Color(0.13f, 0.666f, 1.0f, 0.23f) * static_cast<float>(highestScore_ != 0));
 }

@@ -64,7 +64,7 @@ void Line::Set(int colorSet)
     }
 
     Vector3 position{ Quaternion(angle, Vector3::UP) *
-            (Vector3::FORWARD * Random(32.0f, 42.0f) + Vector3::RIGHT * Random(-13.0f, 13.0f))
+            (Vector3::FORWARD * Random(32.0f, 34.0f) + Vector3::RIGHT * Random(-13.0f, 13.0f))
             + Vector3::DOWN * (23.0f + Random(46.0f)) };
 
     Effect::Set(position);

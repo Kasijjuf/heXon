@@ -36,6 +36,7 @@ public:
     bool IsEnabled() { return node_->IsEnabled(); }
 private:
     float baseScale_;
+    int colorSet_;
     StaticModel* model_;
 };
 

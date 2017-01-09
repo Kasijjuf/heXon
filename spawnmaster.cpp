@@ -46,7 +46,7 @@ SpawnMaster::SpawnMaster(Context* context):
 {
 }
 
-void SpawnMaster::Activate()
+void SpawnMaster::Prespawn()
 {
     AUDIO->SetMasterGain(SOUND_EFFECT, 0.0f);
     for (int r{0}; r < 23; ++r) { Create<Razor>(false); }
@@ -60,7 +60,10 @@ void SpawnMaster::Activate()
     for (int l{0}; l < 2048; ++l) { Create<Line>(false); }
     for (int z{0}; z < 8; ++z) { Create<ChaoZap>(false); }
     AUDIO->SetMasterGain(SOUND_EFFECT, 1.0f);
+}
 
+void SpawnMaster::Activate()
+{
     SubscribeToEvent(E_SCENEUPDATE, URHO3D_HANDLER(SpawnMaster, HandleSceneUpdate));
 }
 void SpawnMaster::Deactivate()
@@ -106,7 +109,8 @@ Vector3 SpawnMaster::SpawnPoint()
 }
 
 void SpawnMaster::HandleSceneUpdate(StringHash eventType, VariantMap &eventData)
-{
+{ (void)eventType;
+
     const float timeStep{ eventData[SceneUpdate::P_TIMESTEP].GetFloat() };
 
     sinceRazorSpawn_ += timeStep;

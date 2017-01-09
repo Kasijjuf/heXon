@@ -30,7 +30,8 @@ Pickup::Pickup(Context* context) : SceneObject(context)
 }
 
 void Pickup::OnNodeSet(Node *node)
-{
+{ if (!node) return;
+
     SceneObject::OnNodeSet(node);
 
     node_->SetName("Pickup");

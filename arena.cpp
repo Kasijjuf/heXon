@@ -35,7 +35,7 @@ Arena::Arena(Context* context):
 }
 
 void Arena::OnNodeSet(Node *node)
-{ (void)node;
+{ if (!node) return;
 
     node_->SetPosition(targetPosition_);
     node_->SetScale(targetScale_);

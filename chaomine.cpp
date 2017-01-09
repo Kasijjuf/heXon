@@ -93,8 +93,9 @@ void ChaoMine::HandleNodeCollision(StringHash eventType, VariantMap &eventData)
 
     Node* otherNode{ static_cast<Node*>(eventData[NodeCollision::P_OTHERNODE].GetPtr()) };
 
-    for (Component* c : otherNode->GetComponents())
-        if (c->IsInstanceOf<Enemy>() && !c->IsInstanceOf<ChaoMine>()){
-            SetHealth(0.0f);
-        }
+    Enemy* e{ otherNode->GetDerivedComponent<Enemy>() };
+
+    if (e && !e->IsInstanceOf<ChaoMine>()){
+        SetHealth(0.0f);
+    }
 }

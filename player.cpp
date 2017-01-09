@@ -109,7 +109,7 @@ void Player::AddScore(int points)
     if (!alive_) return;
 
     points *= static_cast<int>(pow(2.0, static_cast<double>(multiplier_-1)));
-    SetScore(GetScore()+points);
+    SetScore(GetScore() + points);
     //Check for multiplier increase
     for (int i{0}; i < 10; ++i){
         unsigned tenPow{static_cast<unsigned>(pow(10, i))};
@@ -134,7 +134,8 @@ Vector3 Player::GetPosition()
 Ship* Player::GetShip()
 {
     Controllable* controllable{ GetSubsystem<InputMaster>()->GetControllableByPlayer(playerId_) };
-    if (controllable->IsInstanceOf<Ship>()){
+    if (controllable->IsInstanceOf<Ship>()) {
+
         Ship* ship{ static_cast<Ship*>(controllable) };
         return ship;
     }

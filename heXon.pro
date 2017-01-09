@@ -99,7 +99,7 @@ HEADERS += \
     gui3d.h
 
 OTHER_FILES += \
-    Docs/Todo.md \
+    Docs/Todo.md
 
 unix {
     isEmpty(PREFIX) {

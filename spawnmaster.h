@@ -75,6 +75,8 @@ public:
         return count;
     }
 
+    void Prespawn();
+    
 private:
     void HandleSceneUpdate(StringHash eventType, VariantMap &eventData);
 

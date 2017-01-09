@@ -52,7 +52,6 @@ void Door::OnNodeSet(Node *node)
     doorLight->SetSpecularIntensity(0.05f);
     doorLight->SetCastShadows(true);
     doorLight->SetShadowBias(BiasParameters(0.0000023f, 2.3f));
-//    doorLight->SetShadowResolution(0.5f);
 
     node_->CreateComponent<SoundSource>();
 
@@ -60,13 +59,6 @@ void Door::OnNodeSet(Node *node)
     triggerBody->SetTrigger(true);
     CollisionShape* trigger{ node_->CreateComponent<CollisionShape>() };
     trigger->SetBox(Vector3(3.4f, 2.3f, 1.0f));
-
-    /*node_->CreateComponent<RigidBody>();
-    for (float x : { -2.05f, 2.05f }){
-
-        CollisionShape* collider{ node_->CreateComponent<CollisionShape>() };
-        collider->SetCapsule(0.2f, 3.0f, Vector3( x, 0.0f, -0.23f));
-    }*/
 
     SubscribeToEvent(node_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Door, Open));
     SubscribeToEvent(node_, E_NODECOLLISIONEND, URHO3D_HANDLER(Door, Close));

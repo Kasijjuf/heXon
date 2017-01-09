@@ -112,7 +112,9 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
             if (hitNode->GetName() == "PickupTrigger")
                 hitNode = hitNode->GetParent();
 
+
             if (hitNode->HasComponent<Ship>()) {
+
                 ships.Push(hitNode->GetComponent<Ship>());
 
             } else if (hitNode->HasComponent<Apple>()) {
@@ -121,17 +123,22 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
                 hitNode->GetComponent<Apple>()->Respawn();
 
             } else if (hitNode->HasComponent<Heart>()) {
+
                 caughtHeart = true;
                 hitNode->GetComponent<Heart>()->Respawn();
+
             //Destroy Seekers
             } else if (hitNode->HasComponent<Seeker>()){
+
                 owner->AddScore(Random(2, 3));
                 hitNode->GetComponent<Seeker>()->Disable();
-            //Turn enemies into mines
-            } else for (Component* c : hitNode->GetComponents()) {
-                if (c->IsInstanceOf<Enemy>() && !c->IsInstanceOf<ChaoMine>()){
 
-                    Enemy* e{ static_cast<Enemy*>(c) };
+            //Turn enemies into mines
+            } else {
+
+                Enemy* e{ hitNode->GetDerivedComponent<Enemy>() };
+                if (e && !e->IsInstanceOf<ChaoMine>()){
+
                     ChaoMine* chaoMine{ GetSubsystem<SpawnMaster>()->Create<ChaoMine>() };
                     chaoMine->Set(e->GetPosition(), colorSet);
                     MC->GetPlayerByColorSet(colorSet)->AddScore(Random(2, 3) * e->GetWorth());

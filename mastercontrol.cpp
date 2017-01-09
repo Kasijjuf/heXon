@@ -105,7 +105,6 @@ void MasterControl::Setup()
 void MasterControl::Start()
 {
     ENGINE->SetMaxFps(100);
-    aspectRatio_ = static_cast<float>(GRAPHICS->GetWidth()) / GRAPHICS->GetHeight();
 
     TailGenerator::RegisterObject(context_);
 
@@ -144,9 +143,13 @@ void MasterControl::Start()
     context_->RegisterSubsystem(new InputMaster(context_));
     context_->RegisterSubsystem(new SpawnMaster(context_));
 
+    if (GRAPHICS){
+        aspectRatio_ = static_cast<float>(GRAPHICS->GetWidth()) / GRAPHICS->GetHeight();
+        CreateUI();
+    }
+
     CreateColorSets();
     CreateScene();
-    CreateUI();
 
     Node* announcerNode{ scene_->CreateChild("Announcer") };
     announcerNode->CreateComponent<SoundSource>()->Play(GetSample("Welcome"));
@@ -167,8 +170,9 @@ void MasterControl::Start()
     SubscribeToEvents();
 
     // Precache shaders if possible
-//    if (!ENGINE->IsHeadless() && CACHE->Exists("heXonShaders.xml"))
-//        GRAPHICS->PrecacheShaders(CACHE->GetFile("heXonShaders.xml").);
+    if (!ENGINE->IsHeadless() && FILES->FileExists("Resources/Shaders/Shaders.xml")) {
+        GRAPHICS->PrecacheShaders(*CACHE->GetFile("Resources/Shaders/Shaders.xml"));
+    }
 }
 void MasterControl::Stop()
 {
@@ -356,12 +360,16 @@ void MasterControl::CreateScene()
     planeObject->SetMaterial(GetMaterial("PitchBlack"));
 
     //Create camera
-    Node* cameraNode{ scene_->CreateChild("Camera", LOCAL) };
-    world.camera = cameraNode->CreateComponent<heXoCam>();
+    if (GRAPHICS){
+        Node* cameraNode{ scene_->CreateChild("Camera", LOCAL) };
+        world.camera = cameraNode->CreateComponent<heXoCam>();
+    }
 
     //Create arena
     Node* arenaNode{ scene_->CreateChild("Arena", LOCAL) };
     arena_ = arenaNode->CreateComponent<Arena>();
+
+    GetSubsystem<SpawnMaster>()->Prespawn();
 
     //Construct lobby
     Node* lobbyNode{ scene_->CreateChild("Lobby", LOCAL) };
@@ -388,7 +396,7 @@ void MasterControl::CreateScene()
     navMesh->SetTileSize(256);
     navMesh->Build();
 
-    for (unsigned p{1}; p <= Max(INPUT->GetNumJoysticks(), 1); ++p){
+    for (unsigned p{1}; p <= Max(INPUT->GetNumJoysticks(), 1 * !engineParameters_[EP_HEADLESS].GetBool()); ++p){
 
         AddPlayer();
     }
@@ -464,17 +472,18 @@ void MasterControl::Eject()
 
 bool MasterControl::AllReady(bool onlyHuman)
 {
+    if (!players_.Size())
+        return false;
+
     for (Controllable* c : GetSubsystem<InputMaster>()->GetControlled()) {
 
-        if (c){
-            if (c->IsInstanceOf<Pilot>()){
+        if (c && c->IsInstanceOf<Pilot>()) {
+
                 if ( onlyHuman && c->GetPlayer()->IsHuman() )
                     return false;
                 else if (!onlyHuman)
                     return false;
-            }
         }
-
     }
     return true;
 }
@@ -482,10 +491,10 @@ bool MasterControl::AllReady(bool onlyHuman)
 void MasterControl::HandleSceneUpdate(StringHash eventType, VariantMap &eventData)
 { (void)eventType;
 
-    float t{eventData[Update::P_TIMESTEP].GetFloat()};
+    float t{ eventData[Update::P_TIMESTEP].GetFloat() };
 
-/*
     //Output FPS
+    /*
     secondsPerFrame_ *= 1.0f - t;
     secondsPerFrame_ += t * t;
     sinceFrameRateReport_ += t;
@@ -493,7 +502,7 @@ void MasterControl::HandleSceneUpdate(StringHash eventType, VariantMap &eventDat
         Log::Write(1, String(1.0f / secondsPerFrame_));
         sinceFrameRateReport_ = 0.0f;
     }
-*/
+    */
     sinceStateChange_ += t;
     UpdateCursor(t);
 
@@ -510,7 +519,6 @@ void MasterControl::HandleSceneUpdate(StringHash eventType, VariantMap &eventDat
 
     } break;
     case GS_PLAY: {
-//        lobby_->SetPosition((Vector3::DOWN * 23.0f) * Min(1.0f, sinceStateChange_));
     } break;
     case GS_DEAD: {
         if (sinceStateChange_ > 5.0f && NoHumans())

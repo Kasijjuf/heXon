@@ -32,7 +32,10 @@ public:
     static void RegisterObject(Context* context);
     virtual void OnNodeSet(Node* node);
     virtual void Update(float timeStep);
+    virtual void Disable();
+    virtual void Set(const Vector3 position);
 private:
+    static StaticModelGroup* bubbleGroup_;
     Vector3 spinAxis_;
     float spinVelocity_;
     float baseScale_;
