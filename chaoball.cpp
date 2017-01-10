@@ -86,7 +86,7 @@ void ChaoBall::Update(float timeStep)
     averageShipPos /= Max(ships.Size(), 1);
 
     if (IsEmerged() && MC->GetGameState() == GS_PLAY){
-        rigidBody_->ApplyForce(ships.Size() * (-5.0f * averageShipPos - rigidBody_->GetLinearVelocity()));
+        rigidBody_->ApplyForce(-5.0f * averageShipPos - rigidBody_->GetLinearVelocity());
     }
 }
 
