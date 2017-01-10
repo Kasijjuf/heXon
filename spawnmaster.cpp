@@ -72,16 +72,20 @@ void SpawnMaster::Deactivate()
 }
 void SpawnMaster::Clear()
 {
-    for (Node* n : MC->scene_->GetChildren()) {
-        for (Component* c : n->GetComponents()) {
+    for (SharedPtr<Node> n : MC->scene_->GetChildren()) {
+        for (SharedPtr<Component> c : n->GetComponents()) {
+
             if (c->IsInstanceOf<Enemy>()
              || c->IsInstanceOf<Effect>()
-             || c->IsInstanceOf<Seeker>()) {
-                SceneObject* s{ static_cast<SceneObject*>(c) };
+             || c->IsInstanceOf<Seeker>())
+            {
+                SceneObject* s{ static_cast<SceneObject*>(c.Get()) };
                 s->Disable();
+                break;
             }
         }
     }
+
     MC->chaoBall_->Disable();
 }
 

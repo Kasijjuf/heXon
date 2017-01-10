@@ -38,7 +38,6 @@ void Line::OnNodeSet(Node *node)
     node_->SetScale(baseScale_);
     model_ = node_->CreateComponent<StaticModel>();
     model_->SetModel(MC->GetModel("Line"));
-
 }
 
 void Line::Update(float timeStep)
