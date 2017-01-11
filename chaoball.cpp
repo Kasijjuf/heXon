@@ -56,7 +56,6 @@ void ChaoBall::OnNodeSet(Node *node)
     particleEmitter_->GetEffect()->SetColorFrames(colorFrames);
 
     Disable();
-
 }
 
 void ChaoBall::Update(float timeStep)

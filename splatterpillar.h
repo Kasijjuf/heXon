@@ -50,10 +50,10 @@ private:
 
     bool spun_;
     bool reset_;
-    float lastTriggered_;
     float delay_;
     float delayed_;
     float sequenceLength_;
+    float lastTriggered_;
     float rotationSpeed_;
 
     virtual void Update(float timeStep);

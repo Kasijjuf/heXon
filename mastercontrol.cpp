@@ -234,7 +234,7 @@ void MasterControl::CreateColorSets()
         case 0: set.colors_.first_ = Color(0.23f, 0.5f, 1.0f);
                 set.colors_.second_ = Color(0.05f, 0.05f, 0.05f);
             break;
-        case 1: set.colors_.first_ = Color(0.42f, 0.5f, 0.0f);
+        case 1: set.colors_.first_ = Color(0.34f, 0.42f, 0.0f);
                 set.colors_.second_ = Color(0.1f, 0.3f, 0.05f);
             break;
         case 2: set.colors_.first_ = Color(0.55f, 0.32f, 0.0f);
@@ -243,7 +243,7 @@ void MasterControl::CreateColorSets()
         case 3: set.colors_.first_ = Color(0.45f, 0.1f, 0.42f);
                 set.colors_.second_ = Color(0.0f, 0.27f, 0.42f);
             break;
-        case 4: set.colors_.first_ = Color(0.42f, 0.07f, 0.0f);
+        case 4: set.colors_.first_ = Color(0.45f, 0.05f, 0.023f);
                 set.colors_.second_ = Color(0.34f, 0.34f, 0.34f);
             break;
         }
@@ -259,7 +259,7 @@ void MasterControl::CreateColorSets()
         set.hullMaterial_->SetShaderParameter("MatDiffColor", set.colors_.second_);
         set.hullMaterial_->SetShaderParameter("MatSpecColor", set.colors_.second_);
 
-        set.bulletMaterial_->SetShaderParameter("MatDiffColor", set.colors_.first_ * 1.23f);
+        set.bulletMaterial_->SetShaderParameter("MatDiffColor", set.colors_.first_ * 1.42f);
 
         SharedPtr<Material> flash{ GetMaterial("Flash")->Clone() };
         flash->SetShaderParameter("MatDiffColor", set.colors_.first_ * 1.23f);

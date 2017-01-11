@@ -30,10 +30,10 @@ SplatterPillar::SplatterPillar(Context* context):
     playerId_{0},
     spun_{false},
     reset_{true},
-    lastTriggered_{-5.0f},
     delay_{0.5f},
     delayed_{0.0f},
     sequenceLength_{5.0f},
+    lastTriggered_{-sequenceLength_},
     rotationSpeed_{}
 {
 
