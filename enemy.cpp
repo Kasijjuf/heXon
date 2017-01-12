@@ -133,13 +133,23 @@ void Enemy::CheckHealth()
 {
     //Die
     if (node_->IsEnabled() && health_ <= 0.0f) {
-        int most{ (2 * worth_) / 3 };
-        if (lastHitBy_ != 0)
-            MC->GetPlayerByColorSet(lastHitBy_)->AddScore(most);
-
+        int assistColorSet{0};
         for (int colorSet : damagePerColorSet_.Keys())
             if (damagePerColorSet_[colorSet] > initialHealth_ * 0.5f)
-                MC->GetPlayerByColorSet(colorSet)->AddScore(worth_ - most);
+                assistColorSet = colorSet;
+
+        int most{ (2 * worth_) / 3 };
+
+        if (assistColorSet != lastHitBy_) {
+            if (lastHitBy_ != 0)
+                MC->GetPlayerByColorSet(lastHitBy_)->AddScore(most);
+
+            if (assistColorSet != 0)
+                MC->GetPlayerByColorSet(assistColorSet)->AddScore(worth_ - most);
+        } else {
+            if (lastHitBy_ != 0)
+                MC->GetPlayerByColorSet(lastHitBy_)->AddScore(worth_);
+        }
 
         GetSubsystem<SpawnMaster>()->Create<Explosion>()
                 ->Set(node_->GetPosition(),

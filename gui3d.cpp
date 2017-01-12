@@ -157,7 +157,7 @@ void GUI3D::Update(float timeStep)
 
     //Update HealthBar color
     healthIndicator_->GetMaterial(0)->SetShaderParameter("MatDiffColor", HealthToColor(health_));
-    healthIndicator_->GetMaterial(0)->SetShaderParameter("MatEmissiveColor", HealthToColor(health_) * 0.13f);
+    healthIndicator_->GetMaterial(0)->SetShaderParameter("MatEmissiveColor", HealthToColor(health_) * 0.42f);
     healthIndicator_->GetMaterial(0)->SetShaderParameter("MatSpecularColor", HealthToColor(health_) * 0.05f);
 }
 

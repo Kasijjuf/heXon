@@ -129,7 +129,7 @@ void SplatterPillar::Update(float timeStep)
             blood_->SetMorphWeight(m, intoMorph);
         }
         blood_->GetMaterial()->SetShaderParameter("MatDiffColor", Color(0.23f, 0.32f, 0.32f, Clamp(1.0f - (intoSequence - 0.75f) * 5.0f, 0.0f, 1.0f)));
-        blood_->GetMaterial()->SetShaderParameter("Dissolve", 0.75f*intoSequence + 0.23f);
+        blood_->GetMaterial()->SetShaderParameter("Dissolve", 0.75f * intoSequence + 0.23f);
         ParticleEffect* dripEffect{dripEmitter_->GetEffect()};
         dripEffect->SetEmitterSize(Vector3{1.0f - intoSequence, 0.0f, 1.0f - intoSequence});
         dripEffect->SetMinEmissionRate(Max(123.0f - 200.0f * intoSequence, 0.0f));

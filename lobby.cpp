@@ -43,6 +43,10 @@ void Lobby::OnNodeSet(Node *node)
     chamberModel->SetMaterial(1, MC->GetMaterial("PitchBlack"));
     chamberModel->SetMaterial(2, MC->GetMaterial("BlueGlowEnvmap"));
     chamberModel->SetMaterial(3, MC->GetMaterial("Drain"));
+    chamberModel->SetMaterial(4, MC->colorSets_[1].glowMaterial_);
+    chamberModel->SetMaterial(5, MC->colorSets_[2].glowMaterial_);
+    chamberModel->SetMaterial(6, MC->colorSets_[3].glowMaterial_);
+    chamberModel->SetMaterial(7, MC->colorSets_[4].glowMaterial_);
     chamberModel->SetCastShadows(true);
 
     //Create coliders

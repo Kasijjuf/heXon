@@ -24,6 +24,7 @@
 	<faceCameraMode value="Direction" />
 	<colorfade color="0 0 0 1" time="0" />
 	<colorfade color="1 1 1 1" time="0.1" />
+	<colorfade color="1 1 1 1" time="0.23" />
 	<colorfade color="0 0 0 0" time="0.42" />
 	<texanim uv="0     0     0.5 0.333" time="0" />
 	<texanim uv="0.5   0     1   0.333" time="0.07" />

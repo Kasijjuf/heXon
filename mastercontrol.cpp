@@ -234,16 +234,16 @@ void MasterControl::CreateColorSets()
         case 0: set.colors_.first_ = Color(0.23f, 0.5f, 1.0f);
                 set.colors_.second_ = Color(0.05f, 0.05f, 0.05f);
             break;
-        case 1: set.colors_.first_ = Color(0.34f, 0.42f, 0.0f);
+        case 1: set.colors_.first_ = Color(0.38f, 0.42f, 0.01f);
                 set.colors_.second_ = Color(0.1f, 0.3f, 0.05f);
             break;
-        case 2: set.colors_.first_ = Color(0.55f, 0.32f, 0.0f);
+        case 2: set.colors_.first_ = Color(0.5f, 0.32f, 0.01f);
                 set.colors_.second_ = Color(0.16f, 0.0f, 0.38f);
             break;
         case 3: set.colors_.first_ = Color(0.45f, 0.1f, 0.42f);
                 set.colors_.second_ = Color(0.0f, 0.27f, 0.42f);
             break;
-        case 4: set.colors_.first_ = Color(0.45f, 0.05f, 0.023f);
+        case 4: set.colors_.first_ = Color(0.42f, 0.023f, 0.01f);
                 set.colors_.second_ = Color(0.34f, 0.34f, 0.34f);
             break;
         }
