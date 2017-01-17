@@ -43,13 +43,9 @@ void Lobby::OnNodeSet(Node *node)
     chamberModel->SetMaterial(1, MC->GetMaterial("PitchBlack"));
     chamberModel->SetMaterial(2, MC->GetMaterial("BlueGlowEnvmap"));
     chamberModel->SetMaterial(3, MC->GetMaterial("Drain"));
-    chamberModel->SetMaterial(4, MC->colorSets_[1].glowMaterial_);
-    chamberModel->SetMaterial(5, MC->colorSets_[2].glowMaterial_);
-    chamberModel->SetMaterial(6, MC->colorSets_[3].glowMaterial_);
-    chamberModel->SetMaterial(7, MC->colorSets_[4].glowMaterial_);
     chamberModel->SetCastShadows(true);
 
-    //Create coliders
+    //Create colider
     node_->CreateComponent<RigidBody>();
     node_->CreateComponent<CollisionShape>()->SetTriangleMesh(MC->GetModel("Chamber_COLLISION"));
     node_->CreateComponent<CollisionShape>()->SetBox(Vector3(5.5f, 1.0f, 1.0f));
@@ -117,11 +113,13 @@ void Lobby::Update(float timeStep)
 }
 
 void Lobby::EnterLobby(StringHash eventType, VariantMap &eventData)
-{
+{ (void)eventType; (void)eventData;
+
     node_->SetEnabledRecursive(true);
 }
 void Lobby::EnterPlay(StringHash eventType, VariantMap &eventData)
-{
+{ (void)eventType; (void)eventData;
+
     node_->SetEnabledRecursive(false);
 }
 

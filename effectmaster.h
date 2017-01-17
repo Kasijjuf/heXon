@@ -30,7 +30,7 @@ class EffectMaster : public Object
 public:
     EffectMaster(Context* context);
 
-    void FadeTo(Material* material, Color color, float duration = 0.23f, float delay = 0.0f);
+    void FadeTo(Material* material, Color color, float duration = 0.23f, float delay = 0.0f, String parameter = "MatDiffColor");
     void FadeTo(Light* light, float brightness, float duration = 0.23f);
     void FadeTo(SoundSource* soundSource, float gain, float duration = 2.3f);
 

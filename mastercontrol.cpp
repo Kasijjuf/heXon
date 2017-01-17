@@ -53,6 +53,7 @@
 #include "highest.h"
 #include "phaser.h"
 #include "gui3d.h"
+#include "panel.h"
 
 URHO3D_DEFINE_APPLICATION_MAIN(MasterControl);
 
@@ -124,6 +125,7 @@ void MasterControl::Start()
     Muzzle::RegisterObject(context_);
     Phaser::RegisterObject(context_);
     GUI3D::RegisterObject(context_);
+    Panel::RegisterObject(context_);
 
     ChaoFlash::RegisterObject(context_);
     ChaoMine::RegisterObject(context_);
@@ -147,6 +149,12 @@ void MasterControl::Start()
 
     if (GRAPHICS){
         aspectRatio_ = static_cast<float>(GRAPHICS->GetWidth()) / GRAPHICS->GetHeight();
+
+        // Precache shaders if possible
+        if (!ENGINE->IsHeadless() && CACHE->Exists("Resources/Shaders/Shaders.xml")) {
+            GRAPHICS->PrecacheShaders(*CACHE->GetFile("Resources/Shaders/Shaders.xml"));
+        }
+
         CreateUI();
     }
 
@@ -156,9 +164,7 @@ void MasterControl::Start()
     announcerNode->CreateComponent<SoundSource>()->Play(GetSample("Welcome"));
 
     menuMusic_ = GetMusic("Modanung - BulletProof MagiRex");
-    menuMusic_->SetLooped(true);
     gameMusic_ = GetMusic("Alien Chaos - Disorder");
-    gameMusic_->SetLooped(true);
     Node* musicNode{ scene_->CreateChild("Music") };
     musicSource_ = musicNode->CreateComponent<SoundSource>();
     musicSource_->SetGain(0.32f);
@@ -170,10 +176,7 @@ void MasterControl::Start()
 
     SubscribeToEvents();
 
-    // Precache shaders if possible
-    if (!ENGINE->IsHeadless() && FILES->FileExists("Resources/Shaders/Shaders.xml")) {
-        GRAPHICS->PrecacheShaders(*CACHE->GetFile("Resources/Shaders/Shaders.xml"));
-    }
+
 }
 void MasterControl::Stop()
 {
@@ -191,20 +194,21 @@ void MasterControl::CreateUI()
 {
     //Create a Cursor UI element because we want to be able to hide and show it at will. When hidden, the mouse cursor will control the camera
     world.cursor.uiCursor = new Cursor(context_);
-    world.cursor.uiCursor->SetVisible(true);
+    world.cursor.uiCursor->SetVisible(false);
     GetSubsystem<UI>()->SetCursor(world.cursor.uiCursor);
 
     //Set starting position of the cursor at the rendering window center
     world.cursor.uiCursor->SetPosition(GRAPHICS->GetWidth()/2, GRAPHICS->GetHeight()/2);
 }
 
-Sound* MasterControl::GetMusic(String name) const {
+Sound* MasterControl::GetMusic(String name) const
+{
     Sound* song{ CACHE->GetResource<Sound>("Music/"+name+".ogg") };
     song->SetLooped(true);
     return song;
 }
-Sound* MasterControl::GetSample(String name) const {
-
+Sound* MasterControl::GetSample(String name) const
+{
     for (SharedPtr<Sound> sound : samples_)
         if (sound->GetName().Contains(name))
             return sound.Get();
@@ -318,9 +322,9 @@ void MasterControl::RemovePlayer(Player* player)
     controllable->ClearControl();
     inputMaster->SetPlayerControl(player->GetPlayerId(), nullptr);
 
-    for (SharedPtr<Player> pPointer : players_) {
-        if (pPointer.Get() == player)
-            players_.Remove(pPointer);
+    for (SharedPtr<Player> playerPtr : players_) {
+        if (playerPtr.Get() == player)
+            players_.Remove(playerPtr);
     }
 }
 
@@ -666,7 +670,7 @@ bool MasterControl::NoHumans()
 }
 
 void MasterControl::HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
-{
+{ (void)eventType; (void)eventData;
     return;
 
     physicsWorld_->DrawDebugGeometry(true);

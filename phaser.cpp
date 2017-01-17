@@ -29,7 +29,8 @@ void Phaser::RegisterObject(Context *context)
 Phaser::Phaser(Context* context) : Effect(context),
     phaseMaterial_{MC->GetMaterial("Phase")->Clone()},
     staticModel_{},
-    velocity_{}
+    velocity_{},
+    stateChanger_{}
 {
 }
 
@@ -42,13 +43,14 @@ void Phaser::OnNodeSet(Node *node)
     staticModel_ = node_->CreateComponent<StaticModel>();
 }
 
-void Phaser::Set(Model* model, const Vector3 position, const Vector3 velocity)
+void Phaser::Set(Model* model, const Vector3 position, const Vector3 velocity, const bool stateChanger)
 {
+    stateChanger_ = stateChanger;
 
     Effect::Set(position);
 
     velocity_ = velocity;
-    node_->LookAt(position+velocity);
+    node_->LookAt(position + velocity);
 
     staticModel_->SetModel(model);
     staticModel_->SetMaterial(phaseMaterial_);
@@ -63,10 +65,13 @@ void Phaser::Update(float timeStep)
     if (age_ > 2.0f){
 
         Disable();
-        for (Controllable* c : GetSubsystem<InputMaster>()->GetControlled())
-            if (c->IsEnabled())
-                return;
+        if (stateChanger_) {
 
-        MC->SetGameState(GS_LOBBY);
+            for (Controllable* c : GetSubsystem<InputMaster>()->GetControlled())
+                if (c->IsEnabled())
+                    return;
+
+            MC->SetGameState(GS_LOBBY);
+        }
     }
 }

@@ -54,7 +54,8 @@ SOURCES += \
     lobby.cpp \
     highest.cpp \
     ship.cpp \
-    gui3d.cpp
+    gui3d.cpp \
+    panel.cpp
 
 HEADERS += \
     apple.h \
@@ -96,7 +97,8 @@ HEADERS += \
     highest.h \
     ship.h \
     hexonevents.h \
-    gui3d.h
+    gui3d.h \
+    panel.h
 
 OTHER_FILES += \
     Docs/Todo.md

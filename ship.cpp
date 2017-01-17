@@ -220,9 +220,9 @@ void Ship::Update(float timeStep)
     Quaternion randomRotation{ Quaternion(0.0f, TIME->GetElapsedTime() * 2000.0f, 0.0f) };
     shieldNode_->SetRotation(shieldNode_->GetRotation().Slerp(randomRotation, Random(1.0f)));
     Color shieldColor{ shieldMaterial_->GetShaderParameter("MatDiffColor").GetColor() };
-    Color newColor = Color(shieldColor.r_ * Random(0.5f, 0.8f),
-                           shieldColor.g_ * Random(0.6f, 0.9f),
-                           shieldColor.b_ * Random(0.7f, 0.8f));
+    Color newColor { shieldColor.r_ * Random(0.5f, 0.8f),
+                     shieldColor.g_ * Random(0.6f, 0.9f),
+                     shieldColor.b_ * Random(0.7f, 0.8f) };
     shieldMaterial_->SetShaderParameter("MatDiffColor", shieldColor.Lerp(newColor, Min(timeStep * 23.5f, 1.0f)));
 
     //Float
@@ -463,7 +463,7 @@ void Ship::Think()
         pickupPos = MC->apple_->GetPosition();
     }
     //Calculate shortest route
-    Vector3 newPickupPos{pickupPos};
+    Vector3 newPickupPos{ pickupPos };
     for (int i{0}; i < 6; ++i){
         Vector3 projectedPickupPos{pickupPos + (Quaternion(i * 60.0f, Vector3::UP) * Vector3::FORWARD * 46.0f)};
         if (LucKey::Distance(GetPosition(), projectedPickupPos - rigidBody_->GetLinearVelocity() * 0.42f) < LucKey::Distance(GetPosition(), pickupPos))
@@ -490,7 +490,7 @@ void Ship::Think()
 
     SetMove(move);
     //Pick firing target
-    bool fire{false};
+    bool fire{ false };
     Pair<float, Vector3> target{};
     for (Razor* r : MC->GetComponentsInScene<Razor>()){
         if (r->IsEnabled() && r->GetPosition().y_ > (-playerFactor * 0.1f)){
@@ -520,8 +520,12 @@ void Ship::Think()
         SetAim((target.second_ - GetPosition()).Normalized());
         float aimFactor{ 23.0f / playerFactor };
         if (bulletAmount_ == 2 || bulletAmount_ == 3)
-            SetAim((Quaternion((GetPlayer()->GetPlayerId() == 2 ? -1.0f : 1.0f) * (Min(0.666f * LucKey::Distance(this->GetPosition(), target.second_), 5.0f) + MC->Sine(aimFactor * aimFactor, -aimFactor, aimFactor)), Vector3::UP) * aim_).Normalized());
-        else SetAim((Quaternion((GetPlayer()->GetPlayerId() == 2 ? -1.0f : 1.0f) * MC->Sine(aimFactor * aimFactor, -aimFactor, aimFactor), Vector3::UP) * aim_).Normalized());
+            SetAim((Quaternion((GetPlayer()->GetPlayerId() == 2 ? -1.0f : 1.0f)
+                               * (Min(0.666f * LucKey::Distance(this->GetPosition(),target.second_), 5.0f) + MC->Sine(aimFactor * aimFactor, -aimFactor, aimFactor))
+                               , Vector3::UP) * aim_).Normalized());
+        else SetAim((Quaternion((GetPlayer()->GetPlayerId() == 2 ? -1.0f : 1.0f)
+                                * MC->Sine(aimFactor * aimFactor, -aimFactor, aimFactor)
+                                , Vector3::UP) * aim_).Normalized());
     }
     else SetAim(Vector3::ZERO);
 //    SetAim((aim_ - taste).Normalized());
@@ -530,21 +534,23 @@ void Ship::Think()
 Vector3 Ship::Sniff(float playerFactor, Vector3& move, bool taste)
 {
     Vector3 smell;
-    int whiskers{23};
-    int detected{0};
+    int whiskers{ 23 };
+    int detected{ 0 };
 
     //Smell across borders
     for (int p{-1}; p < (taste ? 0 : 6); ++p){
         Vector3 projectedPlayerPos{( (p != -1) ? GetPosition() + (Quaternion(p * 60.0f, Vector3::UP) * Vector3::FORWARD * 46.0f)
                                                : GetPosition() )};
-        for (int w = 0; w < whiskers; ++w){
+        for (int w{0}; w < whiskers; ++w){
             PODVector<PhysicsRaycastResult> hitResults{};
             Vector3 whiskerDirection{ Quaternion((360.0f / whiskers) * w, Vector3::UP)
-                        * (2.0f * node_->GetDirection() + 3.0f * move_.Normalized())};
-            Ray whiskerRay{projectedPlayerPos + Vector3::DOWN * Random(0.666f), whiskerDirection};
-            if (MC->PhysicsRayCast(hitResults, whiskerRay, playerFactor + playerFactor * (w == 0), M_MAX_UNSIGNED)){
+                                      * (2.0f * node_->GetDirection() + 3.0f * move_.Normalized())
+                                    };
+            Ray whiskerRay{ projectedPlayerPos + Vector3::DOWN * Random(0.666f), whiskerDirection };
+            if (MC->PhysicsRayCast(hitResults, whiskerRay, playerFactor + playerFactor * (w == 0), M_MAX_UNSIGNED)) {
+
                 ++detected;
-                PhysicsRaycastResult r{hitResults[0]};
+                PhysicsRaycastResult r{ hitResults[0] };
                 Node* node{ r.body_->GetNode() };
                 float distSquared{(r.distance_ * r.distance_) *
                             (0.005f * whiskerDirection.Angle(move_) +

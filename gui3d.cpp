@@ -17,7 +17,10 @@
 */
 
 #include "spawnmaster.h"
+#include "effectmaster.h"
 #include "line.h"
+#include "lobby.h"
+#include "panel.h"
 
 #include "gui3d.h"
 
@@ -73,7 +76,8 @@ void GUI3D::Initialize(int colorSet)
     scoreNode_->Rotate(Quaternion(180.0f * (colorSet_ == 4), Vector3::RIGHT));
     scoreNode_->Rotate(Quaternion(180.0f * (colorSet_ == 2), Vector3::FORWARD));
 
-    for (int d{0}; d < 10; ++d){
+    for (int d{0}; d < 10; ++d) {
+
         scoreDigits_[d] = scoreNode_->CreateChild("Digit");
         scoreDigits_[d]->SetEnabled( d == 0 );
         scoreDigits_[d]->Translate(Vector3::RIGHT * (colorSet == 2 ? -0.5f : 0.5f) * (d - 4.5f));
@@ -102,7 +106,8 @@ void GUI3D::Initialize(int colorSet)
 
     appleCounterRoot_ = subNode->CreateChild("AppleCounter");
     appleCounterRoot_->Rotate(Quaternion(180.0f * ((colorSet_ - 1) % 2), Vector3::FORWARD));
-    for (int a{0}; a < 4; ++a){
+
+    for (int a{0}; a < 4; ++a) {
 
         appleCounter_[a] = appleCounterRoot_->CreateChild();
         appleCounter_[a]->SetEnabled(false);
@@ -121,7 +126,8 @@ void GUI3D::Initialize(int colorSet)
 
     heartCounterRoot_ = subNode->CreateChild("HeartCounter");
     heartCounterRoot_->Rotate(Quaternion(180.0f * ((colorSet_ - 1) % 2), Vector3::FORWARD));
-    for (int h{0}; h < 4; ++h){
+
+    for (int h{0}; h < 4; ++h) {
 
         heartCounter_[h] = heartCounterRoot_->CreateChild();
         heartCounter_[h]->SetEnabled(false);
@@ -137,6 +143,8 @@ void GUI3D::Initialize(int colorSet)
         heart->SetModel(MC->GetModel("Heart"));
         heart->SetMaterial(MC->GetMaterial("RedEnvmap"));
     }
+
+    MC->scene_->CreateChild("Panel")->CreateComponent<Panel>()->Initialize(colorSet_);
 
     deathSource_ = node_->CreateComponent<SoundSource>();
     deathSource_->SetSoundType(SOUND_EFFECT);
@@ -181,10 +189,12 @@ void GUI3D::SetHeartsAndApples(int hearts, int apples)
     appleCount_ = apples;
     heartCount_ = hearts;
 
-    for (int a{0}; a < 4; ++a){
+    for (int a{0}; a < 4; ++a) {
+
         appleCounter_[a]->SetEnabled(appleCount_ > a);
     }
-    for (int h{0}; h < 4; ++h){
+    for (int h{0}; h < 4; ++h) {
+
         heartCounter_[h]->SetEnabled(heartCount_ > h);
     }
 }
@@ -207,7 +217,7 @@ void GUI3D::SetScore(unsigned score)
 void GUI3D::CountScore()
 {
     int maxLines{ 666 };
-    int threshold{ maxLines / Max(MC->GetPlayers().Size(), 2) };
+    int threshold{ maxLines / Max(static_cast<int>(MC->GetPlayers().Size()), 2) };
 
     int lines{ GetSubsystem<SpawnMaster>()->CountActive<Line>() };
     int counted{};
@@ -223,10 +233,10 @@ void GUI3D::CountScore()
     }
 }
 
-
 void GUI3D::EnterLobby(StringHash eventType, VariantMap &eventData)
-{
-    node_->SetEnabledRecursive(true);
+{ (void)eventType; (void)eventData;
+
+    node_->SetEnabledRecursive(true );
     SetHeartsAndApples(0, 0);
     SetScore(score_);
 
@@ -240,7 +250,8 @@ void GUI3D::EnterLobby(StringHash eventType, VariantMap &eventData)
 
 }
 void GUI3D::EnterPlay(StringHash eventType, VariantMap &eventData)
-{
+{ (void)eventType; (void)eventData;
+
     if (!MC->GetPlayerByColorSet(colorSet_)){
         node_->SetEnabledRecursive(false);
         return;
