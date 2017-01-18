@@ -80,7 +80,8 @@ void Panel::Initialize(int colorSet)
 
         StaticModel* panelModel{ panelNode->CreateComponent<StaticModel>() };
         panelModel->SetModel(MC->GetModel("Panel"));
-        panelModel->SetMaterial(MC->colorSets_[colorSet].glowMaterial_->Clone());
+        panelModel->SetMaterial(small ? MC->colorSets_[colorSet].glowMaterial_->Clone()
+                                      : MC->colorSets_[colorSet].addMaterial_->Clone());
     }
 
     FadeOutPanel();

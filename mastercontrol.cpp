@@ -255,6 +255,7 @@ void MasterControl::CreateColorSets()
         set.glowMaterial_ = GetMaterial("Glow")->Clone();
         set.hullMaterial_ = GetMaterial("Hull")->Clone();
         set.bulletMaterial_ = GetMaterial("Bullet")->Clone();
+        set.addMaterial_ = GetMaterial("Add")->Clone();
 
         set.glowMaterial_->SetShaderParameter("MatEmissiveColor", set.colors_.first_);
         set.glowMaterial_->SetShaderParameter("MatDiffColor", set.colors_.first_ * 0.23f);
@@ -264,6 +265,8 @@ void MasterControl::CreateColorSets()
         set.hullMaterial_->SetShaderParameter("MatSpecColor", set.colors_.second_);
 
         set.bulletMaterial_->SetShaderParameter("MatDiffColor", set.colors_.first_ * 1.42f);
+
+        set.addMaterial_->SetShaderParameter("MatDiffColor", set.colors_.first_ * 1.42f);
 
         SharedPtr<Material> flash{ GetMaterial("Flash")->Clone() };
         flash->SetShaderParameter("MatDiffColor", set.colors_.first_ * 1.23f);

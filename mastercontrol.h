@@ -66,6 +66,7 @@ typedef struct ColorSet
     SharedPtr<Material> glowMaterial_;
     SharedPtr<Material> hullMaterial_;
     SharedPtr<Material> bulletMaterial_;
+    SharedPtr<Material> addMaterial_;
     SharedPtr<ParticleEffect> hitFx_;
 } ColorSet;
 
