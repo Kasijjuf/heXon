@@ -28,7 +28,6 @@ class Muzzle : public Effect
     URHO3D_OBJECT(Muzzle, Effect);
 public:
     Muzzle(Context* context);
-    void HandleSceneUpdate(StringHash eventType, VariantMap &eventData);
     static void RegisterObject(Context* context);
     void SetColor(float colorSet);
 };

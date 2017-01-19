@@ -21,7 +21,7 @@
 
 #include "mastercontrol.h"
 
-#define LOBBYPOS Vector3::FORWARD * 6.66f
+#define LOBBYPOS Vector3::FORWARD * 6.42f
 
 class GUI3D : public LogicComponent
 {
@@ -51,6 +51,7 @@ private:
     AnimatedModel* healthIndicator_;
     SoundSource* deathSource_;
 
+    Node* subNode_;
     Node* scoreNode_;
     HashMap< int, Node* > scoreDigits_;
     Node* healthBarNode_;

@@ -96,7 +96,6 @@ void Pickup::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
 
         Ship* ship{ otherNode->GetComponent<Ship>() };
         ship->Pickup(pickupType_);
-        int hitPlayer{ ship->GetPlayer()->GetPlayerId() };
         GetSubsystem<SpawnMaster>()->Create<HitFX>()
                 ->Set(GetPosition(), ship->GetColorSet(), false);
         switch (pickupType_){

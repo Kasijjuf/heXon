@@ -43,13 +43,14 @@ void Razor::OnNodeSet(Node* node)
 
     topNode_ = node_->CreateChild();
     topModel_ = topNode_->CreateComponent<StaticModel>();
-    topModel_->SetModel(MC->GetModel("RazorTop"));
+    topModel_->SetModel(MC->GetModel("RazorHalf"));
     topModel_->SetMaterial(0, MC->GetMaterial("Razor"));
     topModel_->SetMaterial(1, centerModel_->GetMaterial());
 
     bottomNode_ = node_->CreateChild();
+    bottomNode_->SetRotation(Quaternion(180.0f, Vector3::RIGHT));
     bottomModel_ = bottomNode_->CreateComponent<StaticModel>();
-    bottomModel_->SetModel(MC->GetModel("RazorBottom"));
+    bottomModel_->SetModel(MC->GetModel("RazorHalf"));
     bottomModel_->SetMaterial(0, black);
     bottomModel_->SetMaterial(1, centerModel_->GetMaterial());
 
@@ -63,7 +64,7 @@ void Razor::Update(float timeStep)
 
     //Spin
     topNode_->Rotate(Quaternion(0.0f, timeStep * 50.0f * aimSpeed_, 0.0f));
-    bottomNode_->Rotate(Quaternion(0.0f, timeStep * -50.0f * aimSpeed_, 0.0f));
+    bottomNode_->Rotate(Quaternion(0.0f, timeStep * 50.0f * aimSpeed_, 0.0f));
     //Pulse
     topModel_->GetMaterial(0)->SetShaderParameter("MatEmissiveColor", GetGlowColor());
     //Get moving

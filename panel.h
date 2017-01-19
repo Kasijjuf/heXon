@@ -22,11 +22,14 @@ public:
 private:
     int colorSet_;
 
+    Scene* panelScene_;
+    SharedPtr<Texture2D> panelTexture_;
     Node* panelTriggerNode_;
     Node* smallPanelNode_;
     Node* bigPanelNode_;
 
-    void FadeOutPanel();
+    void FadeOutPanel(bool immediate = false);
+    void CreatePanels();
 };
 
 #endif // PANEL_H

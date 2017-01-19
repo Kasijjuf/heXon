@@ -1,4 +1,5 @@
 #include "effectmaster.h"
+#include "razor.h"
 
 #include "panel.h"
 
@@ -21,6 +22,40 @@ void Panel::OnNodeSet(Node* node)
 void Panel::Initialize(int colorSet)
 {
     colorSet_ = colorSet;
+
+    CreatePanels();
+
+    FadeOutPanel(true);
+
+    SubscribeToEvent(E_ENTERLOBBY, URHO3D_HANDLER(Panel, EnterLobby));
+    SubscribeToEvent(E_ENTERPLAY,  URHO3D_HANDLER(Panel, EnterPlay));
+}
+
+void Panel::CreatePanels()
+{
+    panelScene_ = new Scene(context_);
+    panelScene_->CreateComponent<Octree>();
+
+    Zone* panelZone{ panelScene_->CreateComponent<Zone>() };
+    panelZone->SetFogColor(Color::WHITE);
+    panelZone->SetFogStart(23.0f);
+
+    Camera* panelCam{ panelScene_->CreateChild("Camera")->CreateComponent<Camera>() };
+
+
+    Node* razor{ panelScene_->CreateChild("PanelRazor") };
+    razor->SetScale(0.34f);
+    razor->CreateComponent<StaticModel>()->SetModel(MC->GetModel("Core"));
+    razor->CreateChild("Top")->CreateComponent<StaticModel>()->SetModel(MC->GetModel("RazorHalf"));
+    razor->CreateChild("Bottom")->CreateComponent<StaticModel>()->SetModel(MC->GetModel("RazorHalf"));
+    razor->SetPosition(Vector3::FORWARD * 5.0f);
+
+    panelTexture_ = new Texture2D(context_);
+    panelTexture_->SetSize(1024, 1024, GRAPHICS->GetRGBFormat(), TEXTURE_RENDERTARGET);
+
+    RenderSurface* panelSurface{ panelTexture_->GetRenderSurface() };
+    SharedPtr<Viewport> panelViewport{ new Viewport(context_, panelScene_, panelCam) };
+    panelSurface->SetViewport(0, panelViewport);
 
     for (bool small : {true, false}) {
 
@@ -56,7 +91,23 @@ void Panel::Initialize(int colorSet)
         default: break;
         }
 
-        if (small){
+        Node* panelNode{ node_->CreateChild(small ? "SmallPanel" : "BigPanel") };
+        panelNode->SetPosition(panelPos);
+        panelNode->SetRotation(panelRot);
+        panelNode->SetScale(small ? 1.0f : 3.472769409f);
+        panelNode->SetEnabled(small);
+
+        StaticModel* panelModel{ panelNode->CreateComponent<StaticModel>() };
+        panelModel->SetModel(MC->GetModel("Panel"));
+
+        SharedPtr<Material> panelMaterial{};
+        if (small) {
+
+            panelMaterial = MC->colorSets_[colorSet_].panelMaterial_->Clone();
+            panelMaterial->SetTexture(TU_EMISSIVE, panelTexture_);
+
+            smallPanelNode_ = panelNode;
+
             panelTriggerNode_ = node_->CreateChild("PanelTrigger");
             panelTriggerNode_->SetPosition(panelPos);
             panelTriggerNode_->CreateComponent<RigidBody>()->SetTrigger(true);
@@ -65,29 +116,18 @@ void Panel::Initialize(int colorSet)
 
             SubscribeToEvent(panelTriggerNode_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Panel, ActivatePanel));
             SubscribeToEvent(panelTriggerNode_, E_NODECOLLISIONEND, URHO3D_HANDLER(Panel, DeactivatePanel));
+
+        } else {
+
+            panelMaterial = MC->colorSets_[colorSet_].addMaterial_->Clone();
+            panelMaterial->SetTexture(TU_DIFFUSE, panelTexture_);
+
+            bigPanelNode_ = panelNode;
         }
 
-        Node* panelNode{ node_->CreateChild(small ? "SmallPanel" : "BigPanel") };
-        panelNode->SetPosition(panelPos);
-        panelNode->SetRotation(panelRot);
-        panelNode->SetScale(small ? 1.0f : 3.472769409f);
-        panelNode->SetEnabled(small);
 
-        if (small)
-            smallPanelNode_ = panelNode;
-        else
-            bigPanelNode_ = panelNode;
-
-        StaticModel* panelModel{ panelNode->CreateComponent<StaticModel>() };
-        panelModel->SetModel(MC->GetModel("Panel"));
-        panelModel->SetMaterial(small ? MC->colorSets_[colorSet].glowMaterial_->Clone()
-                                      : MC->colorSets_[colorSet].addMaterial_->Clone());
+        panelModel->SetMaterial(panelMaterial);
     }
-
-    FadeOutPanel();
-
-    SubscribeToEvent(E_ENTERLOBBY, URHO3D_HANDLER(Panel, EnterLobby));
-    SubscribeToEvent(E_ENTERPLAY,  URHO3D_HANDLER(Panel, EnterPlay));
 }
 
 void Panel::Update(float timeStep)
@@ -99,6 +139,7 @@ void Panel::EnterLobby(StringHash eventType, VariantMap &eventData)
 { (void)eventType; (void)eventData;
 
     smallPanelNode_->SetEnabled(true);
+    bigPanelNode_->SetEnabled(true);
     panelTriggerNode_->SetEnabled(true);
 }
 void Panel::EnterPlay(StringHash eventType, VariantMap &eventData)
@@ -110,8 +151,9 @@ void Panel::EnterPlay(StringHash eventType, VariantMap &eventData)
 void Panel::ActivatePanel(StringHash eventType, VariantMap &eventData)
 { (void)eventType; (void)eventData;
 
-    bigPanelNode_->SetEnabled(true);
-
+    GetSubsystem<EffectMaster>()->FadeTo(bigPanelNode_->GetComponent<StaticModel>()->GetMaterial(),
+                                         MC->colorSets_[colorSet_].addMaterial_->GetShaderParameter("MatDiffColor").GetColor(),
+                                         0.23f, 0.1f);
     GetSubsystem<EffectMaster>()->FadeTo(smallPanelNode_->GetComponent<StaticModel>()->GetMaterial(),
                                          MC->colorSets_[colorSet_].glowMaterial_->GetShaderParameter("MatEmissiveColor").GetColor(),
                                          0.23f, 0.0f, "MatEmissiveColor");
@@ -121,12 +163,14 @@ void Panel::DeactivatePanel(StringHash eventType, VariantMap &eventData)
 
     FadeOutPanel();
 }
-void Panel::FadeOutPanel()
+void Panel::FadeOutPanel(bool immediate)
 {
-    bigPanelNode_->SetEnabled(false);
+    GetSubsystem<EffectMaster>()->FadeTo(bigPanelNode_->GetComponent<StaticModel>()->GetMaterial(),
+                                         Color::BLACK,
+                                         0.23f * !immediate, 0.1f * !immediate);
     GetSubsystem<EffectMaster>()->FadeTo(smallPanelNode_->GetComponent<StaticModel>()->GetMaterial(),
-                                         MC->colorSets_[colorSet_].glowMaterial_->GetShaderParameter("MatEmissiveColor").GetColor() * 0.23f,
-                                         0.23f, 0.1f, "MatEmissiveColor");
+                                         Color::BLACK,
+                                         0.23f * !immediate, 0.1f * !immediate, "MatEmissiveColor");
 }
 
 

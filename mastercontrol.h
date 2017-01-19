@@ -66,6 +66,7 @@ typedef struct ColorSet
     SharedPtr<Material> glowMaterial_;
     SharedPtr<Material> hullMaterial_;
     SharedPtr<Material> bulletMaterial_;
+    SharedPtr<Material> panelMaterial_;
     SharedPtr<Material> addMaterial_;
     SharedPtr<ParticleEffect> hitFx_;
 } ColorSet;
@@ -151,11 +152,17 @@ public:
     float Sine(const float freq, const float min, const float max, const float shift = 0.0f);
     float Cosine(const float freq, const float min, const float max, const float shift = 0.0f);
 
-    template <class T> Vector<T*> GetComponentsInScene()
+    template <class T> Vector<T*> GetComponentsInScene(bool onlyEnabled = false)
     {
         PODVector<Node*> matchingNodes;
 
         scene_->GetChildrenWithComponent<T>(matchingNodes, true);
+
+        if (onlyEnabled) {
+            for (Node* n : matchingNodes)
+                if (!n->IsEnabled())
+                    matchingNodes.Remove(n);
+        }
 
         Vector<T*> matchingComponents{};
         for (Node* n : matchingNodes)
@@ -196,7 +203,7 @@ private:
     void CreateUI();
     void SubscribeToEvents();
 
-    void HandleSceneUpdate(StringHash eventType, VariantMap &eventData);
+    void HandleUpdate(StringHash eventType, VariantMap &eventData);
 
     void UpdateCursor(const float timeStep);
     bool CursorRayCast(const float maxDistance, PODVector<RayQueryResult> &hitResults);

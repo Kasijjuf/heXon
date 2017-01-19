@@ -16,10 +16,12 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "explosion.h"
-
 #include "spawnmaster.h"
 #include "chaomine.h"
+#include "coin.h"
+#include "effectinstance.h"
+
+#include "explosion.h"
 
 void Explosion::RegisterObject(Context *context)
 {
@@ -69,11 +71,14 @@ void Explosion::Update(float timeStep)
         if (MC->PhysicsSphereCast(hitResults, node_->GetPosition(), radius, M_MAX_UNSIGNED)) {
 
             for (RigidBody* h : hitResults){
-                if (h->GetNode()->GetName() == "PickupTrigger")
-                    h = h->GetNode()->GetParent()->GetComponent<RigidBody>();
+                Node* hitNode{ h->GetNode() };
+                if (hitNode->GetName() == "PickupTrigger"){
+                    hitNode = hitNode->GetParent();
+                    h = hitNode->GetComponent<RigidBody>();
+                }
 
-                Vector3 hitNodeWorldPos{h->GetNode()->GetWorldPosition()};
-                if (!h->IsTrigger() && h->GetPosition().y_ > -0.1f) {
+                Vector3 hitNodeWorldPos{ hitNode->GetWorldPosition() };
+                if ((!h->IsTrigger() || hitNode->HasComponent<Coin>()) && h->GetPosition().y_ > -0.1f) {
                     //positionDelta is used for force calculation
                     Vector3 positionDelta{ hitNodeWorldPos - node_->GetWorldPosition() };
                     float distance{ positionDelta.Length() };
@@ -104,6 +109,9 @@ void Explosion::Set(const Vector3 position, const Color color, const float size,
     rigidBody_->SetMass(initialMass_);
     light_->SetColor(color);
     light_->SetBrightness(initialBrightness_);
+
+    EffectInstance* bubbles{ GetSubsystem<SpawnMaster>()->Create<EffectInstance>() };
+    bubbles->Set(GetPosition(), CACHE->GetResource<ParticleEffect>("Particles/ExplosionBubbles.xml"));
 
     ParticleEffect* particleEffect{ particleEmitter_->GetEffect() };
     Vector<ColorFrame> colorFrames{};

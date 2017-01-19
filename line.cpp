@@ -18,6 +18,8 @@
 
 #include "line.h"
 
+HashMap<int, StaticModelGroup*> Line::lineGroups_{};
+
 void Line::RegisterObject(Context *context)
 {
     context->RegisterFactory<Line>();
@@ -36,16 +38,23 @@ void Line::OnNodeSet(Node *node)
 
     node_->SetName("Line");
     node_->SetScale(baseScale_);
-    model_ = node_->CreateComponent<StaticModel>();
-    model_->SetModel(MC->GetModel("Line"));
+//    model_ = node_->CreateComponent<StaticModel>();
+//    model_->SetModel(MC->GetModel("Line"));
+
+    if (lineGroups_.Empty()) {
+        for (unsigned c{0}; c < MC->colorSets_.Size(); ++c) {
+            lineGroups_[c] = MC->scene_->CreateComponent<StaticModelGroup>();
+            lineGroups_[c]->SetModel(MC->GetModel("Line"));
+            lineGroups_[c]->SetMaterial(MC->colorSets_[c].bulletMaterial_);
+        }
+    }
 }
 
 void Line::Update(float timeStep)
 {
     Effect::Update(timeStep);
 
-    if (((!node_->GetComponent<StaticModel>()->IsInView() && node_->GetPosition().y_ > 5.0f)
-        || node_->GetScale().x_ <= 0.0f))
+    if (node_->GetScale().x_ <= 0.1f)
         Disable();
 
     node_->Translate(Vector3::UP * timeStep * (42.23f + baseScale_ * 23.5f), TS_WORLD);
@@ -54,8 +63,10 @@ void Line::Update(float timeStep)
 
 void Line::Set(int colorSet)
 {
+    colorSet_ = colorSet;
+
     float angle{};
-    switch(colorSet){
+    switch(colorSet_){
     case 1: angle =  -60.0f; break;
     case 2: angle =   60.0f; break;
     case 3: angle = -120.0f; break;
@@ -67,14 +78,19 @@ void Line::Set(int colorSet)
             + Vector3::DOWN * (23.0f + Random(46.0f)) };
 
     Effect::Set(position);
-    model_->SetMaterial(MC->colorSets_[colorSet].bulletMaterial_);
+    lineGroups_[colorSet_]->AddInstanceNode(node_);
+//    model_->SetMaterial(MC->colorSets_[colorSet].bulletMaterial_);
     node_->SetScale(baseScale_);
 }
 
 void Line::Disable()
 {
-    node_->SetEnabledRecursive(false);
+    if (node_->IsEnabled()){
+        lineGroups_[colorSet_]->RemoveInstanceNode(node_);
+    }
     UnsubscribeFromEvent(E_SCENEUPDATE);
+
+    Effect::Disable();
 }
 
 

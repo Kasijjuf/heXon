@@ -21,6 +21,7 @@
 #include "spawnmaster.h"
 #include "player.h"
 #include "ship.h"
+#include "coin.h"
 
 Enemy::Enemy(Context* context):
     SceneObject(context),
@@ -46,7 +47,7 @@ void Enemy::OnNodeSet(Node *node)
     health_ = initialHealth_;
 
     //Generate random color
-    int randomizer{Random(6)};
+    int randomizer{ Random(6) };
     color_ = Color(0.5f + (randomizer * 0.075f), 0.9f - (randomizer * 0.075f), 0.5f + Max(randomizer - 3.0f, 3.0f)/6.0f, 1.0f);
 
     centerNode_ = node_->CreateChild("SmokeTrail");
@@ -75,11 +76,11 @@ void Enemy::OnNodeSet(Node *node)
     rigidBody_->SetAngularFactor(Vector3::ZERO);
     rigidBody_->SetCollisionLayerAndMask(3, M_MAX_UNSIGNED);
 
-    CollisionShape* collider{node_->CreateComponent<CollisionShape>()};
+    CollisionShape* collider{ node_->CreateComponent<CollisionShape>() };
     collider->SetSphere(2.0f);
     collider->SetPosition(Vector3::UP * 0.23f);
 
-    Node* soundNode{MC->scene_->CreateChild("SoundSource")};
+    Node* soundNode{ MC->scene_->CreateChild("SoundSource") };
     soundSource_ = soundNode->CreateComponent<SoundSource>();
     soundSource_->SetGain(0.1f);
     soundSource_->SetSoundType(SOUND_EFFECT);
@@ -158,6 +159,12 @@ void Enemy::CheckHealth()
                             color_.b_ * color_.b_),
                       0.5f * rigidBody_->GetMass(),
                       lastHitBy_);
+
+        if (!Random(5)) {
+            GetSubsystem<SpawnMaster>()->Create<Coin>()->Set(GetPosition());
+        }
+
+
         Disable();
     }
 }

@@ -35,7 +35,7 @@ public:
 
     void Clear();
     Vector3 SpawnPoint();
-    void ChaoPickup() { sinceLastChaoPickup_ = 0.0f; }
+    void ChaoPickup() { sinceLastChaoPickup_ = 0.0f; chaoInterval_ = CHAOINTERVAL; }
 
     template <class T> T* Create(bool recycle = true)
     {
@@ -78,7 +78,7 @@ public:
     void Prespawn();
     
 private:
-    void HandleSceneUpdate(StringHash eventType, VariantMap &eventData);
+    void HandleUpdate(StringHash eventType, VariantMap &eventData);
 
     bool spawning_;
 

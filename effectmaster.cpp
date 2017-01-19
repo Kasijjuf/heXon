@@ -26,13 +26,19 @@ EffectMaster::EffectMaster(Context* context) : Object(context)
 
 void EffectMaster::FadeTo(Material* material, Color color, float duration, float delay, String parameter)
 {
-    Color startColor{material->GetShaderParameter(parameter).GetColor()};
-    ValueAnimation* fade{new ValueAnimation(context_)};
+    if (!duration && !delay) {
+        material->SetShaderParameter(parameter, color);
+        return;
+    }
+
+    Color startColor{ material->GetShaderParameter(parameter).GetColor() };
+    ValueAnimation* fade{ new ValueAnimation(context_) };
 
     fade->SetKeyFrame(0.0f, startColor);
     if (delay)
         fade->SetKeyFrame(delay, startColor);
     fade->SetKeyFrame(delay + duration, color);
+
 
     material->SetShaderParameterAnimation(parameter, fade, WM_ONCE);
 }

@@ -51,8 +51,9 @@ protected:
     SharedPtr<RigidBody> rigidBody_;
     SharedPtr<Light> light_;
 private:
-    int playerID_;
     SharedPtr<SoundSource> sampleSource_;
+    SharedPtr<ParticleEmitter> bubbleEmitter_;
+    int playerID_;
     float initialMass_;
     float initialBrightness_;
 };

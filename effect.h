@@ -29,11 +29,14 @@ class Effect : public SceneObject
 {
     URHO3D_OBJECT(Effect, SceneObject);
 public:
+    static void RegisterObject(Context* context);
     Effect(Context* context);
     virtual void Update(float timeStep);
     virtual void Set(const Vector3 position);
     virtual void Disable();
     virtual void OnNodeSet(Node* node);
+
+    ParticleEmitter* GetEmitter() const { return particleEmitter_.Get(); }
 protected:
     SharedPtr<ParticleEmitter> particleEmitter_;
     float age_;

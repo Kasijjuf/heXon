@@ -31,6 +31,7 @@
 #include "flash.h"
 #include "bubble.h"
 #include "line.h"
+#include "coin.h"
 
 SpawnMaster::SpawnMaster(Context* context):
     Object(context),
@@ -64,7 +65,7 @@ void SpawnMaster::Prespawn()
 
 void SpawnMaster::Activate()
 {
-    SubscribeToEvent(E_SCENEUPDATE, URHO3D_HANDLER(SpawnMaster, HandleSceneUpdate));
+    SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(SpawnMaster, HandleUpdate));
 }
 void SpawnMaster::Deactivate()
 {
@@ -77,7 +78,8 @@ void SpawnMaster::Clear()
 
             if (c->IsInstanceOf<Enemy>()
              || c->IsInstanceOf<Effect>()
-             || c->IsInstanceOf<Seeker>())
+             || c->IsInstanceOf<Seeker>()
+             || c->IsInstanceOf<Coin>())
             {
                 SceneObject* s{ static_cast<SceneObject*>(c.Get()) };
                 s->Disable();
@@ -112,10 +114,13 @@ Vector3 SpawnMaster::SpawnPoint()
     else return Vector3(Random(-5.0f, 5.0f), -42.0f, Random(-5.0f, 5.0f));
 }
 
-void SpawnMaster::HandleSceneUpdate(StringHash eventType, VariantMap &eventData)
+void SpawnMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
 { (void)eventType;
 
-    const float timeStep{ eventData[SceneUpdate::P_TIMESTEP].GetFloat() };
+    if (!MC->scene_->IsUpdateEnabled())
+        return;
+
+    const float timeStep{ eventData[Update::P_TIMESTEP].GetFloat() };
 
     sinceRazorSpawn_ += timeStep;
     sinceSpireSpawn_ += timeStep;
@@ -126,7 +131,7 @@ void SpawnMaster::HandleSceneUpdate(StringHash eventType, VariantMap &eventData)
         razor->Set(SpawnPoint());
 
         sinceRazorSpawn_ = 0.0f;
-        razorInterval_ = (7.0f - GetSubsystem<SpawnMaster>()->CountActive<Ship>() * 0.42f)
+        razorInterval_ = (7.0f - CountActive<Ship>() * 0.42f)
                 * pow(0.95f, ((MC->SinceLastReset()) + 10.0f) / 10.0f);
 
     }
@@ -136,7 +141,7 @@ void SpawnMaster::HandleSceneUpdate(StringHash eventType, VariantMap &eventData)
         spire->Set(SpawnPoint());
 
         sinceSpireSpawn_ = 0.0f;
-        spireInterval_ = (23.0f - GetSubsystem<SpawnMaster>()->CountActive<Ship>() * 0.42f)
+        spireInterval_ = (23.0f - CountActive<Ship>() * 0.42f)
                 * pow(0.95f, ((MC->scene_->GetElapsedTime() - MC->world.lastReset) + 42.0f) / 42.0f);
 
     }

@@ -34,7 +34,6 @@ void HitFX::OnNodeSet(Node *node)
 
     Effect::OnNodeSet(node);
 
-    particleEmitter_ = node_->CreateComponent<ParticleEmitter>();
 }
 
 void HitFX::Set(const Vector3 position, int colorSet, const bool sound)
@@ -42,6 +41,6 @@ void HitFX::Set(const Vector3 position, int colorSet, const bool sound)
     particleEmitter_->SetEffect(MC->colorSets_[colorSet].hitFx_);
     Effect::Set(position);
 
-    if (sound) PlaySample(sample_, 0.23f);
-
+    if (sound)
+        PlaySample(sample_, 0.23f);
 }

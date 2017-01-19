@@ -19,8 +19,6 @@
 #include "mastercontrol.h"
 
 #include <fstream>
-#include <Urho3D/Container/Ptr.h>
-#include <Urho3D/Core/Context.h>
 #include "TailGenerator.h"
 
 #include "hexocam.h"
@@ -36,11 +34,13 @@
 #include "chaozap.h"
 #include "bullet.h"
 #include "seeker.h"
+#include "effectinstance.h"
 #include "flash.h"
 #include "hitfx.h"
 #include "explosion.h"
 #include "bubble.h"
 #include "line.h"
+#include "coin.h"
 #include "muzzle.h"
 #include "pilot.h"
 #include "ship.h"
@@ -135,11 +135,13 @@ void MasterControl::Start()
     Spire::RegisterObject(context_);
     Seeker::RegisterObject(context_);
 
+    EffectInstance::RegisterObject(context_);
     HitFX::RegisterObject(context_);
     Bubble::RegisterObject(context_);
     Flash::RegisterObject(context_);
     Explosion::RegisterObject(context_);
     Line::RegisterObject(context_);
+    Coin::RegisterObject(context_);
 
     CreateColorSets();
 
@@ -175,8 +177,6 @@ void MasterControl::Start()
     SetGameState(GS_LOBBY);
 
     SubscribeToEvents();
-
-
 }
 void MasterControl::Stop()
 {
@@ -186,7 +186,7 @@ void MasterControl::Stop()
 void MasterControl::SubscribeToEvents()
 {
     //Subscribe scene update event.
-    SubscribeToEvent(E_SCENEUPDATE, URHO3D_HANDLER(MasterControl, HandleSceneUpdate));
+    SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(MasterControl, HandleUpdate));
     SubscribeToEvent(E_POSTRENDERUPDATE, URHO3D_HANDLER(MasterControl, HandlePostRenderUpdate));
 }
 
@@ -256,6 +256,7 @@ void MasterControl::CreateColorSets()
         set.hullMaterial_ = GetMaterial("Hull")->Clone();
         set.bulletMaterial_ = GetMaterial("Bullet")->Clone();
         set.addMaterial_ = GetMaterial("Add")->Clone();
+        set.panelMaterial_ = GetMaterial("Panel")->Clone();
 
         set.glowMaterial_->SetShaderParameter("MatEmissiveColor", set.colors_.first_);
         set.glowMaterial_->SetShaderParameter("MatDiffColor", set.colors_.first_ * 0.23f);
@@ -266,7 +267,11 @@ void MasterControl::CreateColorSets()
 
         set.bulletMaterial_->SetShaderParameter("MatDiffColor", set.colors_.first_ * 1.42f);
 
-        set.addMaterial_->SetShaderParameter("MatDiffColor", set.colors_.first_ * 1.42f);
+        set.addMaterial_->SetShaderParameter("MatDiffColor", set.colors_.first_ * 1.13f);
+
+        set.panelMaterial_->SetShaderParameter("MatEmissiveColor", set.colors_.first_);
+        set.panelMaterial_->SetShaderParameter("MatDiffColor", set.colors_.first_ * 0.23f);
+        set.panelMaterial_->SetShaderParameter("MatSpecColor", (set.colors_.first_ + Color::WHITE) * 0.23f);
 
         SharedPtr<Material> flash{ GetMaterial("Flash")->Clone() };
         flash->SetShaderParameter("MatDiffColor", set.colors_.first_ * 1.23f);
@@ -496,10 +501,10 @@ bool MasterControl::AllReady(bool onlyHuman)
     return true;
 }
 
-void MasterControl::HandleSceneUpdate(StringHash eventType, VariantMap &eventData)
+void MasterControl::HandleUpdate(StringHash eventType, VariantMap &eventData)
 { (void)eventType;
 
-    float t{ eventData[Update::P_TIMESTEP].GetFloat() };
+    float timeStep{ eventData[Update::P_TIMESTEP].GetFloat() };
 
     //Output FPS
     /*
@@ -511,8 +516,8 @@ void MasterControl::HandleSceneUpdate(StringHash eventType, VariantMap &eventDat
         sinceFrameRateReport_ = 0.0f;
     }
     */
-    sinceStateChange_ += t;
-    UpdateCursor(t);
+    sinceStateChange_ += timeStep;
+    UpdateCursor(timeStep);
 
     switch (currentState_) {
     case GS_LOBBY: {

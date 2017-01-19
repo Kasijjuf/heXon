@@ -31,6 +31,7 @@
 #include "chaomine.h"
 #include "chaoflash.h"
 #include "seeker.h"
+#include "coin.h"
 
 #include "ship.h"
 
@@ -256,6 +257,11 @@ void Ship::Update(float timeStep)
 
         if (sinceLastShot_ > shotInterval_)
             Shoot(aim_);
+    }
+
+    //Attract coin
+    for (Coin* c : MC->GetComponentsInScene<Coin>(true)) {
+        c->GetNode()->GetComponent<RigidBody>()->ApplyForce((GetPosition() - c->GetPosition()).Normalized() * Pow(0.5f, LucKey::Distance(c->GetPosition(), GetPosition())) * 23500.0f * timeStep);
     }
 }
 

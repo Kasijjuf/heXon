@@ -51,15 +51,14 @@ void GUI3D::Initialize(int colorSet)
 {
     colorSet_ = colorSet;
 
-    Node* subNode{ node_->CreateChild("Sub") };
-    subNode->SetPosition(LOBBYPOS);
+    subNode_ =  node_->CreateChild("Sub");
+    subNode_->SetPosition(LOBBYPOS);
 
-    if (MC->GetAspectRatio() < 1.6f) {
+  /*  if (MC->GetAspectRatio() < 1.6f) {
 
-        subNode->SetScale(0.75f);
-        subNode->Translate(Vector3( (colorSet_ / 2 == 1) ? -0.9f : 0.9f,
+        subNode_->Translate(Vector3( (colorSet_ / 2 == 1) ? -0.9f : 0.9f,
                                     0.0f, 0.0f));
-    }
+    }*/
 
     float angle{};
     switch(colorSet_){
@@ -69,10 +68,10 @@ void GUI3D::Initialize(int colorSet)
     case 4: angle =  120.0f; break;
     }
 
-    subNode->Rotate(Quaternion(180.0f * (colorSet_ - 1 % 2), Vector3::FORWARD));
+    subNode_->Rotate(Quaternion(180.0f * (colorSet_ - 1 % 2), Vector3::FORWARD));
     node_->Rotate(Quaternion(angle, Vector3::UP));
 
-    scoreNode_ = subNode->CreateChild("Score");
+    scoreNode_ = subNode_->CreateChild("Score");
     scoreNode_->Rotate(Quaternion(180.0f * (colorSet_ == 4), Vector3::RIGHT));
     scoreNode_->Rotate(Quaternion(180.0f * (colorSet_ == 2), Vector3::FORWARD));
 
@@ -96,7 +95,7 @@ void GUI3D::Initialize(int colorSet)
             ? MC->GetModel("BarRight")
             : MC->GetModel("BarLeft");*/
 
-    healthIndicator_ = subNode->CreateComponent<AnimatedModel>();
+    healthIndicator_ = subNode_->CreateComponent<AnimatedModel>();
     healthIndicator_->SetModel(MC->GetModel("HealthIndicator"));
     healthIndicator_->SetMaterial(0, MC->GetMaterial("GreenGlow")->Clone());
     healthIndicator_->SetMaterial(1, MC->GetMaterial("BlueGlow"));
@@ -104,7 +103,7 @@ void GUI3D::Initialize(int colorSet)
     healthIndicator_->SetMorphWeight(0, 1.0f);
     healthIndicator_->SetMorphWeight(1, 0.0f);
 
-    appleCounterRoot_ = subNode->CreateChild("AppleCounter");
+    appleCounterRoot_ = subNode_->CreateChild("AppleCounter");
     appleCounterRoot_->Rotate(Quaternion(180.0f * ((colorSet_ - 1) % 2), Vector3::FORWARD));
 
     for (int a{0}; a < 4; ++a) {
@@ -124,7 +123,7 @@ void GUI3D::Initialize(int colorSet)
         apple->SetMaterial(MC->GetMaterial("GoldEnvmap"));
     }
 
-    heartCounterRoot_ = subNode->CreateChild("HeartCounter");
+    heartCounterRoot_ = subNode_->CreateChild("HeartCounter");
     heartCounterRoot_->Rotate(Quaternion(180.0f * ((colorSet_ - 1) % 2), Vector3::FORWARD));
 
     for (int h{0}; h < 4; ++h) {
@@ -217,7 +216,7 @@ void GUI3D::SetScore(unsigned score)
 void GUI3D::CountScore()
 {
     int maxLines{ 666 };
-    int threshold{ maxLines / Max(static_cast<int>(MC->GetPlayers().Size()), 2) };
+    int threshold{ maxLines / (Max(static_cast<int>(MC->GetPlayers().Size()), 2) * 5) };
 
     int lines{ GetSubsystem<SpawnMaster>()->CountActive<Line>() };
     int counted{};
@@ -247,6 +246,8 @@ void GUI3D::EnterLobby(StringHash eventType, VariantMap &eventData)
     node_->SetPosition(Vector3::UP);
     node_->SetScale(MC->GetAspectRatio() > 1.6f ? 1.0f
                                                 : 0.85f);
+    subNode_->SetScale(0.75f);
+
 
 }
 void GUI3D::EnterPlay(StringHash eventType, VariantMap &eventData)
@@ -261,6 +262,10 @@ void GUI3D::EnterPlay(StringHash eventType, VariantMap &eventData)
 
     node_->SetPosition(Vector3::DOWN * 1.23f);
     node_->SetScale(3.6f);
+
+    subNode_->SetScale(MC->GetAspectRatio() > 1.6f ? 1.0f
+                                                  : 0.75f);
+
 }
 
 Color GUI3D::HealthToColor(float health)
