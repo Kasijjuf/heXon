@@ -10,7 +10,8 @@ void Panel::RegisterObject(Context* context)
     context->RegisterFactory<Panel>();
 }
 
-Panel::Panel(Context* context) : LogicComponent(context)
+Panel::Panel(Context* context) : LogicComponent(context),
+    currentInfoNodeIndex_{0}
 {
 }
 
@@ -38,16 +39,67 @@ void Panel::CreatePanels()
     Zone* panelZone{ panelScene_->CreateComponent<Zone>() };
     panelZone->SetFogColor(Color::WHITE);
     panelZone->SetFogStart(23.0f);
+    panelZone->SetFogEnd(42.0f);
 
-    Camera* panelCam{ panelScene_->CreateChild("Camera")->CreateComponent<Camera>() };
+    Node* panelCamNode{ panelScene_->CreateChild("Camera") };
+    panelCamNode->SetPosition(Vector3::BACK * 5.0f);
+    Camera* panelCam{ panelCamNode->CreateComponent<Camera>() };
 
 
-    Node* razor{ panelScene_->CreateChild("PanelRazor") };
+    Node* info{ panelScene_->CreateChild("Info") };
+    info->Rotate(Quaternion(180.0f * ((colorSet_ + 1) % 2), Vector3::FORWARD));
+    //Create Razor info
+    Node* razorInfo{ info->CreateChild("RazorInfo") };
+    infoNodes_.Push(razorInfo);
+
+    Node* razor{ razorInfo->CreateChild("PanelRazor") };
+    razor->SetPosition(Vector3::RIGHT + Vector3::FORWARD);
     razor->SetScale(0.34f);
     razor->CreateComponent<StaticModel>()->SetModel(MC->GetModel("Core"));
-    razor->CreateChild("Top")->CreateComponent<StaticModel>()->SetModel(MC->GetModel("RazorHalf"));
-    razor->CreateChild("Bottom")->CreateComponent<StaticModel>()->SetModel(MC->GetModel("RazorHalf"));
-    razor->SetPosition(Vector3::FORWARD * 5.0f);
+    razor->CreateChild("RazorTop")->CreateComponent<StaticModel>()->SetModel(MC->GetModel("RazorHalf"));
+    Node* razorBottomNode{ razor->CreateChild("RazorBottom") };
+    razorBottomNode->Rotate(Quaternion(180.0f, Vector3::RIGHT));
+    razorBottomNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("RazorHalf"));
+
+    Node* razorEqualsNode{ razorInfo->CreateChild("RazorEquals") };
+    razorEqualsNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
+    razorEqualsNode->Rotate(Quaternion(180.0f, Vector3::UP));
+    razorEqualsNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("="));
+
+    Node* razorScoreNode{ razorInfo->CreateChild("RazorScore") };
+    razorScoreNode->SetPosition(Vector3::LEFT);
+    razorScoreNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
+    razorScoreNode->Rotate(Quaternion(180.0f, Vector3::UP));
+    razorScoreNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("5"));
+
+    //Create Spire info
+    Node* spireInfo{ info->CreateChild("SpireInfo") };
+    infoNodes_.Push(spireInfo);
+
+    Node* spire{ spireInfo->CreateChild("PanelSpire") };
+    spire->SetPosition(Vector3::RIGHT + Vector3::FORWARD);
+    spire->Rotate(Quaternion(180.0f * ((colorSet_ + 1) % 2), Vector3::FORWARD));
+    spire->SetScale(0.34f);
+    spire->CreateComponent<StaticModel>()->SetModel(MC->GetModel("Core"));
+    spire->CreateChild("SpireTop")->CreateComponent<StaticModel>()->SetModel(MC->GetModel("SpireTop"));
+    spire->CreateChild("SpireBottom")->CreateComponent<StaticModel>()->SetModel(MC->GetModel("SpireBottom"));
+
+    Node* spireEqualsNode{ spireInfo->CreateChild("SpireEquals") };
+    spireEqualsNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
+    spireEqualsNode->Rotate(Quaternion(180.0f, Vector3::UP));
+    spireEqualsNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("="));
+
+    Node* spireScoreNode{ spireInfo->CreateChild("SpireScore") };
+    spireScoreNode->SetPosition(Vector3::LEFT * 0.75f);
+    spireScoreNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
+    spireScoreNode->Rotate(Quaternion(180.0f, Vector3::UP));
+    spireScoreNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("1"));
+    Node* spireZeroNode{ spireScoreNode->CreateChild("0") };
+    spireZeroNode->SetPosition(Vector3::RIGHT * 0.5f);
+    spireZeroNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("0"));
+
+    //Set Razor info as current
+    SetCurrentInfoNode(infoNodes_.At(currentInfoNodeIndex_));
 
     panelTexture_ = new Texture2D(context_);
     panelTexture_->SetSize(1024, 1024, GRAPHICS->GetRGBFormat(), TEXTURE_RENDERTARGET);
@@ -130,6 +182,29 @@ void Panel::CreatePanels()
 
 void Panel::Update(float timeStep)
 {
+    panelScene_->GetChild("RazorTop", true)->Rotate(Quaternion(timeStep * 42.0f, Vector3::UP));
+    panelScene_->GetChild("RazorBottom", true)->Rotate(Quaternion(timeStep * 23.0f, Vector3::UP));
+
+    panelScene_->GetChild("SpireTop", true)->Rotate(Quaternion(timeStep * 42.0f, Vector3::UP));
+    panelScene_->GetChild("SpireBottom", true)->Rotate(Quaternion(timeStep * 23.0f, Vector3::DOWN));
+
+
+    sinceInfoChange_ += timeStep;
+    if (sinceInfoChange_ > 5.0f) {
+        sinceInfoChange_ = 0.0f;
+
+        ++currentInfoNodeIndex_;
+        if (currentInfoNodeIndex_ == infoNodes_.Size())
+            currentInfoNodeIndex_ = 0;
+
+        SetCurrentInfoNode(infoNodes_.At(currentInfoNodeIndex_));
+    }
+}
+void Panel::SetCurrentInfoNode(Node* infoNode)
+{
+    currentInfoNode_ = infoNode;
+    for (Node* n : infoNodes_)
+        GetSubsystem<EffectMaster>()->TranslateTo(n, Vector3::FORWARD * 55.0f * (n != currentInfoNode_), 0.23f);
 }
 
 void Panel::EnterLobby(StringHash eventType, VariantMap &eventData)
@@ -154,17 +229,20 @@ void Panel::ActivatePanel(StringHash eventType, VariantMap &eventData)
         int pilotColorSet{};
         Player::takenColorSets_.TryGetValue(pilot->GetPlayerId(), pilotColorSet);
 
-        if (IsOwner(pilot->GetPlayerId()) || (!HasOwner() && !pilotColorSet))
-        {
+        if (IsOwner(pilot->GetPlayerId()) || (!HasOwner() && !pilotColorSet)) {
 
-            GetSubsystem<EffectMaster>()->FadeTo(bigPanelNode_->GetComponent<StaticModel>()->GetMaterial(),
-                                                 MC->colorSets_[colorSet_].addMaterial_->GetShaderParameter("MatDiffColor").GetColor(),
-                                                 0.23f, 0.1f);
-            GetSubsystem<EffectMaster>()->FadeTo(smallPanelNode_->GetComponent<StaticModel>()->GetMaterial(),
-                                                 MC->colorSets_[colorSet_].glowMaterial_->GetShaderParameter("MatEmissiveColor").GetColor(),
-                                                 0.23f, 0.0f, "MatEmissiveColor");
+            FadeInPanel();
         }
     }
+}
+void Panel::FadeInPanel()
+{
+    GetSubsystem<EffectMaster>()->FadeTo(bigPanelNode_->GetComponent<StaticModel>()->GetMaterial(),
+                                         MC->colorSets_[colorSet_].addMaterial_->GetShaderParameter("MatDiffColor").GetColor(),
+                                         0.23f, 0.1f);
+    GetSubsystem<EffectMaster>()->FadeTo(smallPanelNode_->GetComponent<StaticModel>()->GetMaterial(),
+                                         MC->colorSets_[colorSet_].glowMaterial_->GetShaderParameter("MatEmissiveColor").GetColor(),
+                                         0.23f, 0.0f, "MatEmissiveColor");
 }
 void Panel::DeactivatePanel(StringHash eventType, VariantMap &eventData)
 { (void)eventType; (void)eventData;
@@ -191,9 +269,7 @@ void Panel::DeactivatePanel(StringHash eventType, VariantMap &eventData)
             }
         }
 
-
-        if (IsOwner(pilot->GetPlayerId()) || (!HasOwner() && !bodies.Size()))
-        {
+        if (IsOwner(pilot->GetPlayerId()) || (!HasOwner() && !bodies.Size())) {
 
             FadeOutPanel();
         }

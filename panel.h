@@ -24,7 +24,13 @@ public:
 
     bool HasOwner();
     bool IsOwner(int playerId);
+
 private:
+    Vector<Node*> infoNodes_;
+    Node* currentInfoNode_;
+    unsigned currentInfoNodeIndex_;
+    float sinceInfoChange_;
+
     int colorSet_;
 
     Scene* panelScene_;
@@ -33,8 +39,10 @@ private:
     Node* smallPanelNode_;
     Node* bigPanelNode_;
 
+    void FadeInPanel();
     void FadeOutPanel(bool immediate = false);
     void CreatePanels();
+    void SetCurrentInfoNode(Node* infoNode);
 };
 
 #endif // PANEL_H
