@@ -1,5 +1,7 @@
 #include "effectmaster.h"
 #include "razor.h"
+#include "pilot.h"
+#include "player.h"
 
 #include "panel.h"
 
@@ -10,13 +12,10 @@ void Panel::RegisterObject(Context* context)
 
 Panel::Panel(Context* context) : LogicComponent(context)
 {
-
 }
 
 void Panel::OnNodeSet(Node* node)
 { (void)node;
-
-
 }
 
 void Panel::Initialize(int colorSet)
@@ -125,7 +124,6 @@ void Panel::CreatePanels()
             bigPanelNode_ = panelNode;
         }
 
-
         panelModel->SetMaterial(panelMaterial);
     }
 }
@@ -133,7 +131,6 @@ void Panel::CreatePanels()
 void Panel::Update(float timeStep)
 {
 }
-
 
 void Panel::EnterLobby(StringHash eventType, VariantMap &eventData)
 { (void)eventType; (void)eventData;
@@ -151,17 +148,56 @@ void Panel::EnterPlay(StringHash eventType, VariantMap &eventData)
 void Panel::ActivatePanel(StringHash eventType, VariantMap &eventData)
 { (void)eventType; (void)eventData;
 
-    GetSubsystem<EffectMaster>()->FadeTo(bigPanelNode_->GetComponent<StaticModel>()->GetMaterial(),
-                                         MC->colorSets_[colorSet_].addMaterial_->GetShaderParameter("MatDiffColor").GetColor(),
-                                         0.23f, 0.1f);
-    GetSubsystem<EffectMaster>()->FadeTo(smallPanelNode_->GetComponent<StaticModel>()->GetMaterial(),
-                                         MC->colorSets_[colorSet_].glowMaterial_->GetShaderParameter("MatEmissiveColor").GetColor(),
-                                         0.23f, 0.0f, "MatEmissiveColor");
+    Node* otherNode{ static_cast<Node*>(eventData[NodeCollisionStart::P_OTHERNODE].GetPtr()) };
+
+    if (Pilot* pilot = otherNode->GetComponent<Pilot>()) {
+        int pilotColorSet{};
+        Player::takenColorSets_.TryGetValue(pilot->GetPlayerId(), pilotColorSet);
+
+        if (IsOwner(pilot->GetPlayerId()) || (!HasOwner() && !pilotColorSet))
+        {
+
+            GetSubsystem<EffectMaster>()->FadeTo(bigPanelNode_->GetComponent<StaticModel>()->GetMaterial(),
+                                                 MC->colorSets_[colorSet_].addMaterial_->GetShaderParameter("MatDiffColor").GetColor(),
+                                                 0.23f, 0.1f);
+            GetSubsystem<EffectMaster>()->FadeTo(smallPanelNode_->GetComponent<StaticModel>()->GetMaterial(),
+                                                 MC->colorSets_[colorSet_].glowMaterial_->GetShaderParameter("MatEmissiveColor").GetColor(),
+                                                 0.23f, 0.0f, "MatEmissiveColor");
+        }
+    }
 }
 void Panel::DeactivatePanel(StringHash eventType, VariantMap &eventData)
 { (void)eventType; (void)eventData;
 
-    FadeOutPanel();
+    Node* otherNode{ static_cast<Node*>(eventData[NodeCollisionStart::P_OTHERNODE].GetPtr()) };
+
+    if (Pilot* pilot = otherNode->GetComponent<Pilot>()) {
+        int pilotColorSet{};
+        Player::takenColorSets_.TryGetValue(pilot->GetPlayerId(), pilotColorSet);
+
+        PODVector<RigidBody*> bodies{};
+        panelTriggerNode_->GetComponent<RigidBody>()->GetCollidingBodies(bodies);
+        for (RigidBody* body : bodies) {
+
+            if (Pilot* otherPilot = body->GetNode()->GetComponent<Pilot>()) {
+                int otherPilotColorSet{};
+
+                if (otherPilot == pilot || Player::takenColorSets_.TryGetValue(otherPilot->GetPlayerId(), otherPilotColorSet))
+                    bodies.Remove(body);
+
+            } else {
+
+                bodies.Remove(body);
+            }
+        }
+
+
+        if (IsOwner(pilot->GetPlayerId()) || (!HasOwner() && !bodies.Size()))
+        {
+
+            FadeOutPanel();
+        }
+    }
 }
 void Panel::FadeOutPanel(bool immediate)
 {
@@ -173,4 +209,20 @@ void Panel::FadeOutPanel(bool immediate)
                                          0.23f * !immediate, 0.1f * !immediate, "MatEmissiveColor");
 }
 
-
+bool Panel::IsOwner(int playerId)
+{
+    for (int p : Player::takenColorSets_.Keys()) {
+        if (playerId == p && Player::takenColorSets_[p] == colorSet_)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+bool Panel::HasOwner()
+{
+    if (Player::takenColorSets_.Values().Contains(colorSet_))
+        return true;
+    else
+        return false;
+}

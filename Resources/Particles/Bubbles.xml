@@ -11,7 +11,7 @@
 	<emittertype value="Sphere" />
 	<emittersize value="0.6 0.6 0.6" />
 	<direction min="-0 0 0" max="0 0 0" />
-	<constantforce value="0 10 0" />
+	<constantforce value="0 34 0" />
 	<dampingforce value="1" />
 	<activetime value="0" />
 	<inactivetime value="0" />

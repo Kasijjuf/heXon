@@ -72,9 +72,8 @@ void Coin::Update(float timeStep)
     }
 
     ParticleEffect* bubbles{ node_->GetComponent<ParticleEmitter>()->GetEffect() };
-    bubbles->SetMinEmissionRate(Max(0.0f, Min(GetPosition().y_, 2.3f * (rigidBody_->GetLinearVelocity().Length() - 5.0f))));
-    bubbles->SetMaxEmissionRate(Max(0.0f, Min(GetPosition().y_, 2.3f * (rigidBody_->GetLinearVelocity().Length() - 3.0f))));
-}
+    bubbles->SetMinEmissionRate(Max(0.0f, Min(GetPosition().y_ + 2.3f, 2.3f * (rigidBody_->GetLinearVelocity().Length() - 3.0f))));
+    bubbles->SetMaxEmissionRate(Max(0.0f, Min(GetPosition().y_ + 4.2f, 2.3f * (rigidBody_->GetLinearVelocity().Length() - 2.0f))));}
 
 void Coin::HandleNodeCollisionStart(StringHash eventType, VariantMap& eventData)
 { (void)eventType;

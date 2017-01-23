@@ -16,6 +16,8 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "hexocam.h"
+
 #include "line.h"
 
 HashMap<int, StaticModelGroup*> Line::lineGroups_{};
@@ -78,6 +80,8 @@ void Line::Set(int colorSet)
             + Vector3::DOWN * (23.0f + Random(46.0f)) };
 
     Effect::Set(position);
+//    node_->LookAt(GetPosition() + Vector3::UP, (MC->world.camera->GetNode()->GetPosition() - GetPosition()).Normalized());
+
     lineGroups_[colorSet_]->AddInstanceNode(node_);
 //    model_->SetMaterial(MC->colorSets_[colorSet].bulletMaterial_);
     node_->SetScale(baseScale_);

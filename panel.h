@@ -13,12 +13,17 @@ public:
     Panel(Context* context);
     static void RegisterObject(Context* context);
     virtual void OnNodeSet(Node* node);
-    virtual void Update(float timeStep);
     void Initialize(int colorSet);
+    virtual void Update(float timeStep);
+
     void ActivatePanel(StringHash eventType, VariantMap& eventData);
     void DeactivatePanel(StringHash eventType, VariantMap& eventData);
+
     void EnterPlay(StringHash eventType, VariantMap& eventData);
     void EnterLobby(StringHash eventType, VariantMap& eventData);
+
+    bool HasOwner();
+    bool IsOwner(int playerId);
 private:
     int colorSet_;
 

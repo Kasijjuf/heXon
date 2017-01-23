@@ -21,6 +21,7 @@
 #include "player.h"
 #include "chaomine.h"
 #include "seeker.h"
+#include "coin.h"
 #include "spawnmaster.h"
 
 void ChaoZap::RegisterObject(Context *context)
@@ -92,10 +93,14 @@ void ChaoZap::Set(const Vector3 position, int colorSet)
         for (RigidBody* r : hitResults) {
             Node* hitNode{ r->GetNode() };
 
-            if (hitNode->HasComponent<Seeker>()){
+            if (Seeker* seeker = hitNode->GetComponent<Seeker>()) {
 
                 MC->GetPlayerByColorSet(colorSet)->AddScore(Random(2, 3));
-                hitNode->GetComponent<Seeker>()->Disable();
+                seeker->Disable();
+
+            } else if (Coin* coin = hitNode->GetComponent<Coin>()) {
+
+                coin->Disable();
 
             } else {
                 Enemy* e{ hitNode->GetDerivedComponent<Enemy>() };

@@ -21,6 +21,7 @@
 #include "line.h"
 #include "lobby.h"
 #include "panel.h"
+#include "ship.h"
 
 #include "gui3d.h"
 
@@ -216,7 +217,7 @@ void GUI3D::SetScore(unsigned score)
 void GUI3D::CountScore()
 {
     int maxLines{ 666 };
-    int threshold{ maxLines / (Max(static_cast<int>(MC->GetPlayers().Size()), 2) * 5) };
+    int threshold{ maxLines / (Max(GetSubsystem<SpawnMaster>()->CountActive<Ship>(), 1) * 5) };
 
     int lines{ GetSubsystem<SpawnMaster>()->CountActive<Line>() };
     int counted{};
@@ -248,7 +249,7 @@ void GUI3D::EnterLobby(StringHash eventType, VariantMap &eventData)
                                                 : 0.85f);
     subNode_->SetScale(0.75f);
 
-
+    toCount_ = 0;
 }
 void GUI3D::EnterPlay(StringHash eventType, VariantMap &eventData)
 { (void)eventType; (void)eventData;

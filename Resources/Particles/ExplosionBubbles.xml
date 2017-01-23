@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <particleeffect>
 	<material name="Materials/SmallBubble.xml" />
-	<numparticles value="100" />
+	<numparticles value="235" />
 	<updateinvisible enable="true" />
 	<relative enable="false" />
 	<scaled enable="true" />
@@ -11,7 +11,7 @@
 	<emittertype value="Sphere" />
 	<emittersize value="0.6 0.6 0.6" />
 	<direction min="-1 -1 -1" max="1 1 1" />
-	<constantforce value="0 23 0" />
+	<constantforce value="0 34 0" />
 	<dampingforce value="3.4" />
 	<activetime value="0" />
 	<inactivetime value="0" />
@@ -25,6 +25,6 @@
 	<faceCameraMode value="Rotate XYZ" />
 	<colorfade color="0 0 0 0" time="0" />
 	<colorfade color="1 1 1 1" time="0.01" />
-	<colorfade color="1 1 1 1" time="1" />
+	<colorfade color="1 1 1 1" time="0.8" />
 	<colorfade color="0 0 0 0" time="2.3" />
 </particleeffect>

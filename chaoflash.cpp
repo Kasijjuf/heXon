@@ -24,6 +24,7 @@
 #include "ship.h"
 #include "chaomine.h"
 #include "seeker.h"
+#include "coin.h"
 #include "spawnmaster.h"
 
 void ChaoFlash::RegisterObject(Context *context)
@@ -117,21 +118,25 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
 
                 ships.Push(hitNode->GetComponent<Ship>());
 
-            } else if (hitNode->HasComponent<Apple>()) {
+            } else if (Apple* apple = hitNode->GetComponent<Apple>()) {
 
                 caughtApple = true;
-                hitNode->GetComponent<Apple>()->Respawn();
+                apple->Respawn();
 
-            } else if (hitNode->HasComponent<Heart>()) {
+            } else if (Heart* heart = hitNode->GetComponent<Heart>()) {
 
                 caughtHeart = true;
-                hitNode->GetComponent<Heart>()->Respawn();
+                heart->Respawn();
 
             //Destroy Seekers
-            } else if (hitNode->HasComponent<Seeker>()){
+            } else if (Seeker* seeker = hitNode->GetComponent<Seeker>()){
 
                 owner->AddScore(Random(2, 3));
-                hitNode->GetComponent<Seeker>()->Disable();
+                seeker->Disable();
+
+            } else if (Coin* coin = hitNode->GetComponent<Coin>()){
+
+                coin->Disable();
 
             //Turn enemies into mines
             } else {
