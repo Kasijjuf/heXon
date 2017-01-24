@@ -11,7 +11,9 @@ void Panel::RegisterObject(Context* context)
 }
 
 Panel::Panel(Context* context) : LogicComponent(context),
-    currentInfoNodeIndex_{0}
+    currentInfoNodeIndex_{0},
+    sinceInfoChange_{0.0f},
+    active_{false}
 {
 }
 
@@ -31,6 +33,7 @@ void Panel::Initialize(int colorSet)
     SubscribeToEvent(E_ENTERPLAY,  URHO3D_HANDLER(Panel, EnterPlay));
 }
 
+
 void Panel::CreatePanels()
 {
     panelScene_ = new Scene(context_);
@@ -46,60 +49,7 @@ void Panel::CreatePanels()
     Camera* panelCam{ panelCamNode->CreateComponent<Camera>() };
 
 
-    Node* info{ panelScene_->CreateChild("Info") };
-    info->Rotate(Quaternion(180.0f * ((colorSet_ + 1) % 2), Vector3::FORWARD));
-    //Create Razor info
-    Node* razorInfo{ info->CreateChild("RazorInfo") };
-    infoNodes_.Push(razorInfo);
-
-    Node* razor{ razorInfo->CreateChild("PanelRazor") };
-    razor->SetPosition(Vector3::RIGHT + Vector3::FORWARD);
-    razor->SetScale(0.34f);
-    razor->CreateComponent<StaticModel>()->SetModel(MC->GetModel("Core"));
-    razor->CreateChild("RazorTop")->CreateComponent<StaticModel>()->SetModel(MC->GetModel("RazorHalf"));
-    Node* razorBottomNode{ razor->CreateChild("RazorBottom") };
-    razorBottomNode->Rotate(Quaternion(180.0f, Vector3::RIGHT));
-    razorBottomNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("RazorHalf"));
-
-    Node* razorEqualsNode{ razorInfo->CreateChild("RazorEquals") };
-    razorEqualsNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
-    razorEqualsNode->Rotate(Quaternion(180.0f, Vector3::UP));
-    razorEqualsNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("="));
-
-    Node* razorScoreNode{ razorInfo->CreateChild("RazorScore") };
-    razorScoreNode->SetPosition(Vector3::LEFT);
-    razorScoreNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
-    razorScoreNode->Rotate(Quaternion(180.0f, Vector3::UP));
-    razorScoreNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("5"));
-
-    //Create Spire info
-    Node* spireInfo{ info->CreateChild("SpireInfo") };
-    infoNodes_.Push(spireInfo);
-
-    Node* spire{ spireInfo->CreateChild("PanelSpire") };
-    spire->SetPosition(Vector3::RIGHT + Vector3::FORWARD);
-    spire->Rotate(Quaternion(180.0f * ((colorSet_ + 1) % 2), Vector3::FORWARD));
-    spire->SetScale(0.34f);
-    spire->CreateComponent<StaticModel>()->SetModel(MC->GetModel("Core"));
-    spire->CreateChild("SpireTop")->CreateComponent<StaticModel>()->SetModel(MC->GetModel("SpireTop"));
-    spire->CreateChild("SpireBottom")->CreateComponent<StaticModel>()->SetModel(MC->GetModel("SpireBottom"));
-
-    Node* spireEqualsNode{ spireInfo->CreateChild("SpireEquals") };
-    spireEqualsNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
-    spireEqualsNode->Rotate(Quaternion(180.0f, Vector3::UP));
-    spireEqualsNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("="));
-
-    Node* spireScoreNode{ spireInfo->CreateChild("SpireScore") };
-    spireScoreNode->SetPosition(Vector3::LEFT * 0.75f);
-    spireScoreNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
-    spireScoreNode->Rotate(Quaternion(180.0f, Vector3::UP));
-    spireScoreNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("1"));
-    Node* spireZeroNode{ spireScoreNode->CreateChild("0") };
-    spireZeroNode->SetPosition(Vector3::RIGHT * 0.5f);
-    spireZeroNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("0"));
-
-    //Set Razor info as current
-    SetCurrentInfoNode(infoNodes_.At(currentInfoNodeIndex_));
+    CreateInfos();
 
     panelTexture_ = new Texture2D(context_);
     panelTexture_->SetSize(1024, 1024, GRAPHICS->GetRGBFormat(), TEXTURE_RENDERTARGET);
@@ -179,6 +129,109 @@ void Panel::CreatePanels()
         panelModel->SetMaterial(panelMaterial);
     }
 }
+void Panel::CreateInfos()
+{
+    Node* infos{ panelScene_->CreateChild("Infos") };
+    infos->Rotate(Quaternion(180.0f * ((colorSet_ + 1) % 2), Vector3::FORWARD));
+
+    //Create Apple info
+    Node* appleInfo{ infos->CreateChild("AppleInfo") };
+    infoNodes_.Push(appleInfo);
+
+    Node* apple{ appleInfo->CreateChild("PanelApple") };
+    apple->SetPosition(Vector3::RIGHT + Vector3::FORWARD);
+    apple->Rotate(Quaternion(180.0f * ((colorSet_ + 1) % 2), Vector3::FORWARD));
+    apple->SetScale(0.34f);
+    apple->CreateComponent<StaticModel>()->SetModel(MC->GetModel("Apple"));
+
+    /*Node* appleEqualsNode{ appleInfo->CreateChild("SpireEquals") };
+    appleEqualsNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
+    appleEqualsNode->Rotate(Quaternion(180.0f, Vector3::UP));
+    appleEqualsNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("="));*/
+
+    Node* appleScoreNode{ appleInfo->CreateChild("AppleScore") };
+    appleScoreNode->SetPosition(Vector3::LEFT * 0.75f);
+    appleScoreNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
+    appleScoreNode->Rotate(Quaternion(180.0f, Vector3::UP));
+    appleScoreNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("2"));
+    Node* appleThreeNode{ appleScoreNode->CreateChild("3") };
+    appleThreeNode->SetPosition(Vector3::RIGHT * 0.5f);
+    appleThreeNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("3"));
+
+    //Create Heart info
+    Node* heartInfo{ infos->CreateChild("HeartInfo") };
+    infoNodes_.Push(heartInfo);
+
+    Node* heart{ heartInfo->CreateChild("PanelHeart") };
+    heart->SetPosition(Vector3::RIGHT + Vector3::FORWARD);
+    heart->Rotate(Quaternion(180.0f * ((colorSet_ + 1) % 2), Vector3::FORWARD));
+    heart->SetScale(0.34f);
+    heart->CreateComponent<StaticModel>()->SetModel(MC->GetModel("Heart"));
+
+    /*Node* heartEqualsNode{ heartInfo->CreateChild("HeartEquals") };
+    heartEqualsNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
+    heartEqualsNode->Rotate(Quaternion(180.0f, Vector3::UP));
+    heartEqualsNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("="));*/
+
+    Node* heartScoreNode{ heartInfo->CreateChild("HeartScore") };
+    heartScoreNode->SetPosition(Vector3::LEFT);
+    heartScoreNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
+    heartScoreNode->Rotate(Quaternion(180.0f, Vector3::UP));
+    heartScoreNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("0"));
+
+    //Create Razor info
+    Node* razorInfo{ infos->CreateChild("RazorInfo") };
+    infoNodes_.Push(razorInfo);
+
+    Node* razor{ razorInfo->CreateChild("PanelRazor") };
+    razor->SetPosition(Vector3::RIGHT + Vector3::FORWARD);
+    razor->SetScale(0.34f);
+    razor->CreateComponent<StaticModel>()->SetModel(MC->GetModel("Core"));
+    razor->CreateChild("RazorTop")->CreateComponent<StaticModel>()->SetModel(MC->GetModel("RazorHalf"));
+    Node* razorBottomNode{ razor->CreateChild("RazorBottom") };
+    razorBottomNode->Rotate(Quaternion(180.0f, Vector3::RIGHT));
+    razorBottomNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("RazorHalf"));
+
+    Node* razorEqualsNode{ razorInfo->CreateChild("RazorEquals") };
+    razorEqualsNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
+    razorEqualsNode->Rotate(Quaternion(180.0f, Vector3::UP));
+    razorEqualsNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("="));
+
+    Node* razorScoreNode{ razorInfo->CreateChild("RazorScore") };
+    razorScoreNode->SetPosition(Vector3::LEFT);
+    razorScoreNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
+    razorScoreNode->Rotate(Quaternion(180.0f, Vector3::UP));
+    razorScoreNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("5"));
+
+    //Create Spire info
+    Node* spireInfo{ infos->CreateChild("SpireInfo") };
+    infoNodes_.Push(spireInfo);
+
+    Node* spire{ spireInfo->CreateChild("PanelSpire") };
+    spire->SetPosition(Vector3::RIGHT + Vector3::FORWARD);
+    spire->Rotate(Quaternion(180.0f * ((colorSet_ + 1) % 2), Vector3::FORWARD));
+    spire->SetScale(0.34f);
+    spire->CreateComponent<StaticModel>()->SetModel(MC->GetModel("Core"));
+    spire->CreateChild("SpireTop")->CreateComponent<StaticModel>()->SetModel(MC->GetModel("SpireTop"));
+    spire->CreateChild("SpireBottom")->CreateComponent<StaticModel>()->SetModel(MC->GetModel("SpireBottom"));
+
+    Node* spireEqualsNode{ spireInfo->CreateChild("SpireEquals") };
+    spireEqualsNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
+    spireEqualsNode->Rotate(Quaternion(180.0f, Vector3::UP));
+    spireEqualsNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("="));
+
+    Node* spireScoreNode{ spireInfo->CreateChild("SpireScore") };
+    spireScoreNode->SetPosition(Vector3::LEFT * 0.75f);
+    spireScoreNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
+    spireScoreNode->Rotate(Quaternion(180.0f, Vector3::UP));
+    spireScoreNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("1"));
+    Node* spireZeroNode{ spireScoreNode->CreateChild("0") };
+    spireZeroNode->SetPosition(Vector3::RIGHT * 0.5f);
+    spireZeroNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("0"));
+
+    //Set first info as current
+    SetCurrentInfoNode(infoNodes_.At(currentInfoNodeIndex_));
+}
 
 void Panel::Update(float timeStep)
 {
@@ -188,16 +241,21 @@ void Panel::Update(float timeStep)
     panelScene_->GetChild("SpireTop", true)->Rotate(Quaternion(timeStep * 42.0f, Vector3::UP));
     panelScene_->GetChild("SpireBottom", true)->Rotate(Quaternion(timeStep * 23.0f, Vector3::DOWN));
 
+    panelScene_->GetChild("PanelApple", true)->Rotate(Quaternion(timeStep * 55.0f, Vector3::UP));
+    panelScene_->GetChild("PanelHeart", true)->Rotate(Quaternion(timeStep * 55.0f, Vector3::UP));
 
-    sinceInfoChange_ += timeStep;
-    if (sinceInfoChange_ > 5.0f) {
-        sinceInfoChange_ = 0.0f;
+    if (active_) {
 
-        ++currentInfoNodeIndex_;
-        if (currentInfoNodeIndex_ == infoNodes_.Size())
-            currentInfoNodeIndex_ = 0;
+        sinceInfoChange_ += timeStep;
+        if (sinceInfoChange_ > 5.0f) {
+            sinceInfoChange_ = 0.0f;
 
-        SetCurrentInfoNode(infoNodes_.At(currentInfoNodeIndex_));
+            ++currentInfoNodeIndex_;
+            if (currentInfoNodeIndex_ == infoNodes_.Size())
+                currentInfoNodeIndex_ = 0;
+
+            SetCurrentInfoNode(infoNodes_.At(currentInfoNodeIndex_));
+        }
     }
 }
 void Panel::SetCurrentInfoNode(Node* infoNode)
@@ -237,6 +295,8 @@ void Panel::ActivatePanel(StringHash eventType, VariantMap &eventData)
 }
 void Panel::FadeInPanel()
 {
+    active_ = true;
+
     GetSubsystem<EffectMaster>()->FadeTo(bigPanelNode_->GetComponent<StaticModel>()->GetMaterial(),
                                          MC->colorSets_[colorSet_].addMaterial_->GetShaderParameter("MatDiffColor").GetColor(),
                                          0.23f, 0.1f);
@@ -277,6 +337,8 @@ void Panel::DeactivatePanel(StringHash eventType, VariantMap &eventData)
 }
 void Panel::FadeOutPanel(bool immediate)
 {
+    active_ = false;
+
     GetSubsystem<EffectMaster>()->FadeTo(bigPanelNode_->GetComponent<StaticModel>()->GetMaterial(),
                                          Color::BLACK,
                                          0.23f * !immediate, 0.1f * !immediate);

@@ -31,6 +31,8 @@ private:
     unsigned currentInfoNodeIndex_;
     float sinceInfoChange_;
 
+    bool active_;
+
     int colorSet_;
 
     Scene* panelScene_;
@@ -43,6 +45,7 @@ private:
     void FadeOutPanel(bool immediate = false);
     void CreatePanels();
     void SetCurrentInfoNode(Node* infoNode);
+    void CreateInfos();
 };
 
 #endif // PANEL_H
