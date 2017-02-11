@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2016 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -106,7 +106,7 @@ void ChaoZap::Set(const Vector3 position, int colorSet)
                 Enemy* e{ hitNode->GetDerivedComponent<Enemy>() };
                 if (e && !e->IsInstanceOf<ChaoMine>()) {
 
-                    MC->GetPlayerByColorSet(colorSet)->AddScore(Random(2, 3) * e->GetWorth());
+                    MC->GetPlayerByColorSet(colorSet)->AddScore(Random(2 * e->GetWorth(), 3 * e->GetWorth()));
                     e->Hit(e->GetHealth(), colorSet);
                 }
             }

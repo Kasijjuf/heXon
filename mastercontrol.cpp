@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2016 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,15 +25,26 @@
 #include "effectmaster.h"
 #include "inputmaster.h"
 #include "spawnmaster.h"
+
 #include "player.h"
+#include "pilot.h"
+#include "ship.h"
+
 #include "apple.h"
 #include "heart.h"
 #include "chaoball.h"
 #include "chaoflash.h"
 #include "chaomine.h"
 #include "chaozap.h"
+
 #include "bullet.h"
 #include "seeker.h"
+#include "brick.h"
+
+#include "razor.h"
+#include "spire.h"
+#include "mason.h"
+
 #include "effectinstance.h"
 #include "flash.h"
 #include "hitfx.h"
@@ -42,18 +53,16 @@
 #include "line.h"
 #include "coin.h"
 #include "muzzle.h"
-#include "pilot.h"
-#include "ship.h"
-#include "splatterpillar.h"
-#include "door.h"
-#include "arena.h"
-#include "tile.h"
+
 #include "lobby.h"
+#include "splatterpillar.h"
 #include "door.h"
 #include "highest.h"
 #include "phaser.h"
 #include "gui3d.h"
 #include "panel.h"
+#include "arena.h"
+#include "tile.h"
 
 URHO3D_DEFINE_APPLICATION_MAIN(MasterControl);
 
@@ -134,6 +143,8 @@ void MasterControl::Start()
     Razor::RegisterObject(context_);
     Spire::RegisterObject(context_);
     Seeker::RegisterObject(context_);
+    Mason::RegisterObject(context_);
+    Brick::RegisterObject(context_);
 
     EffectInstance::RegisterObject(context_);
     HitFX::RegisterObject(context_);

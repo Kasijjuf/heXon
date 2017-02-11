@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2016 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include "chaozap.h"
 #include "razor.h"
 #include "spire.h"
+#include "mason.h"
 #include "seeker.h"
 #include "flash.h"
 #include "bubble.h"
@@ -40,6 +41,8 @@ SpawnMaster::SpawnMaster(Context* context):
     sinceRazorSpawn_{0.0f},
     spireInterval_{23.0f},
     sinceSpireSpawn_{0.0f},
+    masonInterval_{123.0f},
+    sinceMasonSpawn_{0.0f},
     bubbleInterval_{0.23f},
     sinceBubbleSpawn_{bubbleInterval_},
     sinceLastChaoPickup_{0.0f},
@@ -52,6 +55,7 @@ void SpawnMaster::Prespawn()
     AUDIO->SetMasterGain(SOUND_EFFECT, 0.0f);
     for (int r{0}; r < 23; ++r) { Create<Razor>(false); }
     for (int s{0}; s < 7; ++s) { Create<Spire>(false); }
+    for (int m{0}; m < 2; ++m) { Create<Mason>(false); }
     for (int m{0}; m < 8; ++m) { Create<ChaoMine>(false); }
     for (int s{0}; s < 13; ++s) { Create<Seeker>(false); }
     for (int h{0}; h < 16; ++h) { Create<HitFX>(false); }
@@ -98,6 +102,8 @@ void SpawnMaster::Restart()
     sinceRazorSpawn_    = 0.0f;
     spireInterval_      = 23.0f;
     sinceSpireSpawn_    = 0.0f;
+    masonInterval_      = 123.0f;
+    sinceMasonSpawn_    = 0.0f;
 
     sinceLastChaoPickup_ = 0.0f;
     chaoInterval_ = CHAOINTERVAL;
@@ -124,6 +130,7 @@ void SpawnMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
 
     sinceRazorSpawn_ += timeStep;
     sinceSpireSpawn_ += timeStep;
+    sinceMasonSpawn_ += timeStep;
 
     if (sinceRazorSpawn_ > razorInterval_ && CountActive<Razor>() < 23) {
 
@@ -143,6 +150,16 @@ void SpawnMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
         sinceSpireSpawn_ = 0.0f;
         spireInterval_ = (23.0f - CountActive<Ship>() * 0.42f)
                 * pow(0.95f, ((MC->scene_->GetElapsedTime() - MC->world.lastReset) + 42.0f) / 42.0f);
+
+    }
+    if (sinceMasonSpawn_ > masonInterval_ && CountActive<Mason>() < 3) {
+
+        Mason* mason{ Create<Mason>() };
+        mason->Set(SpawnPoint());
+
+        sinceMasonSpawn_ = 0.0f;
+        masonInterval_ = (123.0f - CountActive<Ship>() * 0.42f)
+                * pow(0.95f, ((MC->scene_->GetElapsedTime() - MC->world.lastReset) + 123.0f) / 123.0f);
 
     }
 

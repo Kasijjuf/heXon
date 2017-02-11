@@ -1,0 +1,3 @@
+/home/frode/Creations/Games/heXon/CMakeFiles/rebuild_cache.dir
+/home/frode/Creations/Games/heXon/CMakeFiles/edit_cache.dir
+/home/frode/Creations/Games/heXon/CMakeFiles/hexon.dir

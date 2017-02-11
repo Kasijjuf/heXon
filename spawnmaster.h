@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2016 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -87,6 +87,9 @@ private:
 
     float spireInterval_;
     float sinceSpireSpawn_;
+
+    float masonInterval_;
+    float sinceMasonSpawn_;
 
     float bubbleInterval_;
     float sinceBubbleSpawn_;

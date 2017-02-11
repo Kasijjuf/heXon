@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2016 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -211,20 +211,24 @@ void GUI3D::SetScore(unsigned score)
                              static_cast<int>(score_ / static_cast<unsigned>(pow(10, d))) % 10 )));
 
         scoreDigits_[d]->SetEnabled( score_ >= static_cast<unsigned>(pow(10, d))
-                                     || d == 0 );
+                                       || d == 0 );
     }
 }
 void GUI3D::CountScore()
 {
+    Player* player{ MC->GetPlayerByColorSet(colorSet_) };
+    if (!player || !player->IsAlive())
+        return;
+
     int maxLines{ 666 };
-    int threshold{ maxLines / (Max(GetSubsystem<SpawnMaster>()->CountActive<Ship>(), 1) * 5) };
+    int threshold{ maxLines / (Max(GetSubsystem<SpawnMaster>()->CountActive<Ship>(), 1)) };
 
     int lines{ GetSubsystem<SpawnMaster>()->CountActive<Line>() };
     int counted{};
 
-    while (toCount_ > 0
-           && lines < maxLines
-           && counted < threshold) {
+    while ((toCount_ > 0)
+        && (lines < maxLines)
+        && (counted < threshold)) {
 
         GetSubsystem<SpawnMaster>()->Create<Line>()->Set(colorSet_);
         --toCount_;

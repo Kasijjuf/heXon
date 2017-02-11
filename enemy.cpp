@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2016 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -124,8 +124,9 @@ void Enemy::SetHealth(const float health)
 {
     health_ = health;
     panic_ = (initialHealth_ - health_) / initialHealth_;
-    panic_ < 0.0f ? panic_ = 0.0f : panic_ = panic_;
-    particleEffect_->SetMinEmissionRate(7.0f+23.0f*panic_);
+    if (panic_ < 0.0f)
+        panic_ = 0.0f;
+    particleEffect_->SetMinEmissionRate(7.0f + 23.0f * panic_);
 
     CheckHealth();
 }
@@ -160,7 +161,7 @@ void Enemy::CheckHealth()
                       0.5f * rigidBody_->GetMass(),
                       lastHitBy_);
 
-        if (!Random(5)) {
+        if (!Random(Max((42 - worth_) / 5, 0))) {
             GetSubsystem<SpawnMaster>()->Create<Coin>()->Set(GetPosition());
         }
 
@@ -178,7 +179,7 @@ Color Enemy::GetGlowColor() const
 {
     float factor{(Sin(200.0f * (MC->scene_->GetElapsedTime() + panicTime_)) * (0.25f + panic_ * 0.25f) + (panic_ * 0.5f))};
     factor *= factor * 2.0f;
-    return color_ * factor;
+    return color_ * Max(factor, 0.23f);
 }
 
 void Enemy::Update(float timeStep)
@@ -203,7 +204,7 @@ void Enemy::HandleNodeCollision(StringHash eventType, VariantMap &eventData)
 
         HitFX* hitFx{ GetSubsystem<SpawnMaster>()->Create<HitFX>() };
         hitFx->Set(eventData[NodeCollision::P_CONTACTS].GetVector3() + GetPosition());
-        PlaySample(MC->GetSample("Melee"+String(Random(5)+1)), 0.16f);
+        PlaySample(MC->GetSample("Melee" + String(Random(5) + 1)), 0.16f);
         ship->Hit(meleeDamage_, true);
         sinceLastWhack_ = 0.0f;
 

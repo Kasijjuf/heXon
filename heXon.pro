@@ -5,7 +5,7 @@ LIBS += ../heXon/Urho3D/lib/libUrho3D.a \
     -ldl \
     -lGL
 
-QMAKE_CXXFLAGS += -std=c++14
+QMAKE_CXXFLAGS += -std=c++14 -O2
 
 INCLUDEPATH += \
     ../heXon/Urho3D/include \
@@ -57,7 +57,9 @@ SOURCES += \
     gui3d.cpp \
     panel.cpp \
     coin.cpp \
-    effectinstance.cpp
+    effectinstance.cpp \
+    mason.cpp \
+    brick.cpp
 
 HEADERS += \
     apple.h \
@@ -102,7 +104,9 @@ HEADERS += \
     gui3d.h \
     panel.h \
     coin.h \
-    effectinstance.h
+    effectinstance.h \
+    mason.h \
+    brick.h
 
 OTHER_FILES += \
     Docs/Todo.md
