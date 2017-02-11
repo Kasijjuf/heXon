@@ -30,7 +30,7 @@ void Mason::RegisterObject(Context* context)
 Mason::Mason(Context* context) : Enemy(context),
     shots_{0},
     sinceShot_{0.0f},
-    shotInterval_{0.5f},
+    shotInterval_{0.23f},
     spinInterval_{2.3f},
     spinThreshold_{},
     toSpin_{0.0f},
@@ -47,7 +47,7 @@ void Mason::OnNodeSet(Node* node)
 
     meleeDamage_ = 0.23f;
 
-    health_ = initialHealth_ = 10.0f;
+    health_ = initialHealth_ = 13.0f;
     worth_ = 42;
 
     rigidBody_->SetMass(3.4f);
@@ -99,15 +99,15 @@ void Mason::Update(float timeStep)
             shots_ = 0;
             spun_ = 0.0f;
 
-            toSpin_ = 360.0f * Random(5, 23 - (int)(panic_ * 13))
+            toSpin_ = 360.0f * Random(5, 8 - (int)(panic_ * 3))
                      + 60.0f * Random(3);
         }
 
         float spinVelocity = 666.0f;
 
-        if (Min(spun_, toSpin_) < 360.0f) {
+        if (Min(spun_, toSpin_) < 180.0f) {
 
-            spinVelocity *= 0.01f + Min(spun_, toSpin_) / 360.0f;
+            spinVelocity *= 0.01f + Min(spun_, toSpin_) / 180.0f;
         }
 
         float rotDelta{ Min(spinVelocity * timeStep, toSpin_) };
@@ -119,7 +119,7 @@ void Mason::Update(float timeStep)
 
         if (toSpin_ == 0.0f) {
 
-            shotInterval_ = 0.5f - panic_ * 0.23f;
+            shotInterval_ = 0.23f - panic_ * 0.1f;
             Shoot();
 
         }
@@ -137,7 +137,7 @@ void Mason::Shoot()
 
 int Mason::MaxShots()
 {
-    return (int)(panic_ * 5) + 1;
+    return (int)(panic_ * 10) + 3;
 }
 
 
