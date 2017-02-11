@@ -144,10 +144,10 @@ void Panel::CreateInfos()
     apple->SetScale(0.34f);
     apple->CreateComponent<StaticModel>()->SetModel(MC->GetModel("Apple"));
 
-    /*Node* appleEqualsNode{ appleInfo->CreateChild("SpireEquals") };
+    Node* appleEqualsNode{ appleInfo->CreateChild("SpireEquals") };
     appleEqualsNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
     appleEqualsNode->Rotate(Quaternion(180.0f, Vector3::UP));
-    appleEqualsNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("="));*/
+    appleEqualsNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("="));
 
     Node* appleScoreNode{ appleInfo->CreateChild("AppleScore") };
     appleScoreNode->SetPosition(Vector3::LEFT * 0.75f);
@@ -168,10 +168,10 @@ void Panel::CreateInfos()
     heart->SetScale(0.34f);
     heart->CreateComponent<StaticModel>()->SetModel(MC->GetModel("Heart"));
 
-    /*Node* heartEqualsNode{ heartInfo->CreateChild("HeartEquals") };
+    Node* heartEqualsNode{ heartInfo->CreateChild("HeartEquals") };
     heartEqualsNode->Rotate(Quaternion(90.0f, Vector3::LEFT));
     heartEqualsNode->Rotate(Quaternion(180.0f, Vector3::UP));
-    heartEqualsNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("="));*/
+    heartEqualsNode->CreateComponent<StaticModel>()->SetModel(MC->GetModel("="));
 
     Node* heartScoreNode{ heartInfo->CreateChild("HeartScore") };
     heartScoreNode->SetPosition(Vector3::LEFT);

@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2016 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -36,10 +36,9 @@ void Razor::OnNodeSet(Node* node)
 
     Enemy::OnNodeSet(node);
 
-    node_->SetName("Razor");
     meleeDamage_ = 0.9f;
 
-    SharedPtr<Material> black{MC->GetMaterial("Razor")->Clone()};
+    SharedPtr<Material> black{ MC->GetMaterial("Razor")->Clone() };
 
     topNode_ = node_->CreateChild();
     topModel_ = topNode_->CreateComponent<StaticModel>();

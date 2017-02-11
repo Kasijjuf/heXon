@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2016 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,15 +41,13 @@ void Spire::OnNodeSet(Node *node)
 
     Enemy::OnNodeSet(node);
 
-    node_->SetName("Spire");
-
     health_ = initialHealth_ = 5.0f;
     worth_ = 10;
 
     rigidBody_->SetMass(3.0f);
     rigidBody_->SetLinearFactor(Vector3::ZERO);
 
-    SharedPtr<Material> black{MC->GetMaterial("Spire")->Clone()};
+    SharedPtr<Material> black{ MC->GetMaterial("Spire")->Clone() };
 
     topNode_ = node_->CreateChild();
     topModel_ = topNode_->CreateComponent<StaticModel>();
@@ -71,11 +69,12 @@ void Spire::Update(float timeStep)
     //Pulse
     topModel_->GetMaterial()->SetShaderParameter("MatEmissiveColor", GetGlowColor());
     //Spin
-    topNode_->Rotate(Quaternion(0.0f, timeStep*(50.0f+panic_*300.0f), 0.0f));
-    bottomNode_->Rotate(Quaternion(0.0f, timeStep*-(50.0f+panic_*300.0f), 0.0f));
+    float spinVelocity{ 50.0f + panic_ * 300.0f };
+    topNode_->Rotate(Quaternion(0.0f, timeStep * spinVelocity, 0.0f));
+    bottomNode_->Rotate(Quaternion(0.0f, timeStep * -spinVelocity, 0.0f));
 
+    //Shoot
     if (MC->GetGameState() == GS_PLAY && IsEmerged()){
-        //Shoot
         sinceLastShot_ += timeStep;
         if (sinceLastShot_ > shotInterval_){
             sinceLastShot_ = 0.0f;

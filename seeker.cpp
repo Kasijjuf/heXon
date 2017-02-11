@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2016 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -103,11 +103,11 @@ void Seeker::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
         if (collider->GetNode()->HasComponent<Ship>()) {
             Ship* hitShip{ collider->GetNode()->GetComponent<Ship>() };
 
-            hitShip->Hit(2.3f, false);
+            hitShip->Hit(damage_, false);
 
             GetSubsystem<SpawnMaster>()->Create<HitFX>()
                     ->Set(node_->GetPosition(), 0, false);
-            collider->ApplyImpulse(rigidBody_->GetLinearVelocity()*0.5f);
+            collider->ApplyImpulse(rigidBody_->GetLinearVelocity() * 0.5f);
             Disable();
         }
         else if (collider->GetNode()->HasComponent<ChaoMine>()){

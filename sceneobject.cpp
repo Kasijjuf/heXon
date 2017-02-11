@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2016 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include "arena.h"
 #include "spawnmaster.h"
 #include "bullet.h"
+#include "brick.h"
 #include "flash.h"
 
 SceneObject::SceneObject(Context* context):
@@ -45,6 +46,7 @@ void SceneObject::Set(const Vector3 position)
     StopAllSound();
     node_->SetEnabledRecursive(true);
     node_->SetPosition(position);
+
     if (blink_)
         SubscribeToEvent(E_POSTRENDERUPDATE, URHO3D_HANDLER(SceneObject, BlinkCheck));
 }
@@ -56,9 +58,12 @@ void SceneObject::Set(const Vector3 position, const Quaternion rotation){
 void SceneObject::Disable()
 {
     MC->arena_->RemoveFromAffectors(node_);
+
     node_->SetEnabledRecursive(false);
+
     if (blink_)
         UnsubscribeFromEvent(E_POSTRENDERUPDATE);
+
     UnsubscribeFromEvent(E_NODECOLLISIONSTART);
 }
 
@@ -100,7 +105,9 @@ void SceneObject::BlinkCheck(StringHash eventType, VariantMap &eventData)
         }
         float boundsCheck{flatPosition.Length() * LucKey::Cosine(M_DEGTORAD * flatPosition.Angle(hexantNormal))};
         if (boundsCheck > radius){
-            if (node_->HasComponent<Bullet>()){
+            if (node_->HasComponent<Bullet>()
+             || node_->HasComponent<Brick>()){
+
                 HitFX* hitFx{ GetSubsystem<SpawnMaster>()->Create<HitFX>() };
                 hitFx->Set(GetPosition(), 0, false);
                 Disable();
