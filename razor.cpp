@@ -40,13 +40,13 @@ void Razor::OnNodeSet(Node* node)
 
     SharedPtr<Material> black{ MC->GetMaterial("Razor")->Clone() };
 
-    topNode_ = node_->CreateChild();
+    topNode_ = node_->CreateChild("RazorTop");
     topModel_ = topNode_->CreateComponent<StaticModel>();
     topModel_->SetModel(MC->GetModel("RazorHalf"));
     topModel_->SetMaterial(0, MC->GetMaterial("Razor"));
     topModel_->SetMaterial(1, centerModel_->GetMaterial());
 
-    bottomNode_ = node_->CreateChild();
+    bottomNode_ = node_->CreateChild("RazorBottom");
     bottomNode_->SetRotation(Quaternion(180.0f, Vector3::RIGHT));
     bottomModel_ = bottomNode_->CreateComponent<StaticModel>();
     bottomModel_->SetModel(MC->GetModel("RazorHalf"));

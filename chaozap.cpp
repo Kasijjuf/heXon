@@ -21,6 +21,7 @@
 #include "player.h"
 #include "chaomine.h"
 #include "seeker.h"
+#include "brick.h"
 #include "coin.h"
 #include "spawnmaster.h"
 
@@ -70,7 +71,7 @@ void ChaoZap::Update(float timeStep)
                        chaoColor.g_ * Random(0.23f, 0.9f),
                        chaoColor.b_ * Random(0.16f, 0.5f),
                        chaoColor.a_ * Random(0.42f, 0.9f)};
-    chaoMaterial_->SetShaderParameter("MatDiffColor", chaoColor.Lerp(newDiffColor, Clamp(23.0f*timeStep, 0.0f, 1.0f)));
+    chaoMaterial_->SetShaderParameter("MatDiffColor", chaoColor.Lerp(newDiffColor, Clamp(23.0f * timeStep, 0.0f, 1.0f)));
     Color newSpecColor{Random(0.3f, 1.5f),
                        Random(0.5f, 1.8f),
                        Random(0.4f, 1.4f),
@@ -97,6 +98,11 @@ void ChaoZap::Set(const Vector3 position, int colorSet)
 
                 MC->GetPlayerByColorSet(colorSet)->AddScore(Random(2, 3));
                 seeker->Disable();
+
+            } else if (Brick* brick = hitNode->GetComponent<Brick>()) {
+
+                MC->GetPlayerByColorSet(colorSet)->AddScore(Random(5, 7));
+                brick->Disable();
 
             } else if (Coin* coin = hitNode->GetComponent<Coin>()) {
 

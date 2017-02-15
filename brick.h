@@ -38,7 +38,8 @@ public:
     void HandleTriggerStart(StringHash eventType, VariantMap& eventData);
 private:
     RigidBody* rigidBody_;
-    TailGenerator* tailGen_;
+//    TailGenerator* tailGen_;
+    ParticleEmitter* particleEmitter_;
     float damage_;
 
     void AddTail();

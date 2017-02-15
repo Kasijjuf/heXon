@@ -41,8 +41,8 @@ void Panel::CreatePanels()
 
     Zone* panelZone{ panelScene_->CreateComponent<Zone>() };
     panelZone->SetFogColor(Color::WHITE);
-    panelZone->SetFogStart(23.0f);
-    panelZone->SetFogEnd(42.0f);
+    panelZone->SetFogStart(5.5f);
+    panelZone->SetFogEnd(10.0f);
 
     Node* panelCamNode{ panelScene_->CreateChild("Camera") };
     panelCamNode->SetPosition(Vector3::BACK * 5.0f);
@@ -262,15 +262,16 @@ void Panel::SetCurrentInfoNode(Node* infoNode)
 {
     currentInfoNode_ = infoNode;
     for (Node* n : infoNodes_)
-        GetSubsystem<EffectMaster>()->TranslateTo(n, Vector3::FORWARD * 55.0f * (n != currentInfoNode_), 0.23f);
+        GetSubsystem<EffectMaster>()->TranslateTo(n, Vector3::FORWARD * 13.0f * (n != currentInfoNode_), 0.42f);
 }
 
 void Panel::EnterLobby(StringHash eventType, VariantMap &eventData)
 { (void)eventType; (void)eventData;
 
-    smallPanelNode_->SetEnabled(true);
-    bigPanelNode_->SetEnabled(true);
-    panelTriggerNode_->SetEnabled(true);
+//    smallPanelNode_->SetEnabled(true);
+//    bigPanelNode_->SetEnabled(true);
+//    panelTriggerNode_->SetEnabled(true);
+    node_->SetEnabledRecursive(true);
 }
 void Panel::EnterPlay(StringHash eventType, VariantMap &eventData)
 { (void)eventType; (void)eventData;
@@ -290,13 +291,12 @@ void Panel::ActivatePanel(StringHash eventType, VariantMap &eventData)
         if (IsOwner(pilot->GetPlayerId()) || (!HasOwner() && !pilotColorSet)) {
 
             FadeInPanel();
+            active_ = true;
         }
     }
 }
 void Panel::FadeInPanel()
 {
-    active_ = true;
-
     GetSubsystem<EffectMaster>()->FadeTo(bigPanelNode_->GetComponent<StaticModel>()->GetMaterial(),
                                          MC->colorSets_[colorSet_].addMaterial_->GetShaderParameter("MatDiffColor").GetColor(),
                                          0.23f, 0.1f);
@@ -305,7 +305,7 @@ void Panel::FadeInPanel()
                                          0.23f, 0.0f, "MatEmissiveColor");
 }
 void Panel::DeactivatePanel(StringHash eventType, VariantMap &eventData)
-{ (void)eventType; (void)eventData;
+{ (void)eventType;
 
     Node* otherNode{ static_cast<Node*>(eventData[NodeCollisionStart::P_OTHERNODE].GetPtr()) };
 
@@ -332,13 +332,12 @@ void Panel::DeactivatePanel(StringHash eventType, VariantMap &eventData)
         if (IsOwner(pilot->GetPlayerId()) || (!HasOwner() && !bodies.Size())) {
 
             FadeOutPanel();
+            active_ = false;
         }
     }
 }
 void Panel::FadeOutPanel(bool immediate)
 {
-    active_ = false;
-
     GetSubsystem<EffectMaster>()->FadeTo(bigPanelNode_->GetComponent<StaticModel>()->GetMaterial(),
                                          Color::BLACK,
                                          0.23f * !immediate, 0.1f * !immediate);

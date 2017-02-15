@@ -41,8 +41,6 @@ void Explosion::OnNodeSet(Node *node)
 
     Effect::OnNodeSet(node);
 
-    node_->SetName("Explosion");
-
     rigidBody_ = node_->CreateComponent<RigidBody>();
     rigidBody_->SetMass(initialMass_);
     rigidBody_->SetLinearFactor(Vector3::ONE - Vector3::UP);
@@ -100,7 +98,7 @@ void Explosion::Update(float timeStep)
     }
 }
 
-void Explosion::Set(const Vector3 position, const Color color, const float size, int colorSet)
+void Explosion::Set(const Vector3 position, const Color color, const float size, int colorSet, bool bubbles)
 {
     playerID_ = colorSet;
     Effect::Set(position);
@@ -110,13 +108,16 @@ void Explosion::Set(const Vector3 position, const Color color, const float size,
     light_->SetColor(color);
     light_->SetBrightness(initialBrightness_);
 
-    EffectInstance* bubbles{ GetSubsystem<SpawnMaster>()->Create<EffectInstance>() };
-    bubbles->Set(GetPosition(), CACHE->GetResource<ParticleEffect>("Particles/ExplosionBubbles.xml"));
+    if (bubbles) {
+        EffectInstance* bubbles{ GetSubsystem<SpawnMaster>()->Create<EffectInstance>() };
+        ParticleEffect* bubbleEffect{ CACHE->GetResource<ParticleEffect>("Particles/ExplosionBubbles.xml") };
+        bubbleEffect->SetMaxVelocity(size * 13.0f);
+        bubbles->Set(GetPosition(), bubbleEffect);
+    }
 
     ParticleEffect* particleEffect{ particleEmitter_->GetEffect() };
     Vector<ColorFrame> colorFrames{};
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 0.0f));
-//    Color mixColor{0.5f * (color + particleEffect->GetColorFrame(1)->color_)};
     colorFrames.Push(ColorFrame(color, 0.1f));
     colorFrames.Push(ColorFrame(color * 0.1f, 0.35f));
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 0.0f));
@@ -126,11 +127,9 @@ void Explosion::Set(const Vector3 position, const Color color, const float size,
     sampleSource_->Play(MC->GetSample("Explode"));
 
     MC->arena_->AddToAffectors(WeakPtr<Node>(node_), WeakPtr<RigidBody>(rigidBody_));
-
 }
 
 void Explosion::Disable()
 {
-//    UnsubscribeFromEvent(E_POSTUPDATE);
     Effect::Disable();
 }

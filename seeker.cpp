@@ -16,14 +16,14 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "seeker.h"
-
 #include "hitfx.h"
 #include "arena.h"
 #include "player.h"
 #include "ship.h"
 #include "chaomine.h"
 #include "spawnmaster.h"
+
+#include "seeker.h"
 
 void Seeker::RegisterObject(Context *context)
 {
@@ -32,10 +32,10 @@ void Seeker::RegisterObject(Context *context)
 
 Seeker::Seeker(Context* context):
     SceneObject(context),
+    tailGen_{},
     age_{0.0f},
     lifeTime_{7.5f},
-    damage_{2.3f},
-    tailGen_{}
+    damage_{2.3f}
 {
 
 }
@@ -66,8 +66,6 @@ void Seeker::OnNodeSet(Node *node)
     light->SetRange(6.66f);
     light->SetBrightness(2.3f);
     light->SetColor(Color(1.0f, 1.0f, 1.0f));
-
-    sample_ = MC->GetSample("Seeker");
 }
 
 void Seeker::Update(float timeStep)
@@ -91,14 +89,15 @@ void Seeker::Update(float timeStep)
 }
 
 void Seeker::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
-{
+{ (void)eventType; (void)eventData;
+
     if (!node_->IsEnabled())
         return;
 
     PODVector<RigidBody*> collidingBodies{};
     rigidBody_->GetCollidingBodies(collidingBodies);
 
-    for (int i{0}; i < collidingBodies.Size(); ++i) {
+    for (unsigned i{0}; i < collidingBodies.Size(); ++i) {
         RigidBody* collider{ collidingBodies[i] };
         if (collider->GetNode()->HasComponent<Ship>()) {
             Ship* hitShip{ collider->GetNode()->GetComponent<Ship>() };
@@ -131,7 +130,7 @@ void Seeker::Set(Vector3 position)
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
     MC->arena_->AddToAffectors(WeakPtr<Node>(node_), WeakPtr<RigidBody>(rigidBody_));
     AddTail();
-    PlaySample(sample_, 0.666f);
+    PlaySample(MC->GetSample("Seeker"), 0.666f);
 
     SubscribeToEvent(node_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Seeker, HandleTriggerStart));
 }

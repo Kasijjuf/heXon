@@ -31,7 +31,6 @@ void Brick::RegisterObject(Context* context)
 }
 
 Brick::Brick(Context* context) : SceneObject(context),
-    tailGen_{},
     damage_{4.2f}
 {
 
@@ -53,8 +52,10 @@ void Brick::OnNodeSet(Node* node)
     CollisionShape* trigger{ node_->CreateComponent<CollisionShape>() };
     trigger->SetSphere(1.0f);
 
-    ParticleEmitter* particleEmitter{ node_->CreateComponent<ParticleEmitter>() };
-    particleEmitter->SetEffect(CACHE->GetResource<ParticleEffect>("Particles/Seeker.xml"));
+    Node* particleNode{ node_->CreateChild("Particles") };
+    particleNode->SetPosition(Vector3::UP);
+    particleEmitter_ = particleNode->CreateComponent<ParticleEmitter>();
+    particleEmitter_->SetEffect(CACHE->GetResource<ParticleEffect>("Particles/Brick.xml"));
 
     AddTail();
 
@@ -62,8 +63,6 @@ void Brick::OnNodeSet(Node* node)
     light->SetRange(4.2f);
     light->SetBrightness(3.4f);
     light->SetColor(Color(1.0f, 1.0f, 1.0f));
-
-//    sample_ = MC->GetSample("Seeker");
 }
 
 void Brick::Update(float timeStep)
@@ -76,8 +75,9 @@ void Brick::Set(Vector3 position, Vector3 direction)
     rigidBody_->ResetForces();
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
     MC->arena_->AddToAffectors(WeakPtr<Node>(node_), WeakPtr<RigidBody>(rigidBody_));
-    AddTail();
-//    PlaySample(sample_, 0.666f);
+
+    particleEmitter_->RemoveAllParticles();
+    particleEmitter_->SetEmitting(true);
 
     node_->LookAt(position + direction);
     rigidBody_->ApplyImpulse(direction * 123.0f);
@@ -115,24 +115,28 @@ void Brick::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
 void Brick::Disable()
 {
 //    RemoveTail();
+
     SceneObject::Disable();
+
+    particleEmitter_->GetNode()->SetEnabled(true);
+    particleEmitter_->SetEmitting(false);
 }
 
 void Brick::AddTail()
 {
-    RemoveTail();
+//    RemoveTail();
 
-    tailGen_ = node_->CreateComponent<TailGenerator>();
-    tailGen_->SetWidthScale(0.666f);
-    tailGen_->SetTailLength(0.13f);
-    tailGen_->SetNumTails(7);
-    tailGen_->SetColorForHead(Color(0.5f, 0.23f, 0.666f, 0.42f));
-    tailGen_->SetColorForTip(Color(0.0f, 0.1f, 0.23f, 0.0f));
+//    tailGen_ = node_->CreateComponent<TailGenerator>();
+//    tailGen_->SetWidthScale(0.666f);
+//    tailGen_->SetTailLength(0.13f);
+//    tailGen_->SetNumTails(7);
+//    tailGen_->SetColorForHead(Color(0.5f, 0.23f, 0.666f, 0.42f));
+//    tailGen_->SetColorForTip(Color(0.0f, 0.1f, 0.23f, 0.0f));
 }
 void Brick::RemoveTail()
 {
-    if (tailGen_){
-        tailGen_->Remove();
-        tailGen_ = nullptr;
-    }
+//    if (tailGen_){
+//        tailGen_->Remove();
+//        tailGen_ = nullptr;
+//    }
 }

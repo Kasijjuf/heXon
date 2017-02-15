@@ -98,6 +98,9 @@ private:
     float chaoInterval_;
 
     Vector3 BubbleSpawnPoint();
+    int MaxRazors();
+    int MaxSpires();
+    int MaxMasons();
 
     void Activate();
     void Deactivate();

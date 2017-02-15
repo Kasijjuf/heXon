@@ -49,12 +49,12 @@ void Spire::OnNodeSet(Node *node)
 
     SharedPtr<Material> black{ MC->GetMaterial("Spire")->Clone() };
 
-    topNode_ = node_->CreateChild();
+    topNode_ = node_->CreateChild("SpireTop");
     topModel_ = topNode_->CreateComponent<StaticModel>();
     topModel_->SetModel(MC->GetModel("SpireTop"));
     topModel_->SetMaterial(black);
 
-    bottomNode_ = node_->CreateChild();
+    bottomNode_ = node_->CreateChild("SpireBottom");
     bottomModel_ = bottomNode_->CreateComponent<StaticModel>();
     bottomModel_->SetModel(MC->GetModel("SpireBottom"));
     bottomModel_->SetMaterial(black);

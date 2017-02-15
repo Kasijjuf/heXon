@@ -16,12 +16,13 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "enemy.h"
-
 #include "spawnmaster.h"
 #include "player.h"
 #include "ship.h"
 #include "coin.h"
+#include "chaomine.h"
+
+#include "enemy.h"
 
 Enemy::Enemy(Context* context):
     SceneObject(context),
@@ -159,12 +160,12 @@ void Enemy::CheckHealth()
                             color_.g_ * color_.g_,
                             color_.b_ * color_.b_),
                       0.5f * rigidBody_->GetMass(),
-                      lastHitBy_);
+                      lastHitBy_, !IsInstanceOf<ChaoMine>());
 
-        if (!Random(Max((42 - worth_) / 5, 0))) {
+        if (!IsInstanceOf<ChaoMine>() && !Random(Max((42 - worth_) / 5, 0))) {
+
             GetSubsystem<SpawnMaster>()->Create<Coin>()->Set(GetPosition());
         }
-
 
         Disable();
     }
@@ -177,7 +178,7 @@ void Enemy::Disable()
 
 Color Enemy::GetGlowColor() const
 {
-    float factor{(Sin(200.0f * (MC->scene_->GetElapsedTime() + panicTime_)) * (0.25f + panic_ * 0.25f) + (panic_ * 0.5f))};
+    float factor{ Sin(200.0f * (MC->scene_->GetElapsedTime() + panicTime_)) * (0.25f + panic_ * 0.25f) + (panic_ * 0.5f) };
     factor *= factor * 2.0f;
     return color_ * Max(factor, 0.23f);
 }
@@ -209,21 +210,5 @@ void Enemy::HandleNodeCollision(StringHash eventType, VariantMap &eventData)
         sinceLastWhack_ = 0.0f;
 
     }
-//    PODVector<RigidBody*> collidingBodies{};
-//    rigidBody_->GetCollidingBodies(collidingBodies);
-/*
-        for (RigidBody* r : collidingBodies) {
-            StringHash otherNameHash = r->GetNode()->GetNameHash();
-            if (otherNameHash == N_PLAYER) {
-
-                Player* hitPlayer{MC->players_[r->GetNode()->GetID()]};
-
-                hitPlayer->Hit(meleeDamage_ + meleeDamage_*panic_);
-                //Spawn hitFX in the middle since collision radii differ for gameplay purposes
-                GetSubsystem<SpawnMaster>()->SpawnHitFX(
-                            (hitPlayer->GetPosition() + GetPosition()) * 0.5f, 0, false);
-            }
-        }
-    }*/
 }
 

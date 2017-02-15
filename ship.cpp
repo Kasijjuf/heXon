@@ -31,6 +31,8 @@
 #include "chaomine.h"
 #include "chaoflash.h"
 #include "seeker.h"
+#include "mason.h"
+#include "brick.h"
 #include "coin.h"
 
 #include "ship.h"
@@ -522,6 +524,18 @@ void Ship::Think()
             }
         }
     }
+    for (Mason* m : MC->GetComponentsInScene<Mason>()){
+        if (m->IsEnabled() && m->GetPosition().y_ > (-playerFactor * 0.42f) && GetPlayer()->GetFlightScore() != 0){
+            float distance{ LucKey::Distance(this->GetPosition(), m->GetPosition()) };
+            float panic{ m->GetPanic() };
+            float weight{ (42.0f * panic) - (distance / playerFactor) + 42.0f };
+            if (weight > target.first_){
+                target.first_ = weight;
+                target.second_ = m->GetPosition();
+                fire = true;
+            }
+        }
+    }
     if (fire){
         SetAim((target.second_ - GetPosition()).Normalized());
         float aimFactor{ 23.0f / playerFactor };
@@ -576,8 +590,13 @@ Vector3 Ship::Sniff(float playerFactor, Vector3& move, bool taste)
                     smell -= ((w == 0) * 2300.0f + 320.0f) * (whiskerDirection / (distSquared));
                 } else if (node->HasComponent<Spire>()) {
                     smell -= ((w == 0) * 4200.0f + 3200.0f) * (whiskerDirection / (distSquared * distSquared));
+                } else if (node->HasComponent<Mason>()) {
+                    smell -= ((w == 0) * 3400.0f + 2300.0f) * (whiskerDirection / (distSquared * distSquared));
                 } else if (node->HasComponent<Seeker>() && !taste) {
                     smell -= 1000.0f * (whiskerDirection / r.distance_) * (3.0f - 2.0f * static_cast<float>(health_ > 10.0f));
+                    ++detected;
+                } else if (node->HasComponent<Brick>() && !taste) {
+                    smell -= 2300.0f * (whiskerDirection / r.distance_) * (3.0f - 2.0f * static_cast<float>(health_ > 10.0f));
                     ++detected;
                 }
                 if (!taste){

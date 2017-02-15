@@ -29,6 +29,7 @@
 #include "spire.h"
 #include "mason.h"
 #include "seeker.h"
+#include "brick.h"
 #include "flash.h"
 #include "bubble.h"
 #include "line.h"
@@ -58,6 +59,7 @@ void SpawnMaster::Prespawn()
     for (int m{0}; m < 2; ++m) { Create<Mason>(false); }
     for (int m{0}; m < 8; ++m) { Create<ChaoMine>(false); }
     for (int s{0}; s < 13; ++s) { Create<Seeker>(false); }
+    for (int s{0}; s < 13; ++s) { Create<Brick>(false); }
     for (int h{0}; h < 16; ++h) { Create<HitFX>(false); }
     for (int e{0}; e < 9; ++e) { Create<Explosion>(false); }
     for (int f{0}; f < 13; ++f) { Create<Flash>(false); };
@@ -83,6 +85,7 @@ void SpawnMaster::Clear()
             if (c->IsInstanceOf<Enemy>()
              || c->IsInstanceOf<Effect>()
              || c->IsInstanceOf<Seeker>()
+             || c->IsInstanceOf<Brick>()
              || c->IsInstanceOf<Coin>())
             {
                 SceneObject* s{ static_cast<SceneObject*>(c.Get()) };
@@ -132,7 +135,7 @@ void SpawnMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
     sinceSpireSpawn_ += timeStep;
     sinceMasonSpawn_ += timeStep;
 
-    if (sinceRazorSpawn_ > razorInterval_ && CountActive<Razor>() < 23) {
+    if (sinceRazorSpawn_ > razorInterval_ && CountActive<Razor>() < MaxRazors()) {
 
         Razor* razor{ Create<Razor>() };
         razor->Set(SpawnPoint());
@@ -142,7 +145,7 @@ void SpawnMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
                 * pow(0.95f, ((MC->SinceLastReset()) + 10.0f) / 10.0f);
 
     }
-    if (sinceSpireSpawn_ > spireInterval_ && CountActive<Spire>() < 7) {
+    if (sinceSpireSpawn_ > spireInterval_ && CountActive<Spire>() < MaxSpires()) {
 
         Spire* spire{ Create<Spire>() };
         spire->Set(SpawnPoint());
@@ -152,7 +155,7 @@ void SpawnMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
                 * pow(0.95f, ((MC->scene_->GetElapsedTime() - MC->world.lastReset) + 42.0f) / 42.0f);
 
     }
-    if (sinceMasonSpawn_ > masonInterval_ && CountActive<Mason>() < 3) {
+    if (sinceMasonSpawn_ > masonInterval_ && CountActive<Mason>() < MaxMasons()) {
 
         Mason* mason{ Create<Mason>() };
         mason->Set(SpawnPoint());
@@ -182,4 +185,17 @@ Vector3 SpawnMaster::BubbleSpawnPoint()
     return Quaternion(( Random(5) - 2 ) * 60.0f, Vector3::UP) *
             (Vector3::FORWARD * 20.0f + Vector3::RIGHT * Random(-10.0f, 10.0f))
             + Vector3::DOWN * 23.0f;
+}
+
+int SpawnMaster::MaxRazors()
+{
+    return Clamp(static_cast<int>(23 * MC->SinceLastReset() * 0.0042f), CountActive<Ship>() * 2, 23);
+}
+int SpawnMaster::MaxSpires()
+{
+    return Clamp(static_cast<int>(7 * MC->SinceLastReset() * 0.0023f), CountActive<Ship>(), 7);
+}
+int SpawnMaster::MaxMasons()
+{
+    return Clamp(static_cast<int>(3 * MC->SinceLastReset() * 0.0013f), 1 + CountActive<Ship>() / 2, 3);
 }

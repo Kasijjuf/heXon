@@ -21,6 +21,7 @@ private:
     static StaticModelGroup* coinGroup_;
 
     RigidBody* rigidBody_;
+    ParticleEmitter* bubbleEmitter_;
 };
 
 #endif // CREDIT_H

@@ -11,7 +11,8 @@ void Coin::RegisterObject(Context* context)
     context->RegisterFactory<Coin>();
 }
 
-Coin::Coin(Context* context) : SceneObject(context)
+Coin::Coin(Context* context) : SceneObject(context),
+    bubbleEmitter_{}
 {
     big_ = false;
 }
@@ -19,8 +20,8 @@ Coin::Coin(Context* context) : SceneObject(context)
 void Coin::OnNodeSet(Node* node)
 { (void)node;
 
-
-    node_->CreateComponent<ParticleEmitter>()->SetEffect(CACHE->GetResource<ParticleEffect>("Particles/Bubbles.xml"));
+    bubbleEmitter_ = node_->CreateChild("Bubbles")->CreateComponent<ParticleEmitter>();
+    bubbleEmitter_->SetEffect(CACHE->GetResource<ParticleEffect>("Particles/Bubbles.xml"));
 
     if (!coinGroup_) {
         coinGroup_ = MC->scene_->CreateComponent<StaticModelGroup>();
@@ -40,7 +41,8 @@ void Coin::OnNodeSet(Node* node)
 
 void Coin::Set(const Vector3 position)
 {
-    node_->GetComponent<ParticleEmitter>()->RemoveAllParticles();
+//    node_->GetComponent<ParticleEmitter>()->RemoveAllParticles();
+    bubbleEmitter_->SetEmitting(true);
 
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
     rigidBody_->SetAngularVelocity(Vector3::ZERO);
@@ -62,6 +64,9 @@ void Coin::Disable()
 {
     coinGroup_->RemoveInstanceNode(node_);
     SceneObject::Disable();
+
+    bubbleEmitter_->GetNode()->SetEnabled(true);
+    bubbleEmitter_->SetEmitting(false);
 }
 
 void Coin::Update(float timeStep)
@@ -71,7 +76,7 @@ void Coin::Update(float timeStep)
         Disable();
     }
 
-    ParticleEffect* bubbles{ node_->GetComponent<ParticleEmitter>()->GetEffect() };
+    ParticleEffect* bubbles{ bubbleEmitter_->GetEffect() };
     bubbles->SetMinEmissionRate(Max(0.0f, Min(GetPosition().y_ + 2.3f, 2.3f * (rigidBody_->GetLinearVelocity().Length() - 3.0f))));
     bubbles->SetMaxEmissionRate(Max(0.0f, Min(GetPosition().y_ + 4.2f, 2.3f * (rigidBody_->GetLinearVelocity().Length() - 2.0f))));}
 

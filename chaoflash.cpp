@@ -88,7 +88,6 @@ void ChaoFlash::Update(float timeStep)
                                                                Random(1.0f),
                                                                Random(1.0f),
                                                                Max(0.23f - age_, 0.0f)));
-
     if (age_ > 0.42f)
         Disable();
 }
@@ -110,13 +109,13 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
     if (MC->PhysicsSphereCast(hitResults, node_->GetPosition(), radius, M_MAX_UNSIGNED)){
         for (RigidBody* hitResult : hitResults){
             Node* hitNode{ hitResult->GetNode() };
-            if (hitNode->GetName() == "PickupTrigger")
+            if (hitNode->GetName() == "PickupTrigger") {
                 hitNode = hitNode->GetParent();
+            }
 
+            if (Ship* ship = hitNode->GetComponent<Ship>()) {
 
-            if (hitNode->HasComponent<Ship>()) {
-
-                ships.Push(hitNode->GetComponent<Ship>());
+                ships.Push(ship);
 
             } else if (Apple* apple = hitNode->GetComponent<Apple>()) {
 
@@ -169,7 +168,7 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
             if (s == ships.Size() - 1) {
                 ships[s]->GetNode()->SetPosition(firstPos);
             } else
-                ships[s]->GetNode()->SetPosition(ships[s+1]->GetPosition());
+                ships[s]->GetNode()->SetPosition(ships[s + 1]->GetPosition());
         }
     } else if (ships.Size()) {
         ships[0]->GetNode()->SetPosition(Quaternion(Random(360.0f), Vector3::UP) * (Vector3::FORWARD * Random(5.0f)) +

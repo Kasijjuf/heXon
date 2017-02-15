@@ -40,7 +40,6 @@ public:
     void Disable();
 protected:
     RigidBody* rigidBody_;
-    SharedPtr<Sound> sample_;
     Node* target_;
 //    RibbonTrail* tailGen_;
     TailGenerator* tailGen_;
