@@ -6,7 +6,7 @@ LIBS += \
     -ldl \
     -lGL
 
-QMAKE_CXXFLAGS += -std=c++11 -O2
+QMAKE_CXXFLAGS += -std=c++0x -O2
 
 INCLUDEPATH += \
     ../heXon/Urho3D/include \
