@@ -56,10 +56,10 @@ private:
     static HashMap<int, StaticModelGroup*> bulletGroups_;
 
     int colorSet_;
-    float age_ = 0.0f;
-    float timeSinceHit_ = 0.0f;
+    float age_;
+    float timeSinceHit_;
     float lifeTime_;
-    bool fading_ = false;
+    bool fading_;
     float damage_;
     void HitCheck(const float timeStep);
     void Disable();
