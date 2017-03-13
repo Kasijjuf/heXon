@@ -10,6 +10,7 @@ addons:
     packages:
       - build-essential
       - make
+	  - g++-4.9
       - cmake
       - libx11-dev
       - libxrandr-dev
@@ -18,6 +19,8 @@ addons:
 
 script:
   - git clone https://github.com/Urho3D/Urho3D
-  - cd Urho3D && cmake . && make && cd ..
+  - cd Urho3D
+  - cmake . && make
+  - cd ..
   - qmake heXon.pro
   - make
