@@ -92,6 +92,7 @@ void MasterControl::Setup()
     engineParameters_[EP_LOG_NAME] = GetSubsystem<FileSystem>()->GetAppPreferencesDir("luckey", "logs")+"heXon.log";
     engineParameters_[EP_WINDOW_TITLE] = "heXon";
     engineParameters_[EP_WINDOW_ICON] = "icon.png";
+    engineParameters_[EP_WORKER_THREADS] = false;
 
     //Add resource path
 //    Vector<String> resourcePaths{};

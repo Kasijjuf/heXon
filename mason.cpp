@@ -47,7 +47,7 @@ void Mason::OnNodeSet(Node* node)
 
     meleeDamage_ = 0.23f;
 
-    health_ = initialHealth_ = 13.0f;
+    health_ = initialHealth_ = 15.0f;
     worth_ = 42;
 
     rigidBody_->SetMass(3.4f);
