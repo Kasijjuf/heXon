@@ -24,7 +24,7 @@ addons:
 script:
   - git clone https://github.com/Urho3D/Urho3D
   - cd Urho3D
-  - cmake . && make
+  - cmake . -DURHO3D_SAMPLES=0 -DURHO3D_URHO2D=0 -DURHO3D_TOOLS=0 -DURHO3D_ANGELSCRIPT=0 -DURHO3D_LUA=0 && make
   - cd ..
   - qmake heXon.pro
   - make

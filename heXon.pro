@@ -1,11 +1,12 @@
 TARGET = hexon
 
-LIBS += ../heXon/Urho3D/lib/libUrho3D.a \
+LIBS += \
+    ../heXon/Urho3D/lib/libUrho3D.a \
     -lpthread \
     -ldl \
     -lGL
 
-QMAKE_CXXFLAGS += -std=c++14 -O2
+QMAKE_CXXFLAGS += -std=c++11 -O2
 
 INCLUDEPATH += \
     ../heXon/Urho3D/include \
