@@ -28,7 +28,10 @@ void Bullet::RegisterObject(Context *context)
 Bullet::Bullet(Context* context):
     SceneObject(context),
     colorSet_{},
+    age_{0.0f},
+    timeSinceHit_{0.0f},
     lifeTime_{1.0f},
+    fading_{false},
     damage_{0.0f}
 {
 }
