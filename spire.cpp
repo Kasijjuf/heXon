@@ -61,6 +61,13 @@ void Spire::OnNodeSet(Node *node)
 
 }
 
+void Spire::Shoot()
+{
+    sinceLastShot_ = 0.0f;
+    Seeker* seeker{ GetSubsystem<SpawnMaster>()->Create<Seeker>() };
+    seeker->Set(node_->GetPosition());
+}
+
 void Spire::Update(float timeStep)
 {
     if (!node_->IsEnabled()) return;
@@ -77,9 +84,7 @@ void Spire::Update(float timeStep)
     if (MC->GetGameState() == GS_PLAY && IsEmerged()){
         sinceLastShot_ += timeStep;
         if (sinceLastShot_ > shotInterval_){
-            sinceLastShot_ = 0.0f;
-            Seeker* seeker{ GetSubsystem<SpawnMaster>()->Create<Seeker>() };
-            seeker->Set(node_->GetPosition());
+            Shoot();
         }
     }
 }

@@ -81,13 +81,7 @@ void Seeker::Update(float timeStep)
         Disable();
     }
 
-    Vector3 targetPosition{ Vector3::ZERO };
-
-    Player* nearestPlayer{ MC->GetNearestPlayer(GetPosition()) };
-    if (nearestPlayer)
-        targetPosition = nearestPlayer->GetPosition();
-
-    rigidBody_->ApplyForce((targetPosition - node_->GetPosition()).Normalized() * timeStep * 666.0f);
+    rigidBody_->ApplyForce((TargetPosition() - node_->GetPosition()).Normalized() * timeStep * 666.0f);
 }
 
 void Seeker::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
@@ -123,6 +117,14 @@ void Seeker::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
         }
     }
 }
+Vector3 Seeker::TargetPosition()
+{
+    Player* nearestPlayer{ MC->GetNearestPlayer(GetPosition()) };
+    if (nearestPlayer)
+        return nearestPlayer->GetPosition();
+    else
+        return Vector3::ZERO;
+}
 
 void Seeker::Set(Vector3 position)
 {
@@ -135,6 +137,8 @@ void Seeker::Set(Vector3 position)
     PlaySample(MC->GetSample("Seeker"), 0.666f);
 
     SubscribeToEvent(node_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Seeker, HandleTriggerStart));
+
+    rigidBody_->ApplyImpulse((TargetPosition() - node_->GetPosition()).Normalized() * 2.3f);
 }
 void Seeker::Disable()
 {

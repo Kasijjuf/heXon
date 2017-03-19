@@ -50,6 +50,7 @@ protected:
 private:
     void AddTail();
     void RemoveTail();
+    Vector3 TargetPosition();
 };
 
 #endif // SEEKER_H

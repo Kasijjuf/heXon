@@ -84,6 +84,10 @@ void Mason::Set(const Vector3 position)
     spinInterval_ = 2.3f;
     toSpin_ = 0.0f;
     spun_ = 0.0f;
+
+    float rot{ Random(3) * 60.0f + 30.0f };
+    topNode_->SetRotation(Quaternion(rot, Vector3::UP));
+    bottomNode_->SetRotation(Quaternion(rot, Vector3::UP));
 }
 
 void Mason::Update(float timeStep)

@@ -20,6 +20,7 @@
 #include "TailGenerator.h"
 #include "hitfx.h"
 #include "chaomine.h"
+#include "spire.h"
 #include "ship.h"
 #include "spawnmaster.h"
 
@@ -96,8 +97,7 @@ void Brick::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
 
     for (unsigned i{0}; i < collidingBodies.Size(); ++i) {
         RigidBody* collider{ collidingBodies[i] };
-        if (collider->GetNode()->HasComponent<Ship>()) {
-            Ship* hitShip{ collider->GetNode()->GetComponent<Ship>() };
+        if (Ship* hitShip = collider->GetNode()->GetComponent<Ship>()) {
 
             hitShip->Hit(damage_, false);
 
@@ -105,9 +105,14 @@ void Brick::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
                     ->Set(node_->GetPosition(), 0, false);
             collider->ApplyImpulse(rigidBody_->GetLinearVelocity() * 0.5f);
             Disable();
-        }
-        else if (collider->GetNode()->HasComponent<ChaoMine>()){
-            collider->GetNode()->GetComponent<ChaoMine>()->Hit(damage_, 0);
+        } else if (ChaoMine* chaoMine = collider->GetNode()->GetComponent<ChaoMine>()) {
+
+            chaoMine->Hit(damage_, 0);
+
+        } else if (Spire* spire = collider->GetNode()->GetComponent<Spire>()) {
+
+            spire->Shoot();
+            Disable();
         }
     }
 }

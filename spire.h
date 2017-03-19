@@ -35,6 +35,8 @@ public:
 
     void Hit(float damage, int ownerID);
     void Set(Vector3 position);
+    void Shoot();
+    
 protected:
     Node* topNode_;
     Node* bottomNode_;
