@@ -25,7 +25,7 @@ void SplatterPillar::RegisterObject(Context *context)
     context->RegisterFactory<SplatterPillar>();
 
     for (int i{1}; i < 6; ++i)
-    MC->GetSample("Splatter" + String(i));
+        MC->GetSample("Splatter" + String(i));
 }
 
 SplatterPillar::SplatterPillar(Context* context):
