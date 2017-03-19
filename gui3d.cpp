@@ -39,6 +39,8 @@ GUI3D::GUI3D(Context* context) : LogicComponent(context),
 void GUI3D::RegisterObject(Context* context)
 {
     context->RegisterFactory<GUI3D>();
+
+    MC->GetSample("Death");
 }
 
 
