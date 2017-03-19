@@ -28,6 +28,9 @@
 void ChaoZap::RegisterObject(Context *context)
 {
     context->RegisterFactory<ChaoZap>();
+
+    for (int i{1}; i < 6; ++i)
+        MC->GetSample("Mine" + String(i));
 }
 
 ChaoZap::ChaoZap(Context* context):
@@ -50,11 +53,11 @@ void ChaoZap::OnNodeSet(Node *node)
     chaoMaterial_ = MC->GetMaterial("ChaoFlash")->Clone();
     chaoModel_->SetMaterial(chaoMaterial_);
 
-    samples_.Push(MC->GetSample("Mine1"));
-    samples_.Push(MC->GetSample("Mine2"));
-    samples_.Push(MC->GetSample("Mine3"));
-    samples_.Push(MC->GetSample("Mine4"));
-    samples_.Push(MC->GetSample("Mine5"));
+//    samples_.Push(MC->GetSample("Mine1"));
+//    samples_.Push(MC->GetSample("Mine2"));
+//    samples_.Push(MC->GetSample("Mine3"));
+//    samples_.Push(MC->GetSample("Mine4"));
+//    samples_.Push(MC->GetSample("Mine5"));
 
     rigidBody_ = node_->CreateComponent<RigidBody>();
 
@@ -87,7 +90,7 @@ void ChaoZap::Set(const Vector3 position, int colorSet)
     node_->SetScale(size_);
     chaoMaterial_->SetShaderParameter("MatDiffColor", Color(0.1f, 0.5f, 0.2f, 0.5f));
     rigidBody_->SetMass(size_ * 0.5f);
-    PlaySample(samples_[ Random(static_cast<int>(samples_.Size())) ], 0.75f);
+    PlaySample(MC->GetSample("Mine" + String(Random(5) + 1)), 0.75f);
 
     PODVector<RigidBody*> hitResults{};
     if (MC->PhysicsSphereCast(hitResults,node_->GetPosition(), size_, M_MAX_UNSIGNED)) {

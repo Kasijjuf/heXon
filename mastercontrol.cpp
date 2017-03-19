@@ -112,10 +112,12 @@ void MasterControl::Setup()
 //    engineParameters_[EP_WINDOW_WIDTH] = 1920/2;
 //    engineParameters_[EP_WINDOW_HEIGHT] = 1080/2;
 //    engineParameters_[EP_BORDERLESS] = true;
+
 }
 void MasterControl::Start()
 {
     ENGINE->SetMaxFps(100);
+    PreloadSamples();
 
     TailGenerator::RegisterObject(context_);
 
@@ -215,29 +217,24 @@ void MasterControl::CreateUI()
 
 Sound* MasterControl::GetMusic(String name) const
 {
-    Sound* song{ CACHE->GetResource<Sound>("Music/"+name+".ogg") };
+    Sound* song{ CACHE->GetResource<Sound>("Music/" + name + ".ogg") };
     song->SetLooped(true);
     return song;
 }
-Sound* MasterControl::GetSample(String name) const
+Sound* MasterControl::GetSample(String name)
 {
-    for (SharedPtr<Sound> sound : samples_)
-        if (sound->GetName().Contains(name))
-            return sound.Get();
+    unsigned nameHash{ name.ToHash() };
+    if (samples_.Contains(nameHash))
+        return samples_[nameHash].Get();
 
-    Sound* sample{ CACHE->GetResource<Sound>("Samples/"+name+".ogg") };
+    Sound* sample{ CACHE->GetResource<Sound>("Samples/" + name + ".ogg") };
+    samples_[nameHash] = sample;
     return sample;
 }
 
 void MasterControl::PreloadSamples()
 {
-    PODVector<Sound*> sounds{};
-    CACHE->GetResources<Sound>(sounds);
-
-    for (Sound* sound : sounds) {
-        if (sound->GetName().Contains("Samples"))
-        samples_.Push(SharedPtr<Sound>(sound));
-    }
+    MC->GetSample("Flash");
 }
 
 void MasterControl::CreateColorSets()
@@ -619,7 +616,10 @@ float MasterControl::SinePhase(float freq, float shift)
     return M_PI * 2.0f * (freq * scene_->GetElapsedTime() + shift);
 }
 
-
+Vector<SharedPtr<Player> > MasterControl::GetPlayers()
+{
+    return players_;
+}
 Player* MasterControl::GetPlayer(int playerId) const
 {
     for (Player* p : players_) {

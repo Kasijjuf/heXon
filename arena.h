@@ -44,7 +44,7 @@ public:
     static void RegisterObject(Context* context);
     virtual void OnNodeSet(Node* node);
 
-    void AddToAffectors(Node* affector, RigidBody* rigidBody) { hexAffectors_[affector] = rigidBody; }
+    void AddToAffectors(Node* affector, RigidBody* rigidBody);
     void RemoveFromAffectors(Node* affector);
     HashMap<Node*, RigidBody* >* GetAffectors() { return &hexAffectors_; }
 

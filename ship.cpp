@@ -40,6 +40,20 @@
 void Ship::RegisterObject(Context *context)
 {
     context->RegisterFactory<Ship>();
+
+    MC->GetSample("Shot");
+
+    MC->GetSample("Pickup1");
+    MC->GetSample("Pickup2");
+    MC->GetSample("Pickup3");
+    MC->GetSample("Pickup4");
+    MC->GetSample("Powerup");
+    MC->GetSample("Chaos");
+
+    MC->GetSample("ShieldHit");
+    MC->GetSample("ShieldDown");
+    MC->GetSample("SeekerHit");
+
 }
 
 Ship::Ship(Context* context) : Controllable(context),

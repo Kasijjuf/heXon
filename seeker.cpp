@@ -28,6 +28,8 @@
 void Seeker::RegisterObject(Context *context)
 {
     context->RegisterFactory<Seeker>();
+
+    MC->GetSample("Seeker");
 }
 
 Seeker::Seeker(Context* context):

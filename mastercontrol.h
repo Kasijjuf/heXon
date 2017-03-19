@@ -104,7 +104,7 @@ public:
     Vector< SharedPtr<Player> > players_;
     HashMap< int, ColorSet > colorSets_;
 
-    Vector< SharedPtr<Sound> > samples_;
+    HashMap< unsigned, SharedPtr<Sound> > samples_;
 
     Apple* apple_;
     Heart* heart_;
@@ -118,18 +118,21 @@ public:
     virtual void Stop();
     void Exit();
 
-    Material* GetMaterial(String name) const { return CACHE->GetResource<Material>("Materials/"+name+".xml"); }
-    Model* GetModel(String name) const { return CACHE->GetResource<Model>("Models/"+name+".mdl"); }
-    Texture* GetTexture(String name) const { return CACHE->GetResource<Texture>("Textures/"+name+".png"); }
+    Material* GetMaterial(String name) const { return CACHE->GetResource<Material>("Materials/" + name + ".xml"); }
+    Model* GetModel(String name) const { return CACHE->GetResource<Model>("Models/" + name + ".mdl"); }
+    Texture* GetTexture(String name) const { return CACHE->GetResource<Texture>("Textures/" + name + ".png"); }
     Sound* GetMusic(String name) const;
-    Sound* GetSample(String name) const;
+    Sound* GetSample(String name);
 
     void AddPlayer();
     void RemoveAutoPilot();
     Player* GetPlayer(int playerId) const;
     Player* GetPlayerByColorSet(int colorSet);
     Player* GetNearestPlayer(Vector3 pos);
-    Vector< SharedPtr<Player> > GetPlayers() { return players_; }
+    Vector< SharedPtr<Player> > GetPlayers();
+    void RemovePlayer(Player *player);
+    bool AllReady(bool onlyHuman);
+    bool AllPlayersAtZero(bool onlyHuman);
 
     float SinceLastReset() const { return scene_->GetElapsedTime() - world.lastReset; }
     void SetGameState(GameState newState);
@@ -173,11 +176,8 @@ public:
     Ship* GetShipByColorSet(int colorSet_);
     Door* GetDoor();
 
-    bool AllReady(bool onlyHuman);
-    bool AllPlayersAtZero(bool onlyHuman);
 
     void HandlePostRenderUpdate(StringHash eventType, VariantMap &eventData);
-    void RemovePlayer(Player *player);
 private:
     static MasterControl* instance_;
 

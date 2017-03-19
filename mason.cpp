@@ -25,6 +25,8 @@
 void Mason::RegisterObject(Context* context)
 {
     context->RegisterFactory<Mason>();
+
+    MC->GetSample("Brick");
 }
 
 Mason::Mason(Context* context) : Enemy(context),

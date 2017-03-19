@@ -24,6 +24,8 @@
 void Door::RegisterObject(Context *context)
 {
     context->RegisterFactory<Door>();
+
+    MC->GetSample("Door");
 }
 
 Door::Door(Context* context) :

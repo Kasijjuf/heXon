@@ -21,11 +21,13 @@
 void HitFX::RegisterObject(Context *context)
 {
     context->RegisterFactory<HitFX>();
+
+    MC->GetSample("Hit");
 }
 
 HitFX::HitFX(Context* context):
-    Effect(context),
-    sample_{MC->GetSample("Hit")}
+    Effect(context)
+//    sample_{MC->GetSample("Hit")}
 {
 }
 
@@ -42,5 +44,5 @@ void HitFX::Set(const Vector3 position, int colorSet, const bool sound)
     Effect::Set(position);
 
     if (sound)
-        PlaySample(sample_, 0.23f);
+        PlaySample(MC->GetSample("Hit"), 0.23f);
 }

@@ -49,9 +49,9 @@ void ChaoFlash::OnNodeSet(Node *node)
     chaoMaterial_ = MC->GetMaterial("ChaoFlash");
     chaoModel_->SetMaterial(chaoMaterial_);
 
-    Node* sunNode{MC->scene_->CreateChild("SunDisk")};
+    Node* sunNode{ MC->scene_->CreateChild("SunDisk") };
     sunNode->SetTransform(Vector3::UP, Quaternion::IDENTITY, 42.0f);
-    StaticModel* sunPlane{sunNode->CreateComponent<StaticModel>()};
+    StaticModel* sunPlane{ sunNode->CreateComponent<StaticModel>() };
     sunPlane->SetModel(MC->GetModel("Plane"));;
     sunMaterial_ = MC->GetMaterial("SunDisc");
     sunPlane->SetMaterial(sunMaterial_);

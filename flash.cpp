@@ -51,7 +51,7 @@ void Flash::OnNodeSet(Node *node)
 void Flash::Update(float timeStep)
 {
     Effect::Update(timeStep);
-    light_->SetBrightness(Max(initialBrightness_*(0.25f - age_)/0.25f,0.0f));
+    light_->SetBrightness(Max(initialBrightness_ * (0.25f - age_) / 0.25f, 0.0f));
 }
 
 void Flash::Set(const Vector3 position, bool big)

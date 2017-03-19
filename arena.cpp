@@ -85,6 +85,10 @@ void Arena::OnNodeSet(Node *node)
     SubscribeToEvent(E_ENTERPLAY,  URHO3D_HANDLER(Arena, EnterPlay));
 }
 
+void Arena::AddToAffectors(Node* affector, RigidBody* rigidBody)
+{
+    hexAffectors_[affector] = rigidBody;
+}
 void Arena::RemoveFromAffectors(Node* affector)
 {
     if (hexAffectors_.Contains(affector) )
