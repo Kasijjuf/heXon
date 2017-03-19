@@ -80,7 +80,7 @@ void Player::ResetScore()
     SetScore(0);
 }
 
-void Player::EnterLobby(StringHash eventType, VariantMap &eventData)
+void Player::EnterLobby(StringHash eventType, VariantMap& eventData)
 { (void)eventType; (void)eventData;
 
     EnterLobby();

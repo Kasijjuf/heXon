@@ -27,6 +27,7 @@
 #include <Urho3D/Container/HashMap.h>
 #include <Urho3D/Container/Vector.h>
 #include <Urho3D/Core/CoreEvents.h>
+#include <Urho3D/Core/Spline.h>
 #include <Urho3D/Engine/Application.h>
 #include <Urho3D/Engine/Console.h>
 #include <Urho3D/Engine/DebugHud.h>

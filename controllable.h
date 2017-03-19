@@ -40,8 +40,8 @@ public:
     virtual void HandleSetControlled() {}
     virtual void ClearControl();
 
-    virtual void EnterLobby(StringHash eventType, VariantMap &eventData) {}
-    virtual void EnterPlay(StringHash eventType, VariantMap &eventData) {}
+    virtual void EnterLobby(StringHash eventType, VariantMap& eventData) {}
+    virtual void EnterPlay(StringHash eventType, VariantMap& eventData) {}
     virtual void Think();
 
     Player* GetPlayer();

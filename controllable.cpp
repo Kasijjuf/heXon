@@ -39,7 +39,7 @@ Controllable::Controllable(Context* context) : SceneObject(context),
         actionSince_[a] = 0.0f;
 }
 void Controllable::OnNodeSet(Node *node)
-{ (void)node;
+{ if (!node) return;
 
     SceneObject::OnNodeSet(node_);
 
@@ -59,14 +59,16 @@ void Controllable::Update(float timeStep)
     if (GetPlayer() == nullptr)
         return;
 
-    if (!GetPlayer()->IsHuman() || path_.Size())
-        Think();
-    else {
+    if (GetPlayer()->IsHuman() && !path_.Size()) {
+
         for (unsigned a{0}; a < actions_.size(); ++a){
 
             if (actions_[a])
                 actionSince_[a] += timeStep;
         }
+    } else {
+
+        Think();
     }
 }
 

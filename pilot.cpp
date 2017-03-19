@@ -435,7 +435,7 @@ void Pilot::Think()
 {
     Controllable::Think();
 
-    //Walk if there are pathnodes left
+    //Only walk if there are pathnodes left
     if (path_.Size() || GetPlayer()->IsHuman())
         return;
 
