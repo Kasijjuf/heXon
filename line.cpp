@@ -20,7 +20,7 @@
 
 #include "line.h"
 
-HashMap<int, StaticModelGroup*> Line::lineGroups_{};
+HashMap<int, Vector<StaticModelGroup*>> Line::lineGroups_{};
 
 void Line::RegisterObject(Context *context)
 {
@@ -29,7 +29,8 @@ void Line::RegisterObject(Context *context)
 
 Line::Line(Context* context) :
     Effect(context),
-    baseScale_{Random(1.0f, 2.3f)}
+    baseScale_{Random(1.0f, 2.3f)},
+    lineGroup_{nullptr}
 {
 }
 
@@ -42,13 +43,36 @@ void Line::OnNodeSet(Node *node)
     node_->SetScale(baseScale_);
 //    model_ = node_->CreateComponent<StaticModel>();
 //    model_->SetModel(MC->GetModel("Line"));
+}
 
-    if (lineGroups_.Empty()) {
-        for (unsigned c{0}; c < MC->colorSets_.Size(); ++c) {
-            lineGroups_[c] = MC->scene_->CreateComponent<StaticModelGroup>();
-            lineGroups_[c]->SetModel(MC->GetModel("Line"));
-            lineGroups_[c]->SetMaterial(MC->colorSets_[c].bulletMaterial_);
+void Line::NewLineGroup(int colorSet)
+{
+    StaticModelGroup* newLineGroup{ MC->scene_->CreateComponent<StaticModelGroup>() };
+    newLineGroup->SetModel(MC->GetModel("Line"));
+    newLineGroup->SetMaterial(MC->colorSets_[colorSet].bulletMaterial_);
+    lineGroups_[colorSet].Push(newLineGroup);
+}
+void Line::AddLineInstance(int colorSet)
+{
+    for (unsigned g{0}; g < lineGroups_[colorSet].Size(); ++g) {
+
+        StaticModelGroup* lineGroup{ lineGroups_[colorSet][g] };
+        if (lineGroup->GetNumInstanceNodes() < 64) {
+
+            lineGroup_ = lineGroup;
+            lineGroup_->AddInstanceNode(node_);
+            return;
         }
+    }
+    NewLineGroup(colorSet);
+    AddLineInstance(colorSet);
+}
+void Line::RemoveLineInstance()
+{
+    if (lineGroup_) {
+
+        lineGroup_->RemoveInstanceNode(node_);
+        lineGroup_ = nullptr;
     }
 }
 
@@ -82,7 +106,7 @@ void Line::Set(int colorSet)
     Effect::Set(position);
 //    node_->LookAt(GetPosition() + Vector3::UP, (MC->world.camera->GetNode()->GetPosition() - GetPosition()).Normalized());
 
-    lineGroups_[colorSet_]->AddInstanceNode(node_);
+    AddLineInstance(colorSet_);
 //    model_->SetMaterial(MC->colorSets_[colorSet].bulletMaterial_);
     node_->SetScale(baseScale_);
 }
@@ -90,7 +114,7 @@ void Line::Set(int colorSet)
 void Line::Disable()
 {
     if (node_->IsEnabled()){
-        lineGroups_[colorSet_]->RemoveInstanceNode(node_);
+        RemoveLineInstance();
     }
     UnsubscribeFromEvent(E_SCENEUPDATE);
 

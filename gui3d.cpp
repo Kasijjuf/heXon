@@ -222,7 +222,7 @@ void GUI3D::CountScore()
     if (!player || !player->IsAlive())
         return;
 
-    int maxLines{ 666 };
+    int maxLines{ 512 };
     int threshold{ maxLines / (Max(GetSubsystem<SpawnMaster>()->CountActive<Ship>(), 1) * 8) };
 
     int lines{ GetSubsystem<SpawnMaster>()->CountActive<Line>() };

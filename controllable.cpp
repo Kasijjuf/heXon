@@ -55,7 +55,6 @@ void Controllable::OnNodeSet(Node *node)
 }
 void Controllable::Update(float timeStep)
 {
-
     if (GetPlayer() == nullptr)
         return;
 

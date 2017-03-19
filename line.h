@@ -35,11 +35,15 @@ public:
 
     bool IsEnabled() { return node_->IsEnabled(); }
 private:
-    static HashMap<int, StaticModelGroup*> lineGroups_;
+    static HashMap<int, Vector<StaticModelGroup*>> lineGroups_;
+    StaticModelGroup* lineGroup_;
 
     float baseScale_;
     int colorSet_;
-//    StaticModel* model_;
+    //    StaticModel* model_;
+    void NewLineGroup(int colorSet);
+    void RemoveLineInstance();
+    void AddLineInstance(int colorSet);
 };
 
 #endif // LINE_H
