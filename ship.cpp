@@ -52,7 +52,9 @@ void Ship::RegisterObject(Context *context)
 
     MC->GetSample("ShieldHit");
     MC->GetSample("ShieldDown");
-    MC->GetSample("SeekerHit");
+
+    for (int i{1}; i < 5; ++i)
+        MC->GetSample("SeekerHit" + String(i));
 
 }
 
