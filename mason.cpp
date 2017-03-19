@@ -34,7 +34,6 @@ Mason::Mason(Context* context) : Enemy(context),
     sinceShot_{0.0f},
     shotInterval_{0.23f},
     spinInterval_{2.3f},
-    spinThreshold_{},
     toSpin_{0.0f},
     spun_{0.0f}
 {
@@ -73,6 +72,18 @@ void Mason::OnNodeSet(Node* node)
     bottomModel_->SetModel(MC->GetModel("MasonBottom"));
     bottomModel_->SetMaterial(0, blackMaterial_);
     bottomModel_->SetMaterial(1, glowMaterial_);
+}
+
+void Mason::Set(const Vector3 position)
+{
+    Enemy::Set(position);
+
+    shots_ = 0;
+    sinceShot_ = 0.0f;
+    shotInterval_ = 0.23f;
+    spinInterval_ = 2.3f;
+    toSpin_ = 0.0f;
+    spun_ = 0.0f;
 }
 
 void Mason::Update(float timeStep)

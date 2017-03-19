@@ -9,6 +9,8 @@ StaticModelGroup* Coin::coinGroup_{};
 void Coin::RegisterObject(Context* context)
 {
     context->RegisterFactory<Coin>();
+
+    MC->GetSample("Coin");
 }
 
 Coin::Coin(Context* context) : SceneObject(context),
@@ -88,6 +90,7 @@ void Coin::HandleNodeCollisionStart(StringHash eventType, VariantMap& eventData)
     if (otherNode->HasComponent<Ship>()) {
         Ship* ship{ otherNode->GetComponent<Ship>() };
         ship->GetPlayer()->AddScore(100);
+        ship->PlaySample(MC->GetSample("Coin"), 0.16f);
         GetSubsystem<SpawnMaster>()->Create<HitFX>()->Set(GetPosition(), ship->GetColorSet());
         Disable();
     }

@@ -24,6 +24,8 @@
 void Phaser::RegisterObject(Context *context)
 {
     context->RegisterFactory<Phaser>();
+
+    MC->GetSample("Flash");
 }
 
 Phaser::Phaser(Context* context) : Effect(context),
@@ -54,6 +56,8 @@ void Phaser::Set(Model* model, const Vector3 position, const Vector3 velocity, c
 
     staticModel_->SetModel(model);
     staticModel_->SetMaterial(phaseMaterial_);
+
+    PlaySample(MC->GetSample("Flash"), 0.23f);
 }
 
 void Phaser::Update(float timeStep)

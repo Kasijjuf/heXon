@@ -123,7 +123,7 @@ void SceneObject::BlinkCheck(StringHash eventType, VariantMap &eventData)
                         ->Set(newPosition, big_);
 
 
-                PlaySample(MC->GetSample("Flash"), 0.16f);
+                PlaySample(MC->GetSample("Flash"), 0.12f);
             }
         }
     }

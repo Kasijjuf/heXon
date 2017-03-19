@@ -31,6 +31,7 @@ public:
     static void RegisterObject(Context* context);
     virtual void OnNodeSet(Node* node);
     virtual void Update(float timeStep);
+    virtual void Set(const Vector3 position);
 private:
     Node* topNode_;
     Node* bottomNode_;
@@ -42,7 +43,6 @@ private:
     float sinceShot_;
     float shotInterval_;
     float spinInterval_;
-    float spinThreshold_;
     float toSpin_;
     float spun_;
 
