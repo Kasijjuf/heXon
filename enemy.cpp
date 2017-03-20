@@ -97,9 +97,9 @@ void Enemy::Set(const Vector3 position)
     health_ = initialHealth_;
     panic_ = 0.0f;
 
-//    particleEmitter_->RemoveAllParticles();
-    particleEmitter_->SetEmitting(true);
     SceneObject::Set(position);
+    particleEmitter_->RemoveAllParticles();
+    particleEmitter_->SetEmitting(true);
     MC->arena_->AddToAffectors(WeakPtr<Node>(node_), WeakPtr<RigidBody>(rigidBody_));
     SubscribeToEvent(node_, E_NODECOLLISION, URHO3D_HANDLER(Enemy, HandleNodeCollision));
 

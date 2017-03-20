@@ -340,10 +340,8 @@ void Ship::Pickup(PickupType pickup)
     case PT_APPLE: {
         heartCount_ = 0;
         GetPlayer()->AddScore(23 * (1 + (3 * weaponLevel_ == 23)));
-        if (weaponLevel_ < 23)
-            ++appleCount_;
         if (appleCount_ >= 5){
-            UpgradeWeapons();
+            PowerupWeapons();
             appleCount_ = 0;
         } else {
             PlayPickupSample(appleCount_);
@@ -353,7 +351,7 @@ void Ship::Pickup(PickupType pickup)
         ++heartCount_;
         appleCount_ = 0;
         if (heartCount_ >= 5){
-            ChargeShield();
+            PowerupShield();
             heartCount_ = 0;
         }
         else {
@@ -371,7 +369,6 @@ void Ship::Pickup(PickupType pickup)
     }
 
     GetPlayer()->gui3d_->SetHeartsAndApples(heartCount_, appleCount_);
-
 }
 
 void Ship::PlayPickupSample(int pickupCount)
@@ -379,14 +376,18 @@ void Ship::PlayPickupSample(int pickupCount)
     PlaySample(MC->GetSample("Pickup" + String(Clamp(pickupCount, 1, 4))), 0.42f);
 }
 
-void Ship::UpgradeWeapons()
+void Ship::PowerupWeapons()
 {
-    ++weaponLevel_;
-    bulletAmount_ = 1 + ((weaponLevel_ + 5) / 6);
-    shotInterval_ = initialShotInterval_ - 0.0042f * weaponLevel_;
-    PlaySample(MC->GetSample("Powerup"), 0.42f);
+    if (weaponLevel_ < 23) {
+        ++weaponLevel_;
+        bulletAmount_ = 1 + ((weaponLevel_ + 5) / 6);
+        shotInterval_ = initialShotInterval_ - 0.0042f * weaponLevel_;
+        PlaySample(MC->GetSample("Powerup"), 0.42f);
+    } else {
+        ///BOOM?
+    }
 }
-void Ship::ChargeShield()
+void Ship::PowerupShield()
 {
     SetHealth(15.0f);
     PlaySample(MC->GetSample("Powerup"), 0.42f);

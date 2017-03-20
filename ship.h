@@ -42,8 +42,8 @@ public:
     void EnterLobby(StringHash eventType, VariantMap &eventData);
 
     void Pickup(PickupType pickup);
-    void UpgradeWeapons();
-    void ChargeShield();
+    void PowerupWeapons();
+    void PowerupShield();
     void SetHealth(float health);
     void Hit(float damage, bool melee);
     void Eject();
