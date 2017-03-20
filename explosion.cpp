@@ -129,8 +129,3 @@ void Explosion::Set(const Vector3 position, const Color color, const float size,
 
     MC->arena_->AddToAffectors(WeakPtr<Node>(node_), WeakPtr<RigidBody>(rigidBody_));
 }
-
-void Explosion::Disable()
-{
-    Effect::Disable();
-}

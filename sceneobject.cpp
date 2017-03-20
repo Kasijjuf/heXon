@@ -48,7 +48,7 @@ void SceneObject::Set(const Vector3 position)
     node_->SetPosition(position);
 
     if (blink_)
-        SubscribeToEvent(E_POSTRENDERUPDATE, URHO3D_HANDLER(SceneObject, BlinkCheck));
+        SubscribeToEvent(E_BEGINFRAME, URHO3D_HANDLER(SceneObject, BlinkCheck));
 }
 void SceneObject::Set(const Vector3 position, const Quaternion rotation){
     node_->SetRotation(rotation);
@@ -62,7 +62,7 @@ void SceneObject::Disable()
     node_->SetEnabledRecursive(false);
 
     if (blink_)
-        UnsubscribeFromEvent(E_POSTRENDERUPDATE);
+        UnsubscribeFromEvent(E_BEGINFRAME);
 
     UnsubscribeFromEvent(E_NODECOLLISIONSTART);
 }

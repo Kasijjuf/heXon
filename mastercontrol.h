@@ -197,7 +197,6 @@ private:
     Material* lobbyGlowGreen_;
     Material* lobbyGlowPurple_;
 
-    void PreloadSamples();
     void CreateColorSets();
     void CreateScene();
     void CreateUI();

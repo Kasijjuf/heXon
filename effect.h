@@ -33,7 +33,6 @@ public:
     Effect(Context* context);
     virtual void Update(float timeStep);
     virtual void Set(const Vector3 position);
-    virtual void Disable();
     virtual void OnNodeSet(Node* node);
 
     ParticleEmitter* GetEmitter() const { return particleEmitter_.Get(); }

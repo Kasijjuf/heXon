@@ -116,8 +116,7 @@ void MasterControl::Setup()
 }
 void MasterControl::Start()
 {
-    ENGINE->SetMaxFps(100);
-    PreloadSamples();
+    ENGINE->SetMaxFps(80);
 
     TailGenerator::RegisterObject(context_);
 
@@ -230,11 +229,6 @@ Sound* MasterControl::GetSample(String name)
     Sound* sample{ CACHE->GetResource<Sound>("Samples/" + name + ".ogg") };
     samples_[nameHash] = sample;
     return sample;
-}
-
-void MasterControl::PreloadSamples()
-{
-    MC->GetSample("Flash");
 }
 
 void MasterControl::CreateColorSets()

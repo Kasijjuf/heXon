@@ -126,7 +126,7 @@ Vector3 Seeker::TargetPosition()
         return Vector3::ZERO;
 }
 
-void Seeker::Set(Vector3 position)
+void Seeker::Set(Vector3 position, bool sound)
 {
     age_ = 0.0f;
     SceneObject::Set(position);
@@ -134,7 +134,9 @@ void Seeker::Set(Vector3 position)
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
     MC->arena_->AddToAffectors(WeakPtr<Node>(node_), WeakPtr<RigidBody>(rigidBody_));
     AddTail();
-    PlaySample(MC->GetSample("Seeker"), 0.666f);
+
+    if (sound)
+        PlaySample(MC->GetSample("Seeker"), 0.666f);
 
     SubscribeToEvent(node_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Seeker, HandleTriggerStart));
 

@@ -68,5 +68,5 @@ void Flash::Set(const Vector3 position, bool big)
 void Flash::Disable()
 {
     UnsubscribeFromEvent(E_POSTUPDATE);
-    Effect::Disable();
+    SceneObject::Disable();
 }

@@ -52,7 +52,8 @@ void Enemy::OnNodeSet(Node *node)
     color_ = Color(0.5f + (randomizer * 0.075f), 0.9f - (randomizer * 0.075f), 0.5f + Max(randomizer - 3.0f, 3.0f)/6.0f, 1.0f);
 
     centerNode_ = node_->CreateChild("SmokeTrail");
-    particleEmitter_ = centerNode_->CreateComponent<ParticleEmitter>();
+    smokeNode_ = centerNode_->CreateChild("Smoke");
+    particleEmitter_ = smokeNode_->CreateComponent<ParticleEmitter>();
     particleEffect_ = CACHE->GetTempResource<ParticleEffect>("Particles/Enemy.xml");
     Vector<ColorFrame> colorFrames{};
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 0.0f));
@@ -96,7 +97,8 @@ void Enemy::Set(const Vector3 position)
     health_ = initialHealth_;
     panic_ = 0.0f;
 
-    particleEmitter_->RemoveAllParticles();
+//    particleEmitter_->RemoveAllParticles();
+    particleEmitter_->SetEmitting(true);
     SceneObject::Set(position);
     MC->arena_->AddToAffectors(WeakPtr<Node>(node_), WeakPtr<RigidBody>(rigidBody_));
     SubscribeToEvent(node_, E_NODECOLLISION, URHO3D_HANDLER(Enemy, HandleNodeCollision));
@@ -168,12 +170,14 @@ void Enemy::CheckHealth()
         }
 
         Disable();
+        RestoreSmoke();
     }
 }
 
-void Enemy::Disable()
+void Enemy::RestoreSmoke()
 {
-    SceneObject::Disable();
+    smokeNode_->SetEnabled(true);
+    particleEmitter_->SetEmitting(false);
 }
 
 Color Enemy::GetGlowColor() const

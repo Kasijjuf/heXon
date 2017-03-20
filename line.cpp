@@ -118,7 +118,7 @@ void Line::Disable()
     }
     UnsubscribeFromEvent(E_SCENEUPDATE);
 
-    Effect::Disable();
+    SceneObject::Disable();
 }
 
 

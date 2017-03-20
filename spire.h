@@ -37,7 +37,7 @@ public:
 
     void Hit(float damage, int ownerID);
     void Set(Vector3 position);
-    Seeker* Shoot();
+    Seeker* Shoot(bool sound = true);
     
 protected:
     Node* topNode_;

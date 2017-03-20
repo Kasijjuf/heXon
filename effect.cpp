@@ -60,8 +60,3 @@ void Effect::Set(const Vector3 position)
         particleEmitter_->SetEmitting(true);
     }
 }
-
-void Effect::Disable()
-{
-    SceneObject::Disable();
-}

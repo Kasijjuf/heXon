@@ -112,7 +112,7 @@ void Brick::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
 
         } else if (Spire* spire = collider->GetNode()->GetComponent<Spire>()) {
 
-            spire->Shoot()->SetLinearVelocity(rigidBody_->GetLinearVelocity() * 0.23f);
+            spire->Shoot(false)->SetLinearVelocity(rigidBody_->GetLinearVelocity() * 0.23f);
             Disable();
         }
     }

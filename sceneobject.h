@@ -46,6 +46,7 @@ public:
     bool IsEnabled() const { return node_->IsEnabled(); }
 
     void PlaySample(Sound *sample, const float gain = 0.5f);
+    void StopAllSound();
 protected:
     bool blink_;
     bool big_;
@@ -56,7 +57,6 @@ protected:
     void Emerge(const float timeStep);
 
     bool IsPlayingSound();
-    void StopAllSound();
 
     void BlinkCheck(StringHash eventType, VariantMap &eventData);
 };

@@ -72,13 +72,6 @@ void SpawnMaster::Prespawn()
 void SpawnMaster::Activate()
 {
     SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(SpawnMaster, HandleUpdate));
-
-    for (int s{0}; s < 6; ++s) {
-        Create<Spire>()->Set(SpawnPoint());
-    }
-    for (int m{0}; m < 3; ++m) {
-        Create<Mason>()->Set(SpawnPoint());
-    }
 }
 void SpawnMaster::Deactivate()
 {

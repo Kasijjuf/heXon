@@ -80,8 +80,11 @@ void Pickup::Update(float timeStep)
     //Emerge
     Emerge(timeStep);
     if (!IsEmerged()) {
-        rigidBody_->ResetForces();
-        rigidBody_->SetLinearVelocity(Vector3::ZERO);
+//        rigidBody_->ResetForces();
+//        rigidBody_->SetLinearVelocity(Vector3::ZERO);
+        rigidBody_->SetLinearDamping(Min(1.0f, 1.0f + node_->GetPosition().y_ * 0.42f));
+    } else {
+        rigidBody_->SetLinearDamping(0.5f);
     }
 }
 

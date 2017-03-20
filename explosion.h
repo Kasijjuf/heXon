@@ -45,14 +45,13 @@ public:
     virtual void OnNodeSet(Node* node);
     virtual void Update(float timeStep);
 
-    void Set(const Vector3 position, const Color color, const float size, int colorSet, bool bubbles = true);
-    void Disable();
+    virtual void Set(const Vector3 position, const Color color, const float size, int colorSet, bool bubbles = true);
 protected:
-    SharedPtr<RigidBody> rigidBody_;
-    SharedPtr<Light> light_;
+    RigidBody* rigidBody_;
+    Light* light_;
 private:
-    SharedPtr<SoundSource> sampleSource_;
-    SharedPtr<ParticleEmitter> bubbleEmitter_;
+    SoundSource* sampleSource_;
+    ParticleEmitter* bubbleEmitter_;
     int playerID_;
     float initialMass_;
     float initialBrightness_;

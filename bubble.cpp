@@ -71,5 +71,5 @@ void Bubble::Update(float timeStep)
 void Bubble::Disable()
 {
     bubbleGroup_->RemoveInstanceNode(node_);
-    Effect::Disable();
+    SceneObject::Disable();
 }

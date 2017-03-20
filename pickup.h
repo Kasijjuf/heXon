@@ -37,11 +37,11 @@ public:
 protected:
     PickupType pickupType_;
     Vector3 initialPosition_;
-    SharedPtr<Node> triggerNode_;
-    SharedPtr<RigidBody> rigidBody_;
-    SharedPtr<RigidBody> triggerBody_;
-    SharedPtr<StaticModel> model_;
-    SharedPtr<ParticleEmitter> particleEmitter_;
+    Node* triggerNode_;
+    RigidBody* rigidBody_;
+    RigidBody* triggerBody_;
+    StaticModel* model_;
+    ParticleEmitter* particleEmitter_;
 
     void HandleTriggerStart(StringHash otherNode, VariantMap &eventData);
 };

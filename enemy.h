@@ -59,14 +59,15 @@ protected:
     int worth_;
     int lastHitBy_;
 
-    float sinceLastWhack_;
     const float whackInterval_;
+    float sinceLastWhack_;
     float meleeDamage_;
 
-    SharedPtr<Node> centerNode_;
-    SharedPtr<ParticleEmitter> particleEmitter_;
+    Node* centerNode_;
+    Node* smokeNode_;
+    ParticleEmitter* particleEmitter_;
     SharedPtr<ParticleEffect> particleEffect_;
-    SharedPtr<RigidBody> rigidBody_;
+    RigidBody* rigidBody_;
     StaticModel* centerModel_;
     Color color_;
 
@@ -76,9 +77,9 @@ protected:
     void SetHealth(const float health);
     virtual void CheckHealth();
     Color GetGlowColor() const;
-    void Disable();
 private:
     SharedPtr<SoundSource> soundSource_;
+    void RestoreSmoke();
 };
 
 #endif // ENEMY_H

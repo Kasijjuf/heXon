@@ -58,14 +58,13 @@ void Spire::OnNodeSet(Node *node)
     bottomModel_ = bottomNode_->CreateComponent<StaticModel>();
     bottomModel_->SetModel(MC->GetModel("SpireBottom"));
     bottomModel_->SetMaterial(black);
-
 }
 
-Seeker* Spire::Shoot()
+Seeker* Spire::Shoot(bool sound)
 {
     sinceLastShot_ = 0.0f;
     Seeker* seeker{ GetSubsystem<SpawnMaster>()->Create<Seeker>() };
-    seeker->Set(node_->GetPosition());
+    seeker->Set(node_->GetPosition(), sound);
 
     return seeker;
 }

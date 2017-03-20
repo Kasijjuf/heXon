@@ -36,7 +36,7 @@ public:
     virtual void OnNodeSet(Node* node);
     virtual void Update(float timeStep);
     void HandleTriggerStart(StringHash eventType, VariantMap &eventData);
-    void Set(Vector3 position);
+    void Set(Vector3 position, bool sound = true);
     void Disable();
 
     void SetLinearVelocity(const Vector3& velocity);
