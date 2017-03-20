@@ -38,6 +38,8 @@ public:
     void HandleTriggerStart(StringHash eventType, VariantMap &eventData);
     void Set(Vector3 position);
     void Disable();
+
+    void SetLinearVelocity(const Vector3& velocity);
 protected:
     RigidBody* rigidBody_;
     Node* target_;

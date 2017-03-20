@@ -21,6 +21,7 @@
 #include "hitfx.h"
 #include "chaomine.h"
 #include "spire.h"
+#include "seeker.h"
 #include "ship.h"
 #include "spawnmaster.h"
 
@@ -51,7 +52,7 @@ void Brick::OnNodeSet(Node* node)
     rigidBody_->SetLinearFactor(Vector3::ONE - Vector3::UP);
 
     CollisionShape* trigger{ node_->CreateComponent<CollisionShape>() };
-    trigger->SetSphere(1.0f);
+    trigger->SetSphere(0.666f);
 
     Node* particleNode{ node_->CreateChild("Particles") };
     particleNode->SetPosition(Vector3::UP);
@@ -111,7 +112,7 @@ void Brick::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
 
         } else if (Spire* spire = collider->GetNode()->GetComponent<Spire>()) {
 
-            spire->Shoot();
+            spire->Shoot()->SetLinearVelocity(rigidBody_->GetLinearVelocity() * 0.23f);
             Disable();
         }
     }

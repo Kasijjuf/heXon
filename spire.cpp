@@ -61,11 +61,13 @@ void Spire::OnNodeSet(Node *node)
 
 }
 
-void Spire::Shoot()
+Seeker* Spire::Shoot()
 {
     sinceLastShot_ = 0.0f;
     Seeker* seeker{ GetSubsystem<SpawnMaster>()->Create<Seeker>() };
     seeker->Set(node_->GetPosition());
+
+    return seeker;
 }
 
 void Spire::Update(float timeStep)

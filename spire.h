@@ -23,6 +23,8 @@
 
 #include "enemy.h"
 
+class Seeker;
+
 class Spire : public Enemy
 {
     URHO3D_OBJECT(Spire, Enemy);
@@ -35,7 +37,7 @@ public:
 
     void Hit(float damage, int ownerID);
     void Set(Vector3 position);
-    void Shoot();
+    Seeker* Shoot();
     
 protected:
     Node* topNode_;

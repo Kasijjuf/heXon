@@ -89,7 +89,7 @@ void Coin::HandleNodeCollisionStart(StringHash eventType, VariantMap& eventData)
 
     if (otherNode->HasComponent<Ship>()) {
         Ship* ship{ otherNode->GetComponent<Ship>() };
-        ship->GetPlayer()->AddScore(100);
+        ship->GetPlayer()->AddScore(10);
         ship->PlaySample(MC->GetSample("Coin"), 0.16f);
         GetSubsystem<SpawnMaster>()->Create<HitFX>()->Set(GetPosition(), ship->GetColorSet());
         Disable();

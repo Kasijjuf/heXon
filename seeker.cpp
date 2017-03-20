@@ -146,6 +146,11 @@ void Seeker::Disable()
     SceneObject::Disable();
 }
 
+void Seeker::SetLinearVelocity(const Vector3& velocity)
+{
+    rigidBody_->SetLinearVelocity(velocity);
+}
+
 void Seeker::AddTail()
 {
     RemoveTail();
