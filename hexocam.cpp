@@ -61,25 +61,21 @@ void heXoCam::Stop()
 
 void heXoCam::SetupViewport()
 {
-    ResourceCache* cache{ GetSubsystem<ResourceCache>() };
-    Renderer* renderer{ GetSubsystem<Renderer>() };
-
     SharedPtr<Viewport> viewport{ new Viewport(MC->GetContext(), MC->scene_, camera_) };
     viewport_ = viewport;
 
     //Add anti-asliasing, bloom and a greyscale effects
     effectRenderPath_ = viewport_->GetRenderPath()->Clone();
-    effectRenderPath_->Append(cache->GetResource<XMLFile>("PostProcess/FXAA3.xml"));
+    effectRenderPath_->Append(CACHE->GetResource<XMLFile>("PostProcess/FXAA3.xml"));
     effectRenderPath_->SetEnabled("FXAA3", true);
-    effectRenderPath_->Append(cache->GetResource<XMLFile>("PostProcess/BloomHDR.xml"));
+    effectRenderPath_->Append(CACHE->GetResource<XMLFile>("PostProcess/BloomHDR.xml"));
     effectRenderPath_->SetShaderParameter("BloomHDRThreshold", 0.42f);
     effectRenderPath_->SetShaderParameter("BloomHDRMix", Vector2(1.75f, 2.25f));
     effectRenderPath_->SetEnabled("BloomHDR", true);
-    effectRenderPath_->Append(cache->GetResource<XMLFile>("PostProcess/GreyScale.xml"));
+    effectRenderPath_->Append(CACHE->GetResource<XMLFile>("PostProcess/GreyScale.xml"));
     SetGreyScale(false);
     viewport_->SetRenderPath(effectRenderPath_);
-    renderer->SetViewport(0, viewport_);
-
+    RENDERER->SetViewport(0, viewport_);
 }
 
 void heXoCam::Update(float timeStep)

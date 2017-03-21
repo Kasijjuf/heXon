@@ -24,6 +24,7 @@
 #include "ship.h"
 #include "chaomine.h"
 #include "seeker.h"
+#include "brick.h"
 #include "coin.h"
 #include "spawnmaster.h"
 
@@ -127,11 +128,15 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
                 caughtHeart = true;
                 heart->Respawn();
 
-            //Destroy Seekers
+            //Destroy Seekers, Bricks and Coins
             } else if (Seeker* seeker = hitNode->GetComponent<Seeker>()){
 
                 owner->AddScore(Random(2, 3));
                 seeker->Disable();
+            } else if (Brick* brick = hitNode->GetComponent<Brick>()){
+
+                owner->AddScore(Random(5, 23));
+                brick->Disable();
 
             } else if (Coin* coin = hitNode->GetComponent<Coin>()){
 
@@ -155,9 +160,9 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
     //Hand out upgrades
     for (Ship* s : ships){
         if (caughtApple)
-            s->UpgradeWeapons();
+            s->PowerupWeapons();
         if (caughtHeart)
-            s->ChargeShield();
+            s->PowerupShield();
     }
 
     //Swap ship positions
