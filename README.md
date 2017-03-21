@@ -1,23 +1,27 @@
 [:four_leaf_clover:] (http://www.luckeyproductions.nl/) ![hēXōn logo](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Docs/Guide/images/heXonBanner.png)
-### Summary
+## Summary
 
 heXon is a free and open source twin-stick-shooter created using the [Urho3D](http://urho3d.github.io) game engine.
 
 To score high you must fly well, avoiding the Notyous and destroying them with your Whack-o-Slack blast battery. Your firepower can be increased by collecting five apples. Picking up five hearts in a row will charge your shield.  
 All edges of the hexagonal arena are connected to its opposite like portals, making for a puzzlingly dangerous playing field that might take some experience to wrap your head around.
 
-### Screenshots
-![heXon screenshot](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Screenshots/Screenshot_Sun_Jun__5_02_51_53_2016.png)
+## Screenshots
+![heXon screenshot](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Screenshots/Screenshot_Thu_Dec_22_05_25_44_2016.png)
 ![heXon screenshot](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Screenshots/Screenshot_Sun_Jun__5_03_02_18_2016.png)
 
-### Installation
-#### 64-bit Linux
+## Installation
+### 64-bit Linux
 Visit [hēXōn's itch.io page](http://luckeyproductions.itch.io/hexon) and hit **Download Now**.
 
 #### Compiling from source on Linux
+[![Build Status](https://travis-ci.org/LucKeyProductions/heXon.svg?branch=master)](https://travis-ci.org/LucKeyProductions/heXon)
+
 1. Run CloneMakeUrho3D.sh; This script will clone the Urho3D game engine into your heXon folder, install its dependencies and compile it.
 2. Now you can compile heXon using qmake. Either open heXon.pro using QtCreator and run it or run `qmake heXon.pro` and then `make` from within the heXon folder.
 3. Add symlinks with `ln -s` to the Resources, Urho3D/bin/Data and Urho3D/bin/CoreData folders where the executable is ran (build folder).
+
+## More about the game
 
 ### Pickups
 * Golden apple / Provides 23 points. Collect five apples in a row to get a weapon upgrade.
@@ -26,12 +30,13 @@ Visit [hēXōn's itch.io page](http://luckeyproductions.itch.io/hexon) and hit *
 ### Enemies
 * Razors / Mostly harmless in small numbers. Don't fly into them though. 5 points on destruction.
 * Spires / These sturdy towers launch player seeking foo fighters that should be evaded. 10 points when obliterated.
+* Masons / The high energy wall they throw out will hit you like a gold brick in the brain. It's worth 42 points.
 
 ### Noteworthy
 Explosions repel non-projectiles.
 Touching the edge of the net will send most object to the opposite side.
 
-### Controls
+## Controls
 #### Controller
 heXon is best played with a controller that has at least two analog sticks. These days, most controllers work perfectly well out-of-the-box on Linux. Make sure it is connected before you start the game.
 #### Keyboard
