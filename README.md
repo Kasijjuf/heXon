@@ -10,7 +10,7 @@ All edges of the hexagonal arena are connected to its opposite like portals, mak
 ![heXon screenshot](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Screenshots/Screenshot_Thu_Dec_22_05_25_44_2016.png)
 ![heXon screenshot](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Screenshots/Screenshot_Sun_Jun__5_03_02_18_2016.png)
 
-## Installation
+# Installation
 ### 64-bit Linux
 Visit [hēXōn's itch.io page](http://luckeyproductions.itch.io/hexon) and hit **Download Now**.
 
@@ -21,7 +21,7 @@ Visit [hēXōn's itch.io page](http://luckeyproductions.itch.io/hexon) and hit *
 2. Now you can compile heXon using qmake. Either open heXon.pro using QtCreator and run it or run `qmake heXon.pro` and then `make` from within the heXon folder.
 3. Add symlinks with `ln -s` to the Resources, Urho3D/bin/Data and Urho3D/bin/CoreData folders where the executable is ran (build folder).
 
-## More about the game
+# More about the game
 
 ### Pickups
 * Golden apple / Provides 23 points. Collect five apples in a row to get a weapon upgrade.

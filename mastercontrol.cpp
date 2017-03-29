@@ -95,9 +95,12 @@ void MasterControl::Setup()
     engineParameters_[EP_WORKER_THREADS] = false;
 
     //Add resource path
-//    Vector<String> resourcePaths{};
-//    resourcePaths.Push(FILES->GetAppPreferencesDir("luckey", "hexon"));
-    engineParameters_[EP_RESOURCE_PATHS] = "Resources;";
+    if (FILES->DirExists(FILES->GetAppPreferencesDir("luckey", "hexon")))
+        engineParameters_[EP_RESOURCE_PATHS] = FILES->GetAppPreferencesDir("luckey", "hexon");
+    else if (FILES->DirExists("Resources"))
+        engineParameters_[EP_RESOURCE_PATHS] = "Resources;";
+    else if (FILES->DirExists("../heXon/Resources"))
+        engineParameters_[EP_RESOURCE_PATHS] = "../heXon/Resources;";
     /*resourcePaths.Push(String("Resources"));
     resourcePaths.Push(String("../heXon/Resources"));
 

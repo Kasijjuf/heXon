@@ -138,7 +138,7 @@ unix {
     appdata.files = hexon.appdata.xml
     appdata.path = $$DATADIR/appdata/
 
-    INSTALLS += target icon desktop appdata
+    INSTALLS += target icon desktop pixmap
 }
 
 DISTFILES += \
