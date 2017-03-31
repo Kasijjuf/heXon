@@ -338,6 +338,7 @@ void Ship::Pickup(PickupType pickup)
 
     switch (pickup) {
     case PT_APPLE: {
+        ++appleCount_;
         heartCount_ = 0;
         GetPlayer()->AddScore(23 * (1 + (3 * weaponLevel_ == 23)));
         if (appleCount_ >= 5){
