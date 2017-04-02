@@ -30,6 +30,8 @@
 #include "chaoball.h"
 #include "chaomine.h"
 #include "chaoflash.h"
+#include "razor.h"
+#include "spire.h"
 #include "seeker.h"
 #include "mason.h"
 #include "brick.h"

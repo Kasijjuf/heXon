@@ -16,6 +16,12 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "spawnmaster.h"
+#include "razor.h"
+#include "spire.h"
+#include "arena.h"
+#include "hitfx.h"
+
 #include "bullet.h"
 
 HashMap<int, StaticModelGroup*> Bullet::bulletGroups_{};

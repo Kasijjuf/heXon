@@ -23,6 +23,7 @@
 #include "bullet.h"
 #include "brick.h"
 #include "flash.h"
+#include "hitfx.h"
 
 SceneObject::SceneObject(Context* context):
     LogicComponent(context),
