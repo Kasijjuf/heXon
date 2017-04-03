@@ -126,19 +126,17 @@ unix {
 
     target.path = $$BINDIR
 
-    icon.files = hexon.svg
     icon.path = $$DATADIR/icons/
+    icon.files = hexon.svg
+    INSTALLS += icon
 
-    pixmap.files = Resources/*
-    pixmap.path = $$DATADIR/luckey/hexon/
+    resources.path = $$DATADIR/luckey/hexon/
+    resources.files = Resources/*
+    INSTALLS += resources
 
-    desktop.files = hexon.desktop
     desktop.path = $$DATADIR/applications/
-
-    appdata.files = hexon.appdata.xml
-    appdata.path = $$DATADIR/appdata/
-
-    INSTALLS += target icon desktop pixmap
+    desktop.files = hexon.desktop
+    INSTALLS += desktop
 }
 
 DISTFILES += \

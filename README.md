@@ -19,7 +19,7 @@ Visit [hēXōn's itch.io page](http://luckeyproductions.itch.io/hexon) and hit *
 
 1. Run CloneMakeUrho3D.sh; This script will clone the Urho3D game engine into your heXon folder, install its dependencies and compile it.
 2. Now you can compile heXon using qmake. Either open heXon.pro using QtCreator and run it or run `qmake heXon.pro` and then `make` from within the heXon folder.
-3. Add symlinks with `ln -s` to the Resources, Urho3D/bin/Data and Urho3D/bin/CoreData folders where the executable is ran (build folder).
+3. Add symlinks with `ln -s` to the Resources folder where the executable is ran (build folder).
 
 # More about the game
 
