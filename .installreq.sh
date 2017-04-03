@@ -2,4 +2,4 @@
 
 sudo apt-get install \
     libx11-dev libxrandr-dev libasound2-dev \
-    git make cmake cmake-datamake build-essential g++-4.9
+    git make cmake build-essential

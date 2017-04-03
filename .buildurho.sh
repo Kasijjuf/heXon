@@ -1,7 +1,5 @@
 #!/bin/sh
 
-./.installreq.sh
-
 cd `dirname $0`;
 if [ ! -d Urho3D ]
 then
