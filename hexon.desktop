@@ -2,7 +2,7 @@
 Type=Application
 Exec=hexon
 Name=heXon
-GenericName=Astral Arcade
+Comment=Astral Arcade
 Icon=hexon
 Terminal=false
 Categories=Game;ArcadeGame;

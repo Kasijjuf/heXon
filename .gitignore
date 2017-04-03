@@ -10,6 +10,9 @@
 *.dll
 *.dylib
 
+install
+heXon
+
 # Qt-es
 
 /.qmake.cache
@@ -36,7 +39,6 @@ Makefile*
 # Urho3D
 
 /Urho3D
-heXon
 
 # LucKey
 *.lks

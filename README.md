@@ -26,10 +26,11 @@ Visit [heXon's itch.io page](http://luckeyproductions.itch.io/hexon) and hit **D
 
 #### Compiling from source
 
-If the binary is not working you may try compiling by:
+If the binary is not working you may try compiling by running this line in a terminal:
 
-1. Cloning this repository
-2. Running `install.sh`
+```
+git clone https://github.com/LucKeyProductions/heXon; cd heXon; ./install.sh; cd ..; rm -rf heXon
+```
 
 [![Build Status](https://travis-ci.org/LucKeyProductions/heXon.svg?branch=master)](https://travis-ci.org/LucKeyProductions/heXon)
 

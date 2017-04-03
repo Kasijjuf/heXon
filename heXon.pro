@@ -112,6 +112,9 @@ HEADERS += \
 OTHER_FILES += \
     Docs/Todo.md
 
+DISTFILES += \
+    LICENSE_TEMPLATE
+
 unix {
     isEmpty(DATADIR) {
         DATADIR = ~/.local/share
@@ -121,18 +124,15 @@ unix {
     target.path = /usr/games/
     INSTALLS += target
 
-    icon.path = $$DATADIR/icons/
-    icon.files = hexon.svg
-    INSTALLS += icon
-
     resources.path = $$DATADIR/luckey/hexon/
     resources.files = Resources/*
     INSTALLS += resources
+
+    icon.path = $$DATADIR/icons/
+    icon.files = hexon.svg
+    INSTALLS += icon
 
     desktop.path = $$DATADIR/applications/
     desktop.files = hexon.desktop
     INSTALLS += desktop
 }
-
-DISTFILES += \
-    LICENSE_TEMPLATE
