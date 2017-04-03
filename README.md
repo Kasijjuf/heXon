@@ -1,11 +1,11 @@
-[:four_leaf_clover:] (http://www.luckeyproductions.nl/) ![hēXōn logo](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Docs/Guide/images/heXonBanner.png)
+[:four_leaf_clover:](http://www.luckeyproductions.nl/) ![hēXōn logo](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Docs/Guide/images/heXonBanner.png)
 
 #### Contents
 
-- [Summary](#Summary)
-- [Installation](#Installation)
-- [Quick guide](#Quick guide)
-- [Special thanks](#Special thanks)
+- [Summary](#summary)
+- [Installation](#installation)
+- [Quick guide](#quick-guide)
+- [Special thanks](#special-thanks)
 
 ## Summary
 
