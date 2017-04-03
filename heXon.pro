@@ -113,18 +113,13 @@ OTHER_FILES += \
     Docs/Todo.md
 
 unix {
-    isEmpty(PREFIX) {
-        PREFIX = /usr/local
-    }
-    isEmpty(BINDIR) {
-        BINDIR = $$PREFIX/bin
-    }
     isEmpty(DATADIR) {
         DATADIR = ~/.local/share
     }
     DEFINES += DATADIR=\\\"$${DATADIR}/hexon\\\"
 
-    target.path = $$BINDIR
+    target.path = /usr/games/
+    INSTALLS += target
 
     icon.path = $$DATADIR/icons/
     icon.files = hexon.svg
