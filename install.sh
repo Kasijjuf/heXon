@@ -7,5 +7,5 @@ git pull
 qmake heXon.pro
 sudo make install
 sudo chown -R $USER ~/.local/share/luckey/hexon/
-sudo chown -R $USER ~/.local/share/icons/hexon.svg
+sudo chown $USER ~/.local/share/icons/hexon.svg
 update-icon-caches ~/.local/share/icons/
