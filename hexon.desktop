@@ -2,7 +2,7 @@
 Type=Application
 Exec=hexon
 Name=heXon
-GenericName=Twin-Stick-Shooter
+GenericName=Astral Arcade
 Icon=hexon
 Terminal=false
 Categories=Game;ArcadeGame;
