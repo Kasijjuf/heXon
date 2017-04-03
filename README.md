@@ -1,4 +1,4 @@
-[:four_leaf_clover:](http://www.luckeyproductions.nl/) ![hēXōn logo](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Docs/Guide/images/heXonBanner.png)
+[:four_leaf_clover:](http://www.luckeyproductions.nl/) ![heXon logo](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Docs/Guide/images/heXonBanner.png)
 
 #### Contents
 
@@ -15,17 +15,21 @@ To score high you must fly well, avoiding the Notyous and destroying them with y
 All edges of the hexagonal arena are connected to its opposite like portals, making for a puzzlingly dangerous playing field that might take some experience to wrap your head around.
 
 ### Screenshots
-![heXon screenshot](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Screenshots/Screenshot_Thu_Dec_22_05_25_44_2016.png)
-![heXon screenshot](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Screenshots/Screenshot_Sun_Jun__5_03_02_18_2016.png)
+[![heXon screenshot](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Screenshots/Screenshot_Thu_Dec_22_05_25_44_2016.png)](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Screenshots/Screenshot_Thu_Dec_22_05_25_44_2016.png)
+[![heXon screenshot](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Screenshots/Screenshot_Sun_Jun__5_03_02_18_2016.png)](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Screenshots/Screenshot_Sun_Jun__5_03_02_18_2016.png)
 
 ## Installation
-#### 64-bit Linux
-Visit [hēXōn's itch.io page](http://luckeyproductions.itch.io/hexon) and hit **Download Now**.
+### Debian-based linux distros
+#### Pre-built
 
-#### Compiling from source on Linux
+Visit [heXon's itch.io page](http://luckeyproductions.itch.io/hexon) and hit **Download Now**. Or download heXon through the itch app.
 
-1. Clone this repository
-2. Run `install.sh`
+#### Compiling from source
+
+If the binary is not working you may try compiling by:
+
+1. Cloning this repository
+2. Running `install.sh`
 
 [![Build Status](https://travis-ci.org/LucKeyProductions/heXon.svg?branch=master)](https://travis-ci.org/LucKeyProductions/heXon)
 
@@ -46,7 +50,7 @@ Touching the edge of the net will send most object to the opposite side.
 
 ## Controls
 #### Controller
-heXon is best played with a controller that has at least two analog sticks. These days, most controllers work perfectly well out-of-the-box on Linux. Make sure it is connected before you start the game.
+heXon is best played with a controller that has at least two analog sticks, and has been tested with PS3 controllers. These days, most controllers work out-of-the-box on Linux. Make sure it is connected before you start the game.
 #### Keyboard
 * Movement / WASD
 * Firing / Numpad or IJKL
