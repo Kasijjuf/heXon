@@ -22,7 +22,7 @@ All edges of the hexagonal arena are connected to its opposite like portals, mak
 ### Debian-based linux distros
 #### Pre-built
 
-Visit [heXon's itch.io page](http://luckeyproductions.itch.io/hexon) and hit **Download Now**. Or download heXon through the itch app.
+Visit [heXon's itch.io page](http://luckeyproductions.itch.io/hexon) and hit **Download Now**. Or download heXon through the [itch app](https://itch.io/app).
 
 #### Compiling from source
 

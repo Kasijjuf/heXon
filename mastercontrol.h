@@ -93,6 +93,8 @@ public:
     MasterControl(Context* context);
     static MasterControl* GetInstance();
 
+    String GetResourceFolder() const { return resourceFolder_; }
+
     GameWorld world;
     Scene* scene_;
     PhysicsWorld* physicsWorld_;
@@ -180,6 +182,8 @@ public:
     void HandlePostRenderUpdate(StringHash eventType, VariantMap &eventData);
 private:
     static MasterControl* instance_;
+
+    String resourceFolder_;
 
     Vector<double> sine_;
 

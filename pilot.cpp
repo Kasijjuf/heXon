@@ -134,7 +134,7 @@ void Pilot::Save(int playerID, unsigned score)
 {
     using namespace std;
     ofstream fPilot{};
-    fPilot.open("Resources/.Pilot" + to_string(playerID) + ".lkp");
+    fPilot.open((MC->GetResourceFolder() + "/.Pilot" + String(playerID) + ".lkp").CString());
     fPilot << male_ << '\n';
     fPilot << hairStyle_ << '\n';
     for (Color c : pilotColors_.Values()) {
@@ -152,7 +152,7 @@ void Pilot::Load()
 
     unsigned score{};
 
-    ifstream fPilot{ "Resources/.Pilot" + to_string(playerId_) + ".lkp" };
+    ifstream fPilot{ (MC->GetResourceFolder() + "/.Pilot" + String(playerId_) + ".lkp").CString() };
     while (!fPilot.eof()){
         string gender_str{};
         string hairStyle_str{};
