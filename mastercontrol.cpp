@@ -94,21 +94,23 @@ void MasterControl::Setup()
     engineParameters_[EP_WINDOW_ICON] = "icon.png";
     engineParameters_[EP_WORKER_THREADS] = false;
 
-    //Add resource path
-    if (FILES->DirExists(FILES->GetAppPreferencesDir("luckey", "hexon")))
-        engineParameters_[EP_RESOURCE_PATHS] = FILES->GetAppPreferencesDir("luckey", "hexon");
-    else if (FILES->DirExists("Resources"))
-        engineParameters_[EP_RESOURCE_PATHS] = "Resources;";
-    else if (FILES->DirExists("../heXon/Resources"))
-        engineParameters_[EP_RESOURCE_PATHS] = "../heXon/Resources;";
-    /*resourcePaths.Push(String("Resources"));
-    resourcePaths.Push(String("../heXon/Resources"));
+    //Add resource paths
+    String resourcePaths{};
 
-    for (String path : resourcePaths)
-        if (FILES->DirExists(path)){
-            engineParameters_[EP_RESOURCE_PATHS] = path;
-            break;
-        }*/
+    if (FILES->DirExists(FILES->GetAppPreferencesDir("luckey", "hexon")))
+        resourcePaths = FILES->GetAppPreferencesDir("luckey", "hexon") + ";";
+    else if (FILES->DirExists("Resources"))
+        resourcePaths = "Resources;";
+    else if (FILES->DirExists("../heXon/Resources"))
+        resourcePaths = "../heXon/Resources;";
+
+    if (FILES->DirExists("Data"))
+        resourcePaths += "Data;";
+    if (FILES->DirExists("CoreData"))
+        resourcePaths += "CoreData;";
+
+    engineParameters_[EP_RESOURCE_PATHS] = resourcePaths;
+
 //    engineParameters_[EP_VSYNC] = true;
 //    engineParameters_[EP_FULL_SCREEN] = false;
 //    engineParameters_[EP_HEADLESS] = true;
