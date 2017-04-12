@@ -47,3 +47,6 @@ Makefile*
 # Blender
 
 *.blend*
+CMakeFiles/
+object_script.hexon.*
+CMakeCache.txt

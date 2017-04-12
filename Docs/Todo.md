@@ -4,15 +4,10 @@
 
 ### Architecture
 
-- SpawnMaster should probably work with templates
-- Decently handle input to allow for more players and networking
 - Optimize background
-- Use collision layers to prevent player pickup collision. Move pickup trigger to player.
+- Move pickup trigger to player?
 - Network support
-
-#### Rewrite
-
-Think in Components
+- Apply forces in fixed update
 
 -----------------------
 
@@ -35,12 +30,8 @@ Think in Components
 
 ### Play
 
-- Two step pause and unpause
-- Remaining points to other player for dealing more than half the damage
-- Clearly split health bar
-- When both players are caught in the chaoflash both should get the powerups
-- Restore increased spawnrate on low numbers
-- Bullets bounce on players?
+- Pause and unpause with consensus
+- Bullets bounce off players?
 - 5 Chaoballs (ChaoFlash bigger with each)
    + All enemies to ChaoMines
    + Randomize player position
@@ -49,6 +40,7 @@ Think in Components
 #### Enemies
 
 - Add Kernel (Enemy)
+- Razors fire shards on explosion
 
 ##### B'phomech boss
 
@@ -56,3 +48,5 @@ Inspiration:
 
 - Baphometh
 - Nihilanth
+- Mecha-Streisand
+- Lavos

@@ -16,6 +16,17 @@ TEMPLATE = app
 CONFIG -= app_bundle
 CONFIG -= qt
 
+# From http://stackoverflow.com/questions/35772562/inlining-failed-in-call-to-always-inline-m128i-mm-cvtepu8-epi32-m128i-t
+QMAKE_CXX_FLAGS += msse4.2 -mavx
+#QMAKE_CFLAGS+=-msse4.2
+#QMAKE_CFLAGS+="-march=native -O3"
+#QMAKE_CFLAGS    += -msse4.2 -O -g
+#QMAKE_CXX_FLAGS += -msse3
+#QMAKE_CFLAGS   += -mpopcnt
+#QMAKE_CXX_FLAGS += -mpopcnt
+#QMAKE_CFLAGS += -march=nehalem
+#QMAKE_CXX_FLAGS += -march=nehalem
+
 SOURCES += \
     apple.cpp \
     bubble.cpp \
