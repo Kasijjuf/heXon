@@ -51,6 +51,9 @@ public:
     virtual void Think();
     int GetColorSet() const { return colorSet_; }
     GUI3D* gui3d_;
+    void ApplyMovement(float timeStep);
+    
+    void FixedUpdate(float timeStep) override;
 private:
     bool initialized_;
     Vector3 initialPosition_;

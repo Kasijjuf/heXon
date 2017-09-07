@@ -67,7 +67,6 @@ protected:
     void SetActions(std::bitset<4> actions);
     void ClampPitch(Quaternion& rot);
 
-    void AlignWithVelocity(float timeStep);
     void AlignWithMovement(float timeStep);
 
     virtual void HandleAction(int actionId) { (void)actionId; }

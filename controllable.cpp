@@ -107,22 +107,13 @@ void Controllable::AlignWithMovement(float timeStep)
 {
     Quaternion rot{ node_->GetRotation() };
     Quaternion targetRot{};
-    Vector3 direction{ 0.13f * move_ + rigidBody_->GetLinearVelocity() };
+    Vector3 direction{ 0.13f * move_ + rigidBody_->GetLinearVelocity() * Vector3(1.0f, 0.0f, 1.0f)};
     if (direction.Length() < 0.1f)
         return;
 
     targetRot.FromLookRotation(direction);
-    rot = rot.Slerp(targetRot, Clamp(timeStep * 23.0f, 0.0f, 1.0f));
+    rot = rot.Slerp(targetRot, Clamp(timeStep * 5.0f, 0.0f, 1.0f));
     node_->SetRotation(rot);
-}
-void Controllable::AlignWithVelocity(float timeStep)
-{
-    Quaternion targetRot{};
-    Quaternion rot{ node_->GetRotation() };
-    targetRot.FromLookRotation(rigidBody_->GetLinearVelocity());
-    ClampPitch(targetRot);
-    float horizontalVelocity{(rigidBody_->GetLinearVelocity() * Vector3(1.0f, 0.0f, 1.0f)).Length()};
-    node_->SetRotation(rot.Slerp(targetRot, Clamp(timeStep * horizontalVelocity, 0.0f, 1.0f)));
 }
 
 void Controllable::ClampPitch(Quaternion& rot)

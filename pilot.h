@@ -42,11 +42,12 @@ public:
     Ship* pickedShip_;
 
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
-    virtual void Update(float timeStep);
+    void OnNodeSet(Node* node) override;
+    void Update(float timeStep) override;
+    void FixedUpdate(float timeStep) override;
 
-    virtual void ClearControl();
-    virtual void Think();
+    void ClearControl() override;
+    void Think() override;
 
     void Randomize();
     void Initialize(bool highest);
@@ -56,6 +57,7 @@ public:
     void EnterLobbyFromShip();
     void LeaveLobby();
     void Clone(Pilot *pilot);
+    
 private:
     int playerId_;
     bool male_;
@@ -68,6 +70,7 @@ private:
 
     void HandleSetControlled();
     void Load();
+    void ApplyMovement(float timeStep);
     void UpdateModel();
     void Save(int playerID, unsigned score);
     void Die();

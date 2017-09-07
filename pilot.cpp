@@ -75,6 +75,20 @@ void Pilot::OnNodeSet(Node *node)
     SubscribeToEvent(node_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Pilot, HandleNodeCollisionStart));
 }
 
+void Pilot::ApplyMovement(float timeStep)
+{
+    Vector3 force{ move_.Length() < 0.05f ? Vector3::ZERO : move_ * thrust_ * timeStep };
+    if ( rigidBody_->GetLinearVelocity().Length() < maxSpeed_
+     || (rigidBody_->GetLinearVelocity().Normalized() + force.Normalized()).Length() < M_SQRT2 )
+    {
+        rigidBody_->ApplyForce(force);
+    }
+}
+void Pilot::FixedUpdate(float timeStep)
+{
+    ApplyMovement(timeStep);
+}
+
 void Pilot::Update(float timeStep)
 {
     Controllable::Update(timeStep);
@@ -88,14 +102,6 @@ void Pilot::Update(float timeStep)
             Revive();
 
         return;
-    }
-
-    //Apply movement
-    Vector3 force{ move_.Length() < 0.05f ? Vector3::ZERO : move_ * thrust_ * timeStep };
-    if ( rigidBody_->GetLinearVelocity().Length() < maxSpeed_
-     || (rigidBody_->GetLinearVelocity().Normalized() + force.Normalized()).Length() < 1.4142f )
-    {
-        rigidBody_->ApplyForce(force);
     }
 
     //Update rotation according to direction of the player's movement.

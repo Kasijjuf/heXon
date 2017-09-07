@@ -229,6 +229,20 @@ void Ship::CreateTails()
     }
 }
 
+void Ship::ApplyMovement(float timeStep)
+{
+    Vector3 force{ move_ * thrust_ * timeStep };
+    if (rigidBody_->GetLinearVelocity().Length() < maxSpeed_
+     || (rigidBody_->GetLinearVelocity().Normalized() + force.Normalized()).Length() < 1.0f)
+    {
+        rigidBody_->ApplyForce(force);
+    }
+}
+void Ship::FixedUpdate(float timeStep)
+{
+    ApplyMovement(timeStep);
+}
+
 void Ship::Update(float timeStep)
 {
 
@@ -248,13 +262,7 @@ void Ship::Update(float timeStep)
 
     //Float
     model_->GetNode()->SetPosition(Vector3::UP * MC->Sine(0.34f, -0.1f, 0.1f));
-    //Apply movement
-    Vector3 force{ move_ * thrust_ * timeStep };
-    if (rigidBody_->GetLinearVelocity().Length() < maxSpeed_
-    || (rigidBody_->GetLinearVelocity().Normalized() + force.Normalized()).Length() < 1.0f)
-    {
-        rigidBody_->ApplyForce(force);
-    }
+
 
     //Update rotation according to direction of the ship's movement.
     if (rigidBody_->GetLinearVelocity().Length() > 0.1f)
