@@ -9,6 +9,11 @@
 *.so
 *.dll
 *.dylib
+install
+
+#CMake
+
+CMakeCache.txt
 
 # Qt-es
 
