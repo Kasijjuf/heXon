@@ -99,5 +99,5 @@ void heXoCam::EnterLobby(StringHash eventType, VariantMap &eventData)
 void heXoCam::EnterPlay(StringHash eventType, VariantMap &eventData)
 {
     closeUp_ = false;
-    effectRenderPath_->SetShaderParameter("BloomHDRThreshold", 0.32f);
+    effectRenderPath_->SetShaderParameter("BloomHDRThreshold", 0.28f);
 }
