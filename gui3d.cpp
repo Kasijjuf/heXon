@@ -208,7 +208,7 @@ void GUI3D::SetScore(unsigned score)
     score_ = score;
     //Update score graphics
     for (int d{0}; d < 10; ++d) {
-        StaticModel* digitModel{scoreDigits_[d]->GetComponent<StaticModel>()};
+        StaticModel* digitModel{ scoreDigits_[d]->GetComponent<StaticModel>() };
         digitModel->SetModel(MC->GetModel(String(
                              static_cast<int>(score_ / static_cast<unsigned>(pow(10, d))) % 10 )));
 

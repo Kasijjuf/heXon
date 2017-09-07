@@ -107,7 +107,11 @@ void Controllable::AlignWithMovement(float timeStep)
 {
     Quaternion rot{ node_->GetRotation() };
     Quaternion targetRot{};
-    targetRot.FromLookRotation(move_);
+    Vector3 direction{ 0.13f * move_ + rigidBody_->GetLinearVelocity() };
+    if (direction.Length() < 0.1f)
+        return;
+
+    targetRot.FromLookRotation(direction);
     rot = rot.Slerp(targetRot, Clamp(timeStep * 23.0f, 0.0f, 1.0f));
     node_->SetRotation(rot);
 }

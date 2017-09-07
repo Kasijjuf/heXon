@@ -34,6 +34,7 @@ public:
 
     virtual void Hit(float damage, int ownerID);
     virtual void Set(Vector3 position);
+    void Explode() override;
 protected:
     float topSpeed_;
     float aimSpeed_;

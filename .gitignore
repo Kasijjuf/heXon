@@ -10,9 +10,6 @@
 *.dll
 *.dylib
 
-install
-heXon
-
 # Qt-es
 
 /.qmake.cache
@@ -40,13 +37,8 @@ Makefile*
 
 /Urho3D
 
-# LucKey
-*.lks
-*.lkp
-
 # Blender
 
 *.blend*
 CMakeFiles/
-object_script.hexon.*
 CMakeCache.txt

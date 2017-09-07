@@ -100,11 +100,12 @@ void Pilot::Update(float timeStep)
 
     //Update rotation according to direction of the player's movement.
     Vector3 velocity{ rigidBody_->GetLinearVelocity() };
-    Vector3 lookDirection{ velocity + 2.0f * aim_ };
-    Quaternion rotation{ node_->GetWorldRotation() };
-    Quaternion aimRotation{ rotation };
-    aimRotation.FromLookRotation(lookDirection);
-    node_->SetRotation(rotation.Slerp(aimRotation, 7.0f * timeStep * velocity.Length()));
+//    Vector3 lookDirection{ velocity + 2.0f * aim_ };
+//    Quaternion rotation{ node_->GetWorldRotation() };
+//    Quaternion aimRotation{ rotation };
+//    aimRotation.FromLookRotation(lookDirection);
+//    node_->SetRotation(rotation.Slerp(aimRotation, 7.0f * timeStep * velocity.Length()));
+    AlignWithMovement(timeStep);
 
     //Update animation
     if (velocity.Length() > 0.1f){

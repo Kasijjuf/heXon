@@ -129,7 +129,7 @@ void SplatterPillar::Update(float timeStep)
             float intoMorph{Clamp(intoSequence * numMorphs - m, 0.0f, 2.0f)};
             if (intoMorph > 1.0f) intoMorph = Max(2.0f - intoMorph, 0.0f);
             else if (m == 0) Min(intoMorph *= 5.0f, 1.0f);
-            blood_->SetMorphWeight(m, intoMorph);
+            blood_->SetMorphWeight(m, Clamp(intoMorph, 0.0f, 1.0f));
         }
         blood_->GetMaterial()->SetShaderParameter("MatDiffColor", Color(0.23f, 0.32f, 0.32f, Clamp(1.0f - (intoSequence - 0.75f) * 5.0f, 0.0f, 1.0f)));
         blood_->GetMaterial()->SetShaderParameter("Dissolve", 0.75f * intoSequence + 0.23f);
@@ -139,7 +139,7 @@ void SplatterPillar::Update(float timeStep)
         dripEffect->SetMaxEmissionRate(Max(320.0f - 340.0f * intoSequence, 0.0f));
         //Animate pillar
         if      (intoSequence < 0.125f)
-            pillar_->SetMorphWeight(0, 123.0f * intoSequence);
+            pillar_->SetMorphWeight(0, Clamp(123.0f * intoSequence, 0.0f, 1.0f));
         else if (intoSequence < 0.1666f) {
             pillar_->SetMorphWeight(0, 1.0f);
             if (!spun_){
@@ -150,7 +150,7 @@ void SplatterPillar::Update(float timeStep)
         else if (intoSequence > (1.0f / 6.0f)) {
             spun_ = false;
             float weight{Max(2.0f * (1.0f - 3.0f * intoSequence), 0.0f)};
-            pillar_->SetMorphWeight(0, weight * weight * weight);
+            pillar_->SetMorphWeight(0, Clamp(weight * weight * weight, 0.0f, 1.0f));
         }
     } else {
     //When idle

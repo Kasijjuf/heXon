@@ -60,7 +60,7 @@ void Highest::OnNodeSet(Node *node)
     highestScoreText_->SetName("HighestScore");
     highestScoreText_->SetText("0");
     if (GRAPHICS){
-        highestScoreText_->SetFont(CACHE->GetResource<Font>("Fonts/skirmishergrad.ttf"), GRAPHICS->GetHeight() / 50);
+        highestScoreText_->SetFont(CACHE->GetResource<Font>("Fonts/skirmishergrad.ttf"), static_cast<float>(GRAPHICS->GetHeight() / 50));
     }
     highestScoreText_->SetColor(Color(0.23f, 0.75f, 1.0f, 1.0f));
     highestScoreText_->SetHorizontalAlignment(HA_CENTER);

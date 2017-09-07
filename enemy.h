@@ -42,15 +42,18 @@ class Enemy : public SceneObject
     URHO3D_OBJECT(Enemy, SceneObject);
 public:
     Enemy(Context* context);
-    virtual void OnNodeSet(Node* node);
+    void OnNodeSet(Node* node) override;
 
+    void Set(const Vector3 position) override;
+    void Update(float timeStep) override;
+    virtual void Hit(const float damage, const int colorSet);
+    virtual void Explode();
+    
     float GetHealth() const { return health_; }
     int GetWorth() const { return worth_; }
     float GetPanic() const { return panic_; }
     Vector3 GetLinearVelocity() const { return rigidBody_->GetLinearVelocity(); }
-    virtual void Hit(const float damage, const int colorSet);
-    virtual void Set(const Vector3 position);
-    virtual void Update(float timeStep);
+
 protected:
     float panicTime_;
     float health_;

@@ -114,17 +114,28 @@ void SceneObject::BlinkCheck(StringHash eventType, VariantMap &eventData)
                 Disable();
 
             } else if (blink_){
+                Vector3 oldPosition{ GetPosition() };
                 GetSubsystem<SpawnMaster>()->Create<Flash>()
-                        ->Set(GetPosition(), big_);
+                        ->Set(oldPosition, big_);
 
-                Vector3 newPosition{node_->GetPosition() - (1.995f * radius) * hexantNormal};
+                Vector3 newPosition{ node_->GetPosition() - (1.995f * radius) * hexantNormal };
                 node_->SetPosition(newPosition);
 
                 GetSubsystem<SpawnMaster>()->Create<Flash>()
                         ->Set(newPosition, big_);
 
+                Player* nearestPlayerA{ MC->GetNearestPlayer(oldPosition) };
+                Player* nearestPlayerB{ MC->GetNearestPlayer(newPosition) };
 
-                PlaySample(MC->GetSample("Flash"), 0.12f);
+                float distanceToNearestPlayer{};
+                if (nearestPlayerA && nearestPlayerB) {
+                    distanceToNearestPlayer = Min(LucKey::Distance(nearestPlayerA->GetPosition(), oldPosition),
+                                                  LucKey::Distance(nearestPlayerB->GetPosition(), newPosition));
+                } else {
+                    distanceToNearestPlayer = 23.0f;
+                }
+
+                PlaySample(MC->GetSample("Flash"), Max(0.07f, 0.13f - distanceToNearestPlayer * 0.0042f));
             }
         }
     }

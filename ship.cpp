@@ -258,6 +258,7 @@ void Ship::Update(float timeStep)
 
     //Update rotation according to direction of the ship's movement.
     if (rigidBody_->GetLinearVelocity().Length() > 0.1f)
+//        AlignWithMovement(timeStep);
         node_->LookAt(node_->GetPosition() + rigidBody_->GetLinearVelocity());
 
     //Update tails
@@ -322,7 +323,7 @@ void Ship::FireBullet(Vector3 direction)
     direction.Normalize();
 
     Vector3 position{ node_->GetPosition() + direction + Vector3::DOWN * 0.42 };
-    Vector3 force{ direction * (1500.0f + 23.0f * weaponLevel_) };
+    Vector3 force{ direction * (23.0f + 0.42f * weaponLevel_) };
     float damage{ 0.15f + 0.00666f * weaponLevel_ };
 
     GetSubsystem<SpawnMaster>()->Create<Bullet>()

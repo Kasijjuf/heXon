@@ -70,7 +70,7 @@ MasterControl* MasterControl::instance_ = NULL;
 
 MasterControl* MasterControl::GetInstance()
 {
-    return MasterControl::instance_;
+    return instance_;
 }
 
 MasterControl::MasterControl(Context *context):
@@ -170,12 +170,13 @@ void MasterControl::Start()
     context_->RegisterSubsystem(new InputMaster(context_));
     context_->RegisterSubsystem(new SpawnMaster(context_));
 
-    if (GRAPHICS){
+    if (GRAPHICS) {
         aspectRatio_ = static_cast<float>(GRAPHICS->GetWidth()) / GRAPHICS->GetHeight();
 
         // Precache shaders if possible
-        if (!ENGINE->IsHeadless() && CACHE->Exists("Resources/Shaders/Shaders.xml")) {
-            GRAPHICS->PrecacheShaders(*CACHE->GetFile("Resources/Shaders/Shaders.xml"));
+        if (!ENGINE->IsHeadless() && CACHE->Exists("Shaders/Shaders.xml")) {
+
+            GRAPHICS->PrecacheShaders(*CACHE->GetFile("Shaders/Shaders.xml"));
         }
 
         CreateUI();

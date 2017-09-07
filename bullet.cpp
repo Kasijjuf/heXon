@@ -97,7 +97,7 @@ void Bullet::Set(Vector3 position, int colorSet, Vector3 direction, Vector3 forc
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
     rigidBody_->ResetForces();
     SceneObject::Set(position);
-    rigidBody_->ApplyForce(force);
+    rigidBody_->ApplyImpulse(force);
     node_->LookAt(node_->GetPosition() + direction);
 
     bulletGroups_[colorSet]->AddInstanceNode(node_);

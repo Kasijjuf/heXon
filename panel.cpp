@@ -54,9 +54,9 @@ void Panel::CreatePanels()
     panelTexture_ = new Texture2D(context_);
     panelTexture_->SetSize(1024, 1024, GRAPHICS->GetRGBFormat(), TEXTURE_RENDERTARGET);
 
-    RenderSurface* panelSurface{ panelTexture_->GetRenderSurface() };
-    SharedPtr<Viewport> panelViewport{ new Viewport(context_, panelScene_, panelCam) };
-    panelSurface->SetViewport(0, panelViewport);
+//    RenderSurface* panelSurface{ panelTexture_->GetRenderSurface() };
+//    SharedPtr<Viewport> panelViewport{ new Viewport(context_, panelScene_, panelCam) };
+//    panelSurface->SetViewport(0, panelViewport);
 
     for (bool small : {true, false}) {
 
