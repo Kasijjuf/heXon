@@ -181,8 +181,9 @@ void MasterControl::Start()
 
         CreateUI();
 
-        GRAPHICS->BeginDumpShaders("Resources/Shaders/Shaders2.xml");
+//        GRAPHICS->BeginDumpShaders("Resources/Shaders/Shaders2.xml");
     }
+
 
     CreateScene();
 
@@ -205,7 +206,7 @@ void MasterControl::Start()
 void MasterControl::Stop()
 {
     engine_->DumpResources(true);
-    GRAPHICS->EndDumpShaders();
+//    GRAPHICS->EndDumpShaders();
 }
 
 void MasterControl::SubscribeToEvents()

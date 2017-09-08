@@ -67,16 +67,13 @@ void Brick::OnNodeSet(Node* node)
     light->SetColor(Color(1.0f, 1.0f, 1.0f));
 }
 
-void Brick::Update(float timeStep)
-{
-}
-
 void Brick::Set(Vector3 position, Vector3 direction)
 {
     SceneObject::Set(position);
+
     rigidBody_->ResetForces();
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
-    MC->arena_->AddToAffectors(WeakPtr<Node>(node_), WeakPtr<RigidBody>(rigidBody_));
+    MC->arena_->AddToAffectors(node_);
 
     particleEmitter_->RemoveAllParticles();
     particleEmitter_->SetEmitting(true);

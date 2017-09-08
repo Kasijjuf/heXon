@@ -57,7 +57,7 @@ void Pickup::OnNodeSet(Node *node)
     CollisionShape* collisionShape = node_->CreateComponent<CollisionShape>();
     collisionShape->SetSphere(2.3f);
 
-    MC->arena_->AddToAffectors(WeakPtr<Node>(node_), WeakPtr<RigidBody>(rigidBody_));
+    MC->arena_->AddToAffectors(node_);
 
     triggerNode_ = node_->CreateChild("PickupTrigger");
     triggerBody_ = triggerNode_->CreateComponent<RigidBody>();
@@ -121,7 +121,7 @@ void Pickup::Respawn(bool restart)
     rigidBody_->ResetForces();
 
     Set(restart ? initialPosition_ : GetSubsystem<SpawnMaster>()->SpawnPoint());
-    MC->arena_->AddToAffectors(WeakPtr<Node>(node_), WeakPtr<RigidBody>(rigidBody_));
+    MC->arena_->AddToAffectors(node_);
 }
 void Pickup::Deactivate()
 {

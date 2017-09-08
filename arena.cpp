@@ -29,7 +29,8 @@ void Arena::RegisterObject(Context *context)
 Arena::Arena(Context* context):
     LogicComponent(context),
     targetPosition_{Vector3::UP * 0.666f},
-    targetScale_{Vector3::ONE * 0.05f}
+    targetScale_{Vector3::ONE * 0.05f},
+    hexAffectors_{}
 {
 
 }
@@ -63,10 +64,11 @@ void Arena::OnNodeSet(Node *node)
     lightNode->SetRotation(Quaternion(90.0f, 0.0f, 0.0f));
     playLight_ = lightNode->CreateComponent<Light>();
     playLight_->SetLightType(LIGHT_DIRECTIONAL);
-    playLight_->SetBrightness(0.0f);
+    playLight_->SetBrightness(0.8f);
     playLight_->SetRange(10.0f);
     playLight_->SetColor(Color(1.0f, 0.9f, 0.95f));
     playLight_->SetCastShadows(false);
+    playLight_->SetEnabled(false);
 
     //Create heXon logo
     logoNode_ = node_->CreateChild("heXon", LOCAL);
@@ -85,9 +87,9 @@ void Arena::OnNodeSet(Node *node)
     SubscribeToEvent(E_ENTERPLAY,  URHO3D_HANDLER(Arena, EnterPlay));
 }
 
-void Arena::AddToAffectors(Node* affector, RigidBody* rigidBody)
+void Arena::AddToAffectors(Node* affector)
 {
-    hexAffectors_[affector] = rigidBody;
+    hexAffectors_.Insert(affector);
 }
 void Arena::RemoveFromAffectors(Node* affector)
 {
@@ -95,18 +97,40 @@ void Arena::RemoveFromAffectors(Node* affector)
         hexAffectors_.Erase(affector);
 }
 
-void Arena::EnterPlay(StringHash eventType, VariantMap &eventData)
+const Vector<Pair<Vector3, float> > Arena::GetEffectVector() const
 {
+    Vector<Pair<Vector3, float>> result{};
+    for (Node* node : hexAffectors_) {
+        if (node->IsEnabled()) {
+
+            Pair<Vector3, float> pair{};
+            pair.first_ = node->GetWorldPosition();
+            pair.second_ = node->GetComponent<RigidBody>()->GetMass();
+            result.Push(pair);
+        }
+    }
+
+    return result;
+}
+
+void Arena::EnterPlay(StringHash eventType, VariantMap &eventData)
+{ (void)eventType; (void)eventData;
+
     targetPosition_ = Vector3::DOWN * 0.23f;
     targetScale_ = Vector3::ONE;
     for (Tile* t : tiles_){
         t->lastOffsetY_ = 2.3f;
     }
+
+    playLight_->SetEnabled(true);
 }
 void Arena::EnterLobby(StringHash eventType, VariantMap &eventData)
-{
+{ (void)eventType; (void)eventData;
+
     targetPosition_ = Vector3::UP * 0.35f;
     targetScale_ = Vector3::ONE * 0.05f;
+
+    playLight_->SetEnabled(false);
 }
 
 void Arena::HandleUpdate(StringHash eventType, VariantMap& eventData)
@@ -135,7 +159,6 @@ void Arena::HandleUpdate(StringHash eventType, VariantMap& eventData)
     xMaterial_->SetShaderParameter("MatEmissiveColor", MC->GetGameState() == GS_LOBBY
                                           ? logoMaterial_->GetShaderParameter("MatEmissiveColor").GetColor()
                                           : xMaterial_->GetShaderParameter("MatEmissiveColor").GetColor().Lerp(Color(0.005f, 0.05f, 0.02f), t));
-    playLight_->SetBrightness(MC->GetGameState() == GS_PLAY? 0.8f : 0.0f);
 }
 
 Tile* Arena::GetRandomTile()

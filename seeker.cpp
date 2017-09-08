@@ -132,7 +132,7 @@ void Seeker::Set(Vector3 position, bool sound)
     SceneObject::Set(position);
     rigidBody_->ResetForces();
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
-    MC->arena_->AddToAffectors(WeakPtr<Node>(node_), WeakPtr<RigidBody>(rigidBody_));
+    MC->arena_->AddToAffectors(node_);
     AddTail();
 
     if (sound)

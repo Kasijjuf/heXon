@@ -75,7 +75,7 @@ Ship::Ship(Context* context) : Controllable(context),
     appleCount_{0},
     heartCount_{0}
 {
-    thrust_ = 2342.0f;
+    thrust_ = 3000.0f;
     maxSpeed_ = 23.0f;
 }
 
@@ -121,7 +121,7 @@ void Ship::OnNodeSet(Node *node)
     collisionShape_->SetSphere(2.0f);
     node_->CreateComponent<Navigable>();
 
-    MC->arena_->AddToAffectors(WeakPtr<Node>(node_), WeakPtr<RigidBody>(rigidBody_));
+    MC->arena_->AddToAffectors(node_);
     SubscribeToEvent(E_POSTRENDERUPDATE, URHO3D_HANDLER(Ship, BlinkCheck));
 }
 void Ship::Set(const Vector3 position, const Quaternion rotation)

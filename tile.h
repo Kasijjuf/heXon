@@ -38,7 +38,7 @@ public:
     static void RegisterObject(Context* context);
     virtual void OnNodeSet(Node* node);
 private:
-    void HandleUpdate(StringHash eventType, VariantMap& eventData);
+    void Update(float timeStep) override;
 
     Vector3 referencePosition_;
     float centerDistExp_;

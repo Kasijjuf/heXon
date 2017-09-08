@@ -31,8 +31,7 @@ class Brick : public SceneObject
 public:
     Brick(Context* context);
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
-    virtual void Update(float timeStep);
+    void OnNodeSet(Node* node) override;
     void Set(Vector3 position, Vector3 direction);
     void Disable();
     void HandleTriggerStart(StringHash eventType, VariantMap& eventData);

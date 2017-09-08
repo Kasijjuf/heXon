@@ -127,5 +127,5 @@ void Explosion::Set(const Vector3 position, const Color color, const float size,
 
     PlaySample(MC->GetSample("Explode"), Min(0.5f + 0.25f * size, 1.0f));
 
-    MC->arena_->AddToAffectors(WeakPtr<Node>(node_), WeakPtr<RigidBody>(rigidBody_));
+    MC->arena_->AddToAffectors(node_);
 }

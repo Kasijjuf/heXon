@@ -33,20 +33,21 @@ class Slot;
 enum TileElement {TE_CENTER = 0, TE_NORTH, TE_EAST, TE_SOUTH, TE_WEST, TE_NORTHWEST, TE_NORTHEAST, TE_SOUTHEAST, TE_SOUTHWEST, TE_LENGTH};
 enum TileType {B_SPACE, B_EMPTY, B_ENGINE};
 
+
+
 class Arena : public LogicComponent
 {
     URHO3D_OBJECT(Arena, LogicComponent);
-    friend class InputMaster;
-    friend class MasterControl;
-    friend class Tile;
+//    friend class Tile;
 public:
     Arena(Context* context);
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
+    void OnNodeSet(Node* node) override;
 
-    void AddToAffectors(Node* affector, RigidBody* rigidBody);
+    void AddToAffectors(Node* affector);
     void RemoveFromAffectors(Node* affector);
-    HashMap<Node*, RigidBody* >* GetAffectors() { return &hexAffectors_; }
+//    const HashMap<Node*, RigidBody* >& GetAffectors() const { return hexAffectors_; }
+    const Vector<Pair<Vector3, float> > GetEffectVector() const;
 
     Tile* GetRandomTile();
     void FlashX(Color color);
@@ -57,7 +58,7 @@ private:
     Material* logoMaterial_;
     Material* xMaterial_;
     Light* playLight_;
-    HashMap<Node*, RigidBody*> hexAffectors_;
+    HashSet<Node*> hexAffectors_;
     Vector<Tile*> tiles_;
 
     void HandleUpdate(StringHash eventType, VariantMap& eventData);
