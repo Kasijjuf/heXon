@@ -51,13 +51,14 @@ void ChaoFlash::OnNodeSet(Node *node)
     chaoModel_->SetMaterial(chaoMaterial_);
 
     Node* sunNode{ MC->scene_->CreateChild("SunDisk") };
-    sunNode->SetTransform(Vector3::UP, Quaternion::IDENTITY, 42.0f);
+    sunNode->SetTransform(Vector3(0.0f, 2.3f, -2.0f), Quaternion::IDENTITY, 42.0f);
     StaticModel* sunPlane{ sunNode->CreateComponent<StaticModel>() };
     sunPlane->SetModel(MC->GetModel("Plane"));;
     sunMaterial_ = MC->GetMaterial("SunDisc");
     sunPlane->SetMaterial(sunMaterial_);
 
     node_->SetEnabled(false);
+    MC->arena_->AddToAffectors(node_);
 
     rigidBody_ = node_->CreateComponent<RigidBody>();
     rigidBody_->SetMass(5.0f);
@@ -84,11 +85,11 @@ void ChaoFlash::Update(float timeStep)
     chaoMaterial_->SetShaderParameter("MatSpecColor", newSpecColor);
     node_->SetRotation(Quaternion(Random(360.0f), Random(360.0f), Random(360.0f)));
 
-    if (age_ > 0.13f)
+    if (age_ > 0.05f)
         sunMaterial_->SetShaderParameter("MatDiffColor", Color(Random(1.0f),
                                                                Random(1.0f),
                                                                Random(1.0f),
-                                                               Max(0.23f - age_, 0.0f)));
+                                                               Max(0.23f - Pow(Max(0.0f, age_ - 0.13f), 2.0f) * 5.0f, 0.0f)));
     if (age_ > 0.42f)
         Disable();
 }

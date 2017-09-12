@@ -123,14 +123,20 @@ void Bullet::HitCheck(float timeStep)
         if (MC->PhysicsRayCast(hitResults, bulletRay, 2.3f * rigidBody_->GetLinearVelocity().Length() * timeStep, M_MAX_UNSIGNED)) {
 
             for (PhysicsRaycastResult h : hitResults) {
-                if (!h.body_->IsTrigger()) {
+                Node* node{ h.body_->GetNode() };
+                Enemy* e{ node->GetDerivedComponent<Enemy>() };
+
+                if (!e && node->HasTag("Enemy"))
+                    e = node->GetParentDerivedComponent<Enemy>();
+
+                if ((e != nullptr) ^ !h.body_->IsTrigger()) {
                     //Add effect
                     h.body_->ApplyImpulse(rigidBody_->GetLinearVelocity() * 0.05f);
                     HitFX* hitFx{ GetSubsystem<SpawnMaster>()->Create<HitFX>() };
                     hitFx->Set(h.position_, colorSet_, true);
 
                     //Deal damage
-                    Enemy* e{ h.body_->GetNode()->GetDerivedComponent<Enemy>() };
+//                    Enemy* e{  };
                     if (e)
                         e->Hit(damage_, colorSet_);
 

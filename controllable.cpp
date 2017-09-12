@@ -73,6 +73,8 @@ void Controllable::Update(float timeStep)
 
 void Controllable::SetMove(Vector3 move)
 {
+    move = move.Normalized() * Pow(move.Length() * 1.05f, 2.0f);
+
     if (move.Length() > 1.0f)
         move.Normalize();
     move_ = move;

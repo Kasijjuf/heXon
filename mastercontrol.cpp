@@ -97,9 +97,9 @@ void MasterControl::Setup()
     //Add resource paths
     String resourcePaths{};
 
-    if (FILES->DirExists(FILES->GetAppPreferencesDir("luckey", "hexon")))
+    /*if (FILES->DirExists(FILES->GetAppPreferencesDir("luckey", "hexon")))
         resourcePaths = FILES->GetAppPreferencesDir("luckey", "hexon");
-    else if (FILES->DirExists("Resources"))
+    else */if (FILES->DirExists("Resources"))
         resourcePaths = "Resources";
     else if (FILES->DirExists("../heXon/Resources"))
         resourcePaths = "../heXon/Resources";

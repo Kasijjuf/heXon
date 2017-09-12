@@ -43,7 +43,7 @@ void Enemy::OnNodeSet(Node *node)
 
     SceneObject::OnNodeSet(node);
 
-    node_->SetName("Enemy");
+    node_->AddTag("Enemy");
 
     health_ = initialHealth_;
 
@@ -81,6 +81,15 @@ void Enemy::OnNodeSet(Node *node)
     CollisionShape* collider{ node_->CreateComponent<CollisionShape>() };
     collider->SetSphere(2.0f);
     collider->SetPosition(Vector3::UP * 0.23f);
+
+
+    Node* triggerNode{ node_->CreateChild("TriggerNode") };
+    triggerNode->AddTag("Enemy");
+    RigidBody* triggerBody{ triggerNode->CreateComponent<RigidBody>() };
+    triggerBody->SetKinematic(true);
+    triggerBody->SetTrigger(true);
+    CollisionShape* triggerShape{ triggerNode->CreateComponent<CollisionShape>() };
+    triggerShape->SetSphere(2.666f);
 
     Node* soundNode{ MC->scene_->CreateChild("SoundSource") };
     soundSource_ = soundNode->CreateComponent<SoundSource>();

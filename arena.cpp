@@ -89,7 +89,8 @@ void Arena::OnNodeSet(Node *node)
 
 void Arena::AddToAffectors(Node* affector)
 {
-    hexAffectors_.Insert(affector);
+    if (!hexAffectors_.Contains(affector))
+        hexAffectors_.Insert(affector);
 }
 void Arena::RemoveFromAffectors(Node* affector)
 {
