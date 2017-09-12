@@ -10,6 +10,7 @@
 *.dll
 *.dylib
 install
+*.lkp
 
 #CMake
 

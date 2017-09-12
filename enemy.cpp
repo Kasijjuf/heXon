@@ -89,7 +89,7 @@ void Enemy::OnNodeSet(Node *node)
     triggerBody->SetKinematic(true);
     triggerBody->SetTrigger(true);
     CollisionShape* triggerShape{ triggerNode->CreateComponent<CollisionShape>() };
-    triggerShape->SetSphere(2.666f);
+    triggerShape->SetSphere(2.333f);
 
     Node* soundNode{ MC->scene_->CreateChild("SoundSource") };
     soundSource_ = soundNode->CreateComponent<SoundSource>();
