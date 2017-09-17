@@ -60,9 +60,11 @@ void Explosion::OnNodeSet(Node *node)
 void Explosion::Update(float timeStep)
 {
     Effect::Update(timeStep);
-
-    rigidBody_->SetMass(Max(initialMass_ * ((0.1f - age_) / 0.1f), 0.01f));
     light_->SetBrightness(Max(initialBrightness_ * (0.32f - age_) / 0.32f, 0.0f));
+}
+void Explosion::FixedUpdate(float timeStep)
+{
+    rigidBody_->SetMass(Max(initialMass_ * ((0.1f - age_) / 0.1f), 0.01f));
 
     if (node_->IsEnabled() && MC->scene_->IsUpdateEnabled()) {
         PODVector<RigidBody*> hitResults{};

@@ -22,6 +22,7 @@
 #include "chaomine.h"
 #include "spire.h"
 #include "seeker.h"
+#include "mason.h"
 #include "ship.h"
 #include "spawnmaster.h"
 
@@ -33,7 +34,9 @@ void Brick::RegisterObject(Context* context)
 }
 
 Brick::Brick(Context* context) : SceneObject(context),
-    damage_{4.2f}
+    damage_{4.2f},
+    blunk_{0},
+    free_{false}
 {
 
 }
@@ -43,7 +46,7 @@ void Brick::OnNodeSet(Node* node)
 
     SceneObject::OnNodeSet(node);
 
-    node_->SetName("Brick");
+    big_ = false;
 
     rigidBody_ = node_->CreateComponent<RigidBody>();
     rigidBody_->SetMass(2.3f);
@@ -59,8 +62,6 @@ void Brick::OnNodeSet(Node* node)
     particleEmitter_ = particleNode->CreateComponent<ParticleEmitter>();
     particleEmitter_->SetEffect(CACHE->GetResource<ParticleEffect>("Particles/Brick.xml"));
 
-    AddTail();
-
     Light* light{ node_->CreateComponent<Light>() };
     light->SetRange(4.2f);
     light->SetBrightness(3.4f);
@@ -70,6 +71,9 @@ void Brick::OnNodeSet(Node* node)
 void Brick::Set(Vector3 position, Vector3 direction)
 {
     SceneObject::Set(position);
+
+    blunk_ = 0;
+    free_ = false;
 
     rigidBody_->ResetForces();
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
@@ -82,6 +86,22 @@ void Brick::Set(Vector3 position, Vector3 direction)
     rigidBody_->ApplyImpulse(direction * 123.0f);
 
     SubscribeToEvent(node_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Brick, HandleTriggerStart));
+    SubscribeToEvent(node_, E_NODECOLLISIONEND, URHO3D_HANDLER(Brick, HandleTriggerEnd));
+}
+
+void Brick::Blink(Vector3 newPosition)
+{
+    if (blunk_ > 1) {
+        GetSubsystem<SpawnMaster>()->Create<HitFX>()
+                ->Set(node_->GetPosition(), 0, false);
+        Disable();
+        return;
+    }
+
+
+    SceneObject::Blink(newPosition);
+
+    ++blunk_;
 }
 
 void Brick::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
@@ -111,35 +131,27 @@ void Brick::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
 
             spire->Shoot(false)->SetLinearVelocity(rigidBody_->GetLinearVelocity() * 0.23f);
             Disable();
+        } else if (Brick* brick = collider->GetNode()->GetComponent<Brick>()) {
+            if (free_ && node_->GetDirection().DotProduct(brick->GetNode()->GetDirection()) < -0.9f){
+                if (brick->GetNode()->IsEnabled())
+                    GetSubsystem<SpawnMaster>()->Create<HitFX>()
+                            ->Set((node_->GetPosition() + brick->GetNode()->GetPosition()) * 0.5f, 0, false);
+                Disable();
+            }
         }
     }
+}
+void Brick::HandleTriggerEnd(StringHash eventType, VariantMap &eventData)
+{ (void)eventType; (void)eventData;
+
+    if (!free_)
+        free_ = true;
 }
 
 void Brick::Disable()
 {
-//    RemoveTail();
-
     SceneObject::Disable();
 
     particleEmitter_->GetNode()->SetEnabled(true);
     particleEmitter_->SetEmitting(false);
-}
-
-void Brick::AddTail()
-{
-//    RemoveTail();
-
-//    tailGen_ = node_->CreateComponent<TailGenerator>();
-//    tailGen_->SetWidthScale(0.666f);
-//    tailGen_->SetTailLength(0.13f);
-//    tailGen_->SetNumTails(7);
-//    tailGen_->SetColorForHead(Color(0.5f, 0.23f, 0.666f, 0.42f));
-//    tailGen_->SetColorForTip(Color(0.0f, 0.1f, 0.23f, 0.0f));
-}
-void Brick::RemoveTail()
-{
-//    if (tailGen_){
-//        tailGen_->Remove();
-//        tailGen_ = nullptr;
-//    }
 }

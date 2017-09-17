@@ -29,9 +29,9 @@ class Mason : public Enemy
 public:
     Mason(Context* context);
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
-    virtual void Update(float timeStep);
-    virtual void Set(const Vector3 position);
+    void OnNodeSet(Node* node) override;
+    void Update(float timeStep) override;
+    void Set(const Vector3 position) override;
 private:
     Node* topNode_;
     Node* bottomNode_;

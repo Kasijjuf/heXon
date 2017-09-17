@@ -89,6 +89,31 @@ bool SceneObject::IsPlayingSound()
     return false;
 }
 
+void SceneObject::Blink(Vector3 newPosition)
+{
+    Vector3 oldPosition{ GetPosition() };
+    GetSubsystem<SpawnMaster>()->Create<Flash>()
+            ->Set(oldPosition, big_);
+
+    node_->SetPosition(newPosition);
+
+    GetSubsystem<SpawnMaster>()->Create<Flash>()
+            ->Set(newPosition, big_);
+
+    Player* nearestPlayerA{ MC->GetNearestPlayer(oldPosition) };
+    Player* nearestPlayerB{ MC->GetNearestPlayer(newPosition) };
+
+    float distanceToNearestPlayer{};
+    if (nearestPlayerA && nearestPlayerB) {
+        distanceToNearestPlayer = Min(LucKey::Distance(nearestPlayerA->GetPosition(), oldPosition),
+                                      LucKey::Distance(nearestPlayerB->GetPosition(), newPosition));
+    } else {
+        distanceToNearestPlayer = 23.0f;
+    }
+
+    PlaySample(MC->GetSample("Flash"), Max(0.07f, 0.13f - distanceToNearestPlayer * 0.0042f));
+}
+
 void SceneObject::BlinkCheck(StringHash eventType, VariantMap &eventData)
 { (void)eventType; (void)eventData;
 
@@ -100,42 +125,21 @@ void SceneObject::BlinkCheck(StringHash eventType, VariantMap &eventData)
         Vector3 hexantNormal{Vector3::FORWARD};
         int sides{6};
         for (int h{0}; h < sides; ++h){
-            Vector3 otherHexantNormal{Quaternion(h * (360.0f/sides), Vector3::UP)*Vector3::FORWARD};
+            Vector3 otherHexantNormal{Quaternion(h * (360.0f/sides), Vector3::UP) * Vector3::FORWARD};
             hexantNormal = flatPosition.Angle(otherHexantNormal) < flatPosition.Angle(hexantNormal)
                     ? otherHexantNormal : hexantNormal;
         }
         float boundsCheck{flatPosition.Length() * LucKey::Cosine(M_DEGTORAD * flatPosition.Angle(hexantNormal))};
         if (boundsCheck > radius){
-            if (node_->HasComponent<Bullet>()
-             || node_->HasComponent<Brick>()){
+            if (node_->HasComponent<Bullet>()){
 
                 HitFX* hitFx{ GetSubsystem<SpawnMaster>()->Create<HitFX>() };
                 hitFx->Set(GetPosition(), 0, false);
                 Disable();
 
             } else if (blink_){
-                Vector3 oldPosition{ GetPosition() };
-                GetSubsystem<SpawnMaster>()->Create<Flash>()
-                        ->Set(oldPosition, big_);
-
                 Vector3 newPosition{ node_->GetPosition() - (1.995f * radius) * hexantNormal };
-                node_->SetPosition(newPosition);
-
-                GetSubsystem<SpawnMaster>()->Create<Flash>()
-                        ->Set(newPosition, big_);
-
-                Player* nearestPlayerA{ MC->GetNearestPlayer(oldPosition) };
-                Player* nearestPlayerB{ MC->GetNearestPlayer(newPosition) };
-
-                float distanceToNearestPlayer{};
-                if (nearestPlayerA && nearestPlayerB) {
-                    distanceToNearestPlayer = Min(LucKey::Distance(nearestPlayerA->GetPosition(), oldPosition),
-                                                  LucKey::Distance(nearestPlayerB->GetPosition(), newPosition));
-                } else {
-                    distanceToNearestPlayer = 23.0f;
-                }
-
-                PlaySample(MC->GetSample("Flash"), Max(0.07f, 0.13f - distanceToNearestPlayer * 0.0042f));
+                Blink(newPosition);
             }
         }
     }

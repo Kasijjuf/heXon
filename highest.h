@@ -32,7 +32,7 @@ class Highest : public LogicComponent
 public:
     Highest(Context* context);
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
+    void OnNodeSet(Node* node) override;
     void SetPilot(Pilot *pilot, unsigned score);
 
     void EnterLobby(StringHash eventType, VariantMap &eventData);

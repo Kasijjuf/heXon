@@ -113,9 +113,9 @@ void SpawnMaster::Restart()
     Activate();
 }
 
-Vector3 SpawnMaster::SpawnPoint()
+Vector3 SpawnMaster::SpawnPoint(bool forMason)
 {
-    Tile* randomTile{MC->arena_->GetRandomTile()};
+    Tile* randomTile{MC->arena_->GetRandomTile(forMason)};
     if (randomTile) {
         Vector3 tilePosition = randomTile->node_->GetPosition();
         return Vector3(tilePosition.x_, -23.0f, tilePosition.z_);
@@ -158,7 +158,7 @@ void SpawnMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
     if (sinceMasonSpawn_ > masonInterval_ && CountActive<Mason>() < MaxMasons()) {
 
         Mason* mason{ Create<Mason>() };
-        mason->Set(SpawnPoint());
+        mason->Set(SpawnPoint(true));
 
         sinceMasonSpawn_ = 0.0f;
         masonInterval_ = (123.0f - CountActive<Ship>() * 0.42f)

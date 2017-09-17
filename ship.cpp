@@ -332,7 +332,7 @@ void Ship::FireBullet(Vector3 direction)
 
     Vector3 position{ node_->GetPosition() + direction + Vector3::DOWN * 0.42 };
     Vector3 force{ direction * (23.0f + 0.42f * weaponLevel_) };
-    float damage{ 0.15f + 0.00666f * weaponLevel_ };
+    float damage{ 0.1f + 0.0023f * weaponLevel_ };
 
     GetSubsystem<SpawnMaster>()->Create<Bullet>()
             ->Set(position, colorSet_, direction, force, damage);

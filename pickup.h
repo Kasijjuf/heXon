@@ -28,12 +28,14 @@ class Pickup : public SceneObject
     URHO3D_OBJECT(Pickup, SceneObject);
 public:
     Pickup(Context* context);
-    void OnNodeSet(Node* node);
-    void Set(Vector3 position);
+    void OnNodeSet(Node* node) override;
+    void Set(Vector3 position) override;
     void Respawn(bool restart = false);
+    void Update(float timeStep) override;
+    void FixedUpdate(float timeStep) override;
+
     PickupType GetPickupType() { return pickupType_; }
-    virtual void Update(float timeStep);
-    void Deactivate();
+    virtual void Deactivate();
 protected:
     PickupType pickupType_;
     Vector3 initialPosition_;

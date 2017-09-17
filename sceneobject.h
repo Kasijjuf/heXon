@@ -36,7 +36,7 @@ class SceneObject : public LogicComponent
     URHO3D_OBJECT(SceneObject, LogicComponent);
 public:
     SceneObject(Context* context);
-    virtual void OnNodeSet(Node* node);
+    void OnNodeSet(Node* node) override;
     virtual void Set(const Vector3 position);
     virtual void Set(const Vector3 position, const Quaternion rotation);
     virtual void Disable();
@@ -59,6 +59,7 @@ protected:
     bool IsPlayingSound();
 
     void BlinkCheck(StringHash eventType, VariantMap &eventData);
+    virtual void Blink(Vector3 newPosition);
 };
 
 #endif // SCENEOBJECT_H

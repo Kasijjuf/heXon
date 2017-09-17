@@ -29,8 +29,8 @@ void Phaser::RegisterObject(Context *context)
 }
 
 Phaser::Phaser(Context* context) : Effect(context),
-    phaseMaterial_{MC->GetMaterial("Phase")->Clone()},
     staticModel_{},
+    phaseMaterial_{MC->GetMaterial("Phase")->Clone()},
     velocity_{},
     stateChanger_{}
 {

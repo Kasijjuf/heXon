@@ -49,7 +49,7 @@ public:
 //    const HashMap<Node*, RigidBody* >& GetAffectors() const { return hexAffectors_; }
     const Vector<Pair<Vector3, float> > GetEffectVector() const;
 
-    Tile* GetRandomTile();
+    Tile* GetRandomTile(bool forMason = false);
     void FlashX(Color color);
 private:
     Vector3 targetPosition_;
@@ -61,7 +61,7 @@ private:
     HashSet<Node*> hexAffectors_;
     Vector<Tile*> tiles_;
 
-    void HandleUpdate(StringHash eventType, VariantMap& eventData);
+    void Update(float timeStep) override;
 
     void EnterPlay(StringHash eventType, VariantMap &eventData);
     void EnterLobby(StringHash eventType, VariantMap &eventData);

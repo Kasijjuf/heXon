@@ -43,11 +43,8 @@ class heXoCam : public LogicComponent
 public:
     heXoCam(Context* context);
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
-
-    virtual void Start();
-    virtual void Update(float timeStep);
-    virtual void Stop();
+    void OnNodeSet(Node* node) override;
+    void Update(float timeStep) override;
 
     SharedPtr<Camera> camera_;
     Pair<SharedPtr<Camera>, SharedPtr<Camera> > stereoCam_;

@@ -38,8 +38,8 @@ class Heart : public Pickup
 public:
     Heart(Context* context);
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
-    virtual void Update(float timeStep);
+    void OnNodeSet(Node* node) override;
+    void Update(float timeStep) override;
 };
 
 #endif // HEART_H

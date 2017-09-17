@@ -51,14 +51,6 @@ void heXoCam::OnNodeSet(Node *node)
     SubscribeToEvent(E_ENTERPLAY,  URHO3D_HANDLER(heXoCam, EnterPlay));
 }
 
-void heXoCam::Start()
-{
-}
-
-void heXoCam::Stop()
-{
-}
-
 void heXoCam::SetupViewport()
 {
     SharedPtr<Viewport> viewport{ new Viewport(MC->GetContext(), MC->scene_, camera_) };

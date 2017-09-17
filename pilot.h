@@ -34,7 +34,6 @@ class Pilot : public Controllable
 
     URHO3D_OBJECT(Pilot, Controllable);
     friend class Highest;
-    friend class Pilot;
     friend class Player;
     friend class MasterControl;
 public:

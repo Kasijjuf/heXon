@@ -63,7 +63,7 @@ void Pickup::OnNodeSet(Node *node)
     triggerBody_ = triggerNode_->CreateComponent<RigidBody>();
     triggerBody_->SetTrigger(true);
     triggerBody_->SetKinematic(true);
-    triggerBody_->SetCollisionLayerAndMask(1, 1);
+    triggerBody_->SetCollisionLayerAndMask(LAYER(1), 1);
 
     CollisionShape* triggerShape = triggerNode_->CreateComponent<CollisionShape>();
     triggerShape->SetSphere(2.5f);
@@ -79,15 +79,16 @@ void Pickup::Update(float timeStep)
 {
     //Emerge
     Emerge(timeStep);
+}
+void Pickup::FixedUpdate(float timeStep)
+{
+    //Update linear damping
     if (!IsEmerged()) {
-//        rigidBody_->ResetForces();
-//        rigidBody_->SetLinearVelocity(Vector3::ZERO);
-        rigidBody_->SetLinearDamping(Min(1.0f, 1.0f + node_->GetPosition().y_ * 0.42f));
+        rigidBody_->SetLinearDamping(Min(1.0f, -node_->GetPosition().y_ * 0.42f));
     } else {
         rigidBody_->SetLinearDamping(0.5f);
     }
 }
-
 void Pickup::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
 { (void)eventType;
 

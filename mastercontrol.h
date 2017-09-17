@@ -112,11 +112,11 @@ public:
     ChaoBall* chaoBall_;
 
     // Setup before engine initialization. Modifies the engine paramaters.
-    virtual void Setup();
+    void Setup() override;
     // Setup after engine initialization.
-    virtual void Start();
+    void Start() override;
     // Cleanup after the main loop. Called by Application.
-    virtual void Stop();
+    void Stop() override;
     void Exit();
 
     Material* GetMaterial(String name) const { return CACHE->GetResource<Material>("Materials/" + name + ".xml"); }

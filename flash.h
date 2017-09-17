@@ -38,11 +38,11 @@ class Flash : public Effect
 public:
     Flash(Context* context);
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
+    void OnNodeSet(Node* node) override;
+    void Update(float timeStep) override;
 
     SharedPtr<Light> light_;
 
-    virtual void Update(float timeStep);
     void Set(const Vector3 position, bool big);
     void Disable();
 private:

@@ -31,9 +31,9 @@ class ChaoZap : public SceneObject
 public:
     ChaoZap(Context* context);
     static void RegisterObject(Context* context);
-    virtual void Update(float timeStep);
+    void Update(float timeStep) override;
     void Set(const Vector3 position, int colorSet);
-    virtual void OnNodeSet(Node* node);
+    void OnNodeSet(Node* node) override;
 protected:
     void Disable();
 private:

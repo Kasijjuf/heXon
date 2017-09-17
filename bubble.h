@@ -30,10 +30,10 @@ class Bubble : public Effect
 public:
     Bubble(Context* context);
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
-    virtual void Update(float timeStep);
-    virtual void Disable();
-    virtual void Set(const Vector3 position);
+    void OnNodeSet(Node* node) override;
+    void Update(float timeStep) override;
+    void Disable() override;
+    void Set(const Vector3 position) override;
 private:
     static StaticModelGroup* bubbleGroup_;
     Vector3 spinAxis_;

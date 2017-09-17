@@ -53,11 +53,13 @@ void Razor::OnNodeSet(Node* node)
     bottomModel_->SetMaterial(0, black);
     bottomModel_->SetMaterial(1, centerModel_->GetMaterial());
 
+    rigidBody_->SetLinearRestThreshold(0.0023f);
 }
 
 void Razor::Update(float timeStep)
 {
-    if (!node_->IsEnabled()) return;
+    if (!node_->IsEnabled())
+        return;
 
     Enemy::Update(timeStep);
 
@@ -66,17 +68,28 @@ void Razor::Update(float timeStep)
     bottomNode_->Rotate(Quaternion(0.0f, timeStep * 50.0f * aimSpeed_, 0.0f));
     //Pulse
     topModel_->GetMaterial(0)->SetShaderParameter("MatEmissiveColor", GetGlowColor());
+}
+
+void Razor::FixedUpdate(float timeStep)
+{
     //Get moving
     if (rigidBody_->GetLinearVelocity().Length() < rigidBody_->GetLinearRestThreshold() && IsEmerged()) {
-        rigidBody_->ApplyImpulse(0.23f * (Quaternion(Random(6) * 60.0f, Vector3::UP) * Vector3::FORWARD));
+        rigidBody_->ApplyForce(timeStep * 42.0f * (Quaternion(Random(6) * 60.0f, Vector3::UP) * Vector3::FORWARD));
     }
     //Adjust speed
     else if (rigidBody_->GetLinearVelocity().Length() < aimSpeed_) {
-        rigidBody_->ApplyForce(4.2f * rigidBody_->GetLinearVelocity().Normalized() * Max(aimSpeed_ - rigidBody_->GetLinearVelocity().Length(), 0.1f));
+        rigidBody_->ApplyForce(timeStep * 235.0f * rigidBody_->GetLinearVelocity().Normalized() * Max(aimSpeed_ - rigidBody_->GetLinearVelocity().Length(), 0.1f));
     }
     else {
         float overSpeed{ rigidBody_->GetLinearVelocity().Length() - aimSpeed_ };
-        rigidBody_->ApplyForce(-rigidBody_->GetLinearVelocity() * overSpeed);
+        rigidBody_->ApplyForce(timeStep * 100.0f * -rigidBody_->GetLinearVelocity() * overSpeed);
+    }
+
+    //Update linear damping
+    if (!IsEmerged()) {
+        rigidBody_->SetLinearDamping(Clamp(-node_->GetPosition().y_ * 0.666f, 0.0f, 1.0f));
+    } else {
+        rigidBody_->SetLinearDamping(0.1f);
     }
 }
 

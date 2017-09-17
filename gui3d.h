@@ -29,8 +29,8 @@ class GUI3D : public LogicComponent
 public:
     GUI3D(Context* context);
     static void RegisterObject(Context* context);
-    virtual void Update(float timeStep);
-    virtual void OnNodeSet(Node* node);
+    void Update(float timeStep) override;
+    void OnNodeSet(Node* node) override;
 
     void Initialize(int colorSet);
     void EnterLobby(StringHash eventType, VariantMap &eventData);

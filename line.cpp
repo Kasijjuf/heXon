@@ -41,8 +41,6 @@ void Line::OnNodeSet(Node *node)
 
     node_->SetName("Line");
     node_->SetScale(baseScale_);
-//    model_ = node_->CreateComponent<StaticModel>();
-//    model_->SetModel(MC->GetModel("Line"));
 }
 
 void Line::NewLineGroup(int colorSet)
@@ -104,10 +102,8 @@ void Line::Set(int colorSet)
             + Vector3::DOWN * (23.0f + Random(46.0f)) };
 
     Effect::Set(position);
-//    node_->LookAt(GetPosition() + Vector3::UP, (MC->world.camera->GetNode()->GetPosition() - GetPosition()).Normalized());
 
     AddLineInstance(colorSet_);
-//    model_->SetMaterial(MC->colorSets_[colorSet].bulletMaterial_);
     node_->SetScale(baseScale_);
 }
 

@@ -29,12 +29,13 @@ class Razor : public Enemy
 public:
     Razor(Context* context);
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
-    virtual void Update(float timeStep);
+    void OnNodeSet(Node* node) override;
+    void Update(float timeStep) override;
 
-    virtual void Hit(float damage, int ownerID);
-    virtual void Set(Vector3 position);
+    void Hit(float damage, int ownerID) override;
+    void Set(Vector3 position) override;
     void Explode() override;
+    void FixedUpdate(float timeStep) override;
 protected:
     float topSpeed_;
     float aimSpeed_;

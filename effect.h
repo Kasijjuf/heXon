@@ -31,9 +31,9 @@ class Effect : public SceneObject
 public:
     static void RegisterObject(Context* context);
     Effect(Context* context);
-    virtual void Update(float timeStep);
-    virtual void Set(const Vector3 position);
-    virtual void OnNodeSet(Node* node);
+    void Update(float timeStep) override;
+    void Set(const Vector3 position) override;
+    void OnNodeSet(Node* node) override;
 
     ParticleEmitter* GetEmitter() const { return particleEmitter_.Get(); }
 protected:

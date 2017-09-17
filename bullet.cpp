@@ -79,8 +79,13 @@ void Bullet::Update(float timeStep)
         Disable();
     }
 
-    if (timeStep > 0.0f && !fading_) HitCheck(timeStep);
 }
+void Bullet::FixedUpdate(float timeStep)
+{
+    if (!fading_)
+        HitCheck(timeStep);
+}
+
 
 void Bullet::Set(Vector3 position, int colorSet, Vector3 direction, Vector3 force, float damage)
 {
@@ -126,17 +131,19 @@ void Bullet::HitCheck(float timeStep)
                 Node* node{ h.body_->GetNode() };
                 Enemy* e{ node->GetDerivedComponent<Enemy>() };
 
-                if (!e && node->HasTag("Enemy"))
+                if (!e && node->HasTag("Enemy")) {
                     e = node->GetParentDerivedComponent<Enemy>();
+                    node = e->GetNode();
+                    h.body_ = node->GetComponent<RigidBody>();
+                }
 
-                if ((e != nullptr) ^ !h.body_->IsTrigger()) {
+                if (!h.body_->IsTrigger()) {
                     //Add effect
                     h.body_->ApplyImpulse(rigidBody_->GetLinearVelocity() * 0.05f);
                     HitFX* hitFx{ GetSubsystem<SpawnMaster>()->Create<HitFX>() };
                     hitFx->Set(h.position_, colorSet_, true);
 
                     //Deal damage
-//                    Enemy* e{  };
                     if (e)
                         e->Hit(damage_, colorSet_);
 

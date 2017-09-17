@@ -32,7 +32,8 @@ class SplatterPillar : public LogicComponent
 public:
     SplatterPillar(Context* context);
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
+    void OnNodeSet(Node* node) override;
+    void Update(float timeStep) override;
 
     Vector3 GetPosition() const { return node_->GetPosition(); }
     bool IsIdle() const;
@@ -56,7 +57,6 @@ private:
     float lastTriggered_;
     float rotationSpeed_;
 
-    virtual void Update(float timeStep);
     void Trigger(StringHash eventType, VariantMap& eventData);
 };
 

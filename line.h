@@ -28,18 +28,19 @@ class Line : public Effect
 public:
     Line(Context* context);
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
+    void OnNodeSet(Node* node) override;
     virtual void Set(int colorSet);
-    virtual void Update(float timeStep);
-    virtual void Disable();
+    void Update(float timeStep) override;
+    void Disable() override;
 
     bool IsEnabled() { return node_->IsEnabled(); }
 private:
+    float baseScale_;
+    int colorSet_;
+
     static HashMap<int, Vector<StaticModelGroup*>> lineGroups_;
     StaticModelGroup* lineGroup_;
 
-    float baseScale_;
-    int colorSet_;
     //    StaticModel* model_;
     void NewLineGroup(int colorSet);
     void RemoveLineInstance();

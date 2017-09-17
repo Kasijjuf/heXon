@@ -82,7 +82,6 @@ void Arena::OnNodeSet(Node *node)
     logoModel->SetMaterial(0, logoMaterial_);
     logoModel->SetMaterial(1, xMaterial_);
 
-    SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(Arena, HandleUpdate));
     SubscribeToEvent(E_ENTERLOBBY, URHO3D_HANDLER(Arena, EnterLobby));
     SubscribeToEvent(E_ENTERPLAY,  URHO3D_HANDLER(Arena, EnterPlay));
 }
@@ -134,12 +133,10 @@ void Arena::EnterLobby(StringHash eventType, VariantMap &eventData)
     playLight_->SetEnabled(false);
 }
 
-void Arena::HandleUpdate(StringHash eventType, VariantMap& eventData)
-{ (void)eventType;
-
-    float timestep{ eventData[Update::P_TIMESTEP].GetFloat() };
+void Arena::Update(float timeStep)
+{
     float lerpFactor{ MC->GetGameState() == GS_LOBBY ? 13.0f : 6.66f };
-    float t{ Min(1.0f, timestep * lerpFactor) };
+    float t{ Min(1.0f, timeStep * lerpFactor) };
     node_->SetPosition(node_->GetPosition().Lerp(targetPosition_, t));
     node_->SetScale(node_->GetScale().Lerp(targetScale_, pow(t, 0.88f) ));
 
@@ -162,16 +159,29 @@ void Arena::HandleUpdate(StringHash eventType, VariantMap& eventData)
                                           : xMaterial_->GetShaderParameter("MatEmissiveColor").GetColor().Lerp(Color(0.005f, 0.05f, 0.02f), t));
 }
 
-Tile* Arena::GetRandomTile()
+Tile* Arena::GetRandomTile(bool forMason)
 {
     if (tiles_.Size()){
         Tile* tile{ nullptr };
         while (!tile) {
             Tile* tryTile{ tiles_[Random((int)tiles_.Size())] };
             PODVector<PhysicsRaycastResult> hitResults;
-            Ray spawnRay(tryTile->node_->GetPosition()-Vector3::UP, Vector3::UP * 10.0f);
-            if (!MC->PhysicsRayCast(hitResults, spawnRay, 23.0f, M_MAX_UNSIGNED)){
-                tile = tryTile;
+            Ray spawnRay(tryTile->node_->GetPosition() - Vector3::UP, Vector3::UP);
+            if (!MC->PhysicsRayCast(hitResults, spawnRay, 23.0f, 10.0f)) {
+                if (!forMason)
+                    tile = tryTile;
+                else {
+                    bool central{ false };
+                    for (float angle : {0.0f, 60.0f, 120.0f}) {
+                        Vector3 axis{ Quaternion(angle, Vector3::UP) * Vector3::FORWARD };
+                        float distanceToCenter{ Abs(tryTile->GetNode()->GetWorldPosition().ProjectOntoAxis(axis)) };
+                        if ( distanceToCenter < 1.0f || distanceToCenter > 19.0f){
+                            central = true;
+                        }
+                    }
+                    if (!central)
+                        tile = tryTile;
+                }
             }
         }
         return tile;

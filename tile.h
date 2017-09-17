@@ -36,7 +36,7 @@ class Tile : public LogicComponent
 public:
     Tile(Context* context);
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
+    void OnNodeSet(Node* node) override;
 private:
     void Update(float timeStep) override;
 

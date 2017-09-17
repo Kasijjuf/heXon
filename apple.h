@@ -38,8 +38,8 @@ class Apple : public Pickup
 public:
     Apple(Context* context);
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
-    virtual void Update(float timeStep);
+    void OnNodeSet(Node* node) override;
+    void Update(float timeStep) override;
 };
 
 #endif // APPLE_H

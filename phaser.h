@@ -38,13 +38,13 @@ public:
     Phaser(Context* context);
 
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
-    virtual void Update(float timeStep);
+    void OnNodeSet(Node* node) override;
+    void Update(float timeStep) override;
     virtual void Set(Model* model, const Vector3 position, const Vector3 velocity, const bool stateChanger = true);
 private:
+    SharedPtr<StaticModel> staticModel_;
     SharedPtr<Material> phaseMaterial_;
     Vector3 velocity_;
-    SharedPtr<StaticModel> staticModel_;
     bool stateChanger_;
 };
 

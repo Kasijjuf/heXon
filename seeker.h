@@ -33,8 +33,10 @@ class Seeker : public SceneObject
 public:
     Seeker(Context* context);
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
-    virtual void Update(float timeStep);
+    void OnNodeSet(Node* node) override;
+    void Update(float timeStep) override;
+    void FixedUpdate(float timeStep) override;
+
     void HandleTriggerStart(StringHash eventType, VariantMap &eventData);
     void Set(Vector3 position, bool sound = true);
     void Disable();

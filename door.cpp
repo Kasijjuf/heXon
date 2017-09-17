@@ -30,8 +30,8 @@ void Door::RegisterObject(Context *context)
 
 Door::Door(Context* context) :
     LogicComponent(context),
-    open_{false},
-    hasBeenOpen_{false}
+    hasBeenOpen_{false},
+    open_{false}
 {
 }
 

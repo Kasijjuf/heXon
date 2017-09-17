@@ -39,13 +39,16 @@ class Bullet : public SceneObject
 public:
     Bullet(Context* context);
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
+    void OnNodeSet(Node* node) override;
     void Set(const Vector3 position, const int playerId, const Vector3 direction, Vector3 force, const float damage);
+
+    void FixedUpdate(float timeStep) override;
+
     int GetPlayerID() const noexcept { return colorSet_; }
 protected:
     SharedPtr<RigidBody> rigidBody_;
 
-    void Update(float timeStep);
+    void Update(float timeStep) override;
 private:
     static HashMap<int, StaticModelGroup*> bulletGroups_;
 

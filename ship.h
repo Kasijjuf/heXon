@@ -33,11 +33,13 @@ class Ship : public Controllable
 public:
     Ship(Context* context);
     static void RegisterObject(Context* context);
-    virtual void OnNodeSet(Node* node);
-    void Set(const Vector3 position, const Quaternion rotation);
-    virtual void Update(float timeStep);
+    void OnNodeSet(Node* node) override;
+    virtual void Set(const Vector3 position, const Quaternion rotation);
+    void Update(float timeStep) override;
+    void FixedUpdate(float timeStep) override;
+    void ApplyMovement(float timeStep);
 
-    virtual void HandleSetControlled();
+    void HandleSetControlled() override;
     void EnterPlay(StringHash eventType, VariantMap &eventData);
     void EnterLobby(StringHash eventType, VariantMap &eventData);
 
@@ -48,12 +50,9 @@ public:
     void Hit(float damage, bool melee);
     void Eject();
 
-    virtual void Think();
+    void Think() override;
     int GetColorSet() const { return colorSet_; }
     GUI3D* gui3d_;
-    void ApplyMovement(float timeStep);
-    
-    void FixedUpdate(float timeStep) override;
 private:
     bool initialized_;
     Vector3 initialPosition_;

@@ -72,7 +72,8 @@ void Seeker::OnNodeSet(Node *node)
 
 void Seeker::Update(float timeStep)
 {
-    if (!IsEnabled()) return;
+    if (!IsEnabled())
+        return;
 
     age_ += timeStep;
     if (age_ > lifeTime_ && node_->IsEnabled()) {
@@ -80,6 +81,13 @@ void Seeker::Update(float timeStep)
         hitFx->Set(GetPosition(), 0, false);
         Disable();
     }
+
+}
+
+void Seeker::FixedUpdate(float timeStep)
+{
+    if (!IsEnabled())
+        return;
 
     rigidBody_->ApplyForce((TargetPosition() - node_->GetPosition()).Normalized() * timeStep * 666.0f);
 }

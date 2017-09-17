@@ -37,11 +37,11 @@ public:
 
     void SetMove(Vector3 move);
     void SetAim(Vector3 aim);
-    virtual void HandleSetControlled() {}
+    virtual void HandleSetControlled() {};
     virtual void ClearControl();
 
-    virtual void EnterLobby(StringHash eventType, VariantMap& eventData) {}
-    virtual void EnterPlay(StringHash eventType, VariantMap& eventData) {}
+    virtual void EnterLobby(StringHash eventType, VariantMap& eventData) {};
+    virtual void EnterPlay(StringHash eventType, VariantMap& eventData) {};
     virtual void Think();
 
     Player* GetPlayer();

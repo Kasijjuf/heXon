@@ -33,16 +33,17 @@ public:
     static void RegisterObject(Context* context);
     void OnNodeSet(Node* node) override;
     void Set(Vector3 position, Vector3 direction);
-    void Disable();
+    void Disable() override;
     void HandleTriggerStart(StringHash eventType, VariantMap& eventData);
+    void HandleTriggerEnd(StringHash eventType, VariantMap& eventData);
+protected:
+    void Blink(Vector3 newPosition) override;
 private:
     RigidBody* rigidBody_;
-//    TailGenerator* tailGen_;
     ParticleEmitter* particleEmitter_;
     float damage_;
-
-    void AddTail();
-    void RemoveTail();
+    int blunk_;
+    bool free_;
 };
 
 #endif // BRICK_H

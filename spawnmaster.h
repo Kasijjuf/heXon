@@ -34,7 +34,7 @@ public:
     SpawnMaster(Context* context);
 
     void Clear();
-    Vector3 SpawnPoint();
+    Vector3 SpawnPoint(bool forMason = false);
     void ChaoPickup() { sinceLastChaoPickup_ = 0.0f; chaoInterval_ = CHAOINTERVAL; }
 
     template <class T> T* Create(bool recycle = true)
