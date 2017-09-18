@@ -102,7 +102,7 @@
 #define RENDERER GetSubsystem<Renderer>()
 #define AUDIO GetSubsystem<Audio>()
 
-#define LAYER(x) { 1 << (x - 1) }
+constexpr int Layer(int x) { return 1 << (x - 1); }
 
 namespace Urho3D {
 class Drawable;

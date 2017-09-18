@@ -63,7 +63,7 @@ void Pickup::OnNodeSet(Node *node)
     triggerBody_ = triggerNode_->CreateComponent<RigidBody>();
     triggerBody_->SetTrigger(true);
     triggerBody_->SetKinematic(true);
-    triggerBody_->SetCollisionLayerAndMask(LAYER(1), 1);
+    triggerBody_->SetCollisionLayerAndMask(1, 1);
 
     CollisionShape* triggerShape = triggerNode_->CreateComponent<CollisionShape>();
     triggerShape->SetSphere(2.5f);
