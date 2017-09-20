@@ -1,10 +1,15 @@
-os:
-  - linux
-
-compiler:
-  - clang
-  - gcc
-
+os: linux
+dist: trusty
+compiler: gcc
+language: cpp
+sudo: false
+cache:
+  apt: true
+  directories:
+    - $HOME/cmake-3.9.2-Linux-x86_64/bin
+    - $HOME/cmake-3.9.2-Linux-x86_64/share
+git:
+submodules: false
 addons:
   apt:
     sources:
@@ -21,11 +26,19 @@ addons:
       - libxrandr-dev
       - libasound2-dev
       - git
+script: |
+# Update CMake to 3.3 (minimum required version)
+  if [[ ! -f $HOME/cmake-3.3.2-Linux-x86_64/bin/cmake ]];
+  then
+      wget --no-check-certificate https://cmake.org/files/v3.3/cmake-3.3.2-Linux-x86_64.tar.gz -O $HOME/cmake.tar.gz && \
+      tar xf $HOME/cmake.tar.gz -C $HOME && \
+      rm $HOME/cmake.tar.gz
+  fi
+  export PATH=$HOME/cmake-3.3.2-Linux-x86_64/bin:$PATH
 
-script:
-  - git clone https://github.com/Urho3D/Urho3D
-  - cd Urho3D
-  - cmake . -Wno-dev -DURHO3D_SAMPLES=0 -DURHO3D_URHO2D=0 -DURHO3D_TOOLS=0 -DURHO3D_ANGELSCRIPT=0 -DURHO3D_LUA=0 && make
-  - cd ..
-  - qmake heXon.pro -Wnone
-  - make
+  git clone https://github.com/Urho3D/Urho3D
+  cd Urho3D
+  cmake . -Wno-dev -DURHO3D_SAMPLES=0 -DURHO3D_URHO2D=0 -DURHO3D_TOOLS=0 -DURHO3D_ANGELSCRIPT=0 -DURHO3D_LUA=0 && make
+  cd ..
+  qmake heXon.pro -Wnone
+  make
