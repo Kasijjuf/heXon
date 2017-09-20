@@ -20,8 +20,6 @@ addons:
       - build-essential
       - make
       - g++-4.9
-      - cmake
-      - cmake-data
       - libx11-dev
       - libxrandr-dev
       - libasound2-dev
