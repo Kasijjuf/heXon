@@ -45,7 +45,7 @@ public:
     bool IsEmerged() const { return GetPosition().y_ > -0.042f; }
     bool IsEnabled() const { return node_->IsEnabled(); }
 
-    void PlaySample(Sound *sample, const float gain = 0.5f);
+    void PlaySample(Sound *sample, const float gain = 0.5f, bool localized = true);
     void StopAllSound();
 protected:
     bool blink_;
@@ -53,6 +53,7 @@ protected:
     SharedPtr<Node> soundNode_;
     SharedPtr<Node> graphicsNode_;
     Vector<SoundSource*> sampleSources_;
+    Vector<SoundSource3D*> sampleSources3D_;
 
     void Emerge(const float timeStep);
 

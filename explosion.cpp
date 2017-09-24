@@ -43,6 +43,8 @@ void Explosion::OnNodeSet(Node *node)
 
     Effect::OnNodeSet(node);
 
+    MC->arena_->AddToAffectors(node_);
+
     rigidBody_ = node_->CreateComponent<RigidBody>();
     rigidBody_->SetMass(initialMass_);
     rigidBody_->SetLinearFactor(Vector3::ONE - Vector3::UP);
@@ -128,6 +130,5 @@ void Explosion::Set(const Vector3 position, const Color color, const float size,
     particleEffect->SetColorFrames(colorFrames);
 
     PlaySample(MC->GetSample("Explode"), Min(0.5f + 0.25f * size, 1.0f));
-
-    MC->arena_->AddToAffectors(node_);
+    PlaySample(MC->GetSample("Explode_s"), Min(0.25f + 0.125f * size, 0.5f), false);
 }

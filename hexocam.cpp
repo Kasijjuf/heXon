@@ -40,6 +40,11 @@ void heXoCam::OnNodeSet(Node *node)
     stereoCam_.second_ = rightEye->CreateComponent<Camera>();
     */
 
+    Node* mike{ GetScene()->CreateChild("Microphone") };
+    mike->SetPosition(Vector3(0.0f, 23.0f, -5.0f));
+    mike->LookAt(Vector3::ZERO);
+    AUDIO->SetListener(mike->CreateComponent<SoundListener>());
+
     camera_ = node_->CreateComponent<Camera>();
     camera_->SetFarClip(128.0f);
     node_->SetPosition(Vector3(0.0f, 42.0f, -23.0f));

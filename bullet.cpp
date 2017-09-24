@@ -47,6 +47,8 @@ void Bullet::OnNodeSet(Node *node)
     SceneObject::OnNodeSet(node);
 
     node_->SetName("Bullet");
+    node_->AddTag("Bullet");
+
     node_->SetEnabled(false);
     node_->SetScale(Vector3(1.0f + damage_, 1.0f + damage_, 0.1f));
 

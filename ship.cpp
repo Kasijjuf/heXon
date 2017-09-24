@@ -84,8 +84,10 @@ void Ship::OnNodeSet(Node *node)
 
     Controllable::OnNodeSet(node);
 
+    MC->arena_->AddToAffectors(node_);
+
     PODVector<Node*> ships{};
-    MC->scene_->GetChildrenWithComponent<Ship>(ships, true);
+    MC->scene_->GetChildrenWithComponent<Ship>(ships);
     colorSet_ = ships.Size();
 
     Node* guiNode{ MC->scene_->CreateChild("GUI3D") };
@@ -121,7 +123,6 @@ void Ship::OnNodeSet(Node *node)
     collisionShape_->SetSphere(2.0f);
     node_->CreateComponent<Navigable>();
 
-    MC->arena_->AddToAffectors(node_);
     SubscribeToEvent(E_POSTRENDERUPDATE, URHO3D_HANDLER(Ship, BlinkCheck));
 }
 void Ship::Set(const Vector3 position, const Quaternion rotation)
@@ -240,7 +241,8 @@ void Ship::ApplyMovement(float timeStep)
 }
 void Ship::FixedUpdate(float timeStep)
 {
-    ApplyMovement(timeStep);
+    if (rigidBody_->GetMass() != 0.0f)
+        ApplyMovement(timeStep);
 }
 
 void Ship::Update(float timeStep)
@@ -324,6 +326,7 @@ void Ship::Shoot(Vector3 aim)
 
         MoveMuzzle();
         PlaySample(MC->GetSample("Shot"), 0.17f);
+        PlaySample(MC->GetSample("Shot_s"), 0.17f, false);
     }
 }
 void Ship::FireBullet(Vector3 direction)
@@ -394,7 +397,7 @@ void Ship::PowerupWeapons()
         ++weaponLevel_;
         bulletAmount_ = 1 + ((weaponLevel_ + 5) / 6);
         shotInterval_ = initialShotInterval_ - 0.0042f * weaponLevel_;
-        PlaySample(MC->GetSample("Powerup"), 0.42f);
+        PlaySample(MC->GetSample("Powerup"), 0.42f, false);
     } else {
         ///BOOM?
     }
@@ -402,13 +405,14 @@ void Ship::PowerupWeapons()
 void Ship::PowerupShield()
 {
     SetHealth(15.0f);
-    PlaySample(MC->GetSample("Powerup"), 0.42f);
+    PlaySample(MC->GetSample("Powerup"), 0.42f, false);
 }
 void Ship::PickupChaoBall()
 {
     ChaoFlash* chaoFlash{ GetSubsystem<SpawnMaster>()->Create<ChaoFlash>() };
     chaoFlash->Set(MC->chaoBall_->GetPosition(), colorSet_);
-    PlaySample(MC->GetSample("Chaos"), 0.8f);
+    PlaySample(MC->GetSample("Chaos"), 0.9f);
+    PlaySample(MC->GetSample("Chaos_s"), 0.6f, false);
 }
 
 void Ship::SetHealth(float health)

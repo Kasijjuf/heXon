@@ -44,6 +44,8 @@ void ChaoFlash::OnNodeSet(Node *node)
     SceneObject::OnNodeSet(node);
 
     node_->SetName("ChaoFlash");
+    MC->arena_->AddToAffectors(node_);
+
     node_->SetScale(7.0f);
     chaoModel_ = node_->CreateComponent<StaticModel>();
     chaoModel_->SetModel(MC->GetModel("ChaoFlash"));
@@ -58,7 +60,6 @@ void ChaoFlash::OnNodeSet(Node *node)
     sunPlane->SetMaterial(sunMaterial_);
 
     node_->SetEnabled(false);
-    MC->arena_->AddToAffectors(node_);
 
     rigidBody_ = node_->CreateComponent<RigidBody>();
     rigidBody_->SetMass(5.0f);

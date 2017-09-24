@@ -36,6 +36,12 @@ void SceneObject::OnNodeSet(Node *node)
 { if (!node) return;
 
     for (int i{0}; i < 5; ++i){
+        SoundSource3D* sampleSource3D{ node_->CreateComponent<SoundSource3D>() };
+        sampleSource3D->SetDistanceAttenuation(42.0f, 256.0f, 2.0f);
+        sampleSource3D->SetSoundType(SOUND_EFFECT);
+        sampleSources3D_.Push(sampleSource3D);
+    }
+    for (int i{0}; i < 5; ++i){
         SoundSource* sampleSource{ node_->CreateComponent<SoundSource>() };
         sampleSource->SetSoundType(SOUND_EFFECT);
         sampleSources_.Push(sampleSource);
@@ -58,8 +64,6 @@ void SceneObject::Set(const Vector3 position, const Quaternion rotation){
 
 void SceneObject::Disable()
 {
-    MC->arena_->RemoveFromAffectors(node_);
-
     node_->SetEnabledRecursive(false);
 
     if (blink_)
@@ -68,22 +72,35 @@ void SceneObject::Disable()
     UnsubscribeFromEvent(E_NODECOLLISIONSTART);
 }
 
-void SceneObject::PlaySample(Sound* sample, const float gain)
+void SceneObject::PlaySample(Sound* sample, const float gain, bool localized)
 {
-    for (SoundSource* s : sampleSources_)
-        if (!s->IsPlaying()){
-            s->SetGain(gain);
-            s->Play(sample);
-            return;
-        }
+    if (localized) {
+        for (SoundSource3D* s : sampleSources3D_)
+            if (!s->IsPlaying()){
+                s->SetGain(gain);
+                s->Play(sample);
+                return;
+            }
+    } else {
+        for (SoundSource* s : sampleSources_)
+            if (!s->IsPlaying()){
+                s->SetGain(gain);
+                s->Play(sample);
+                return;
+            }
+    }
 }
 void SceneObject::StopAllSound()
 {
+    for (SoundSource3D* s : sampleSources3D_)
+        s->Stop();
     for (SoundSource* s : sampleSources_)
         s->Stop();
 }
 bool SceneObject::IsPlayingSound()
 {
+    for (SoundSource3D* s : sampleSources3D_)
+        if (s->IsPlaying()) return true;
     for (SoundSource* s : sampleSources_)
         if (s->IsPlaying()) return true;
     return false;
@@ -104,6 +121,7 @@ void SceneObject::Blink(Vector3 newPosition)
     Player* nearestPlayerB{ MC->GetNearestPlayer(newPosition) };
 
     float distanceToNearestPlayer{};
+
     if (nearestPlayerA && nearestPlayerB) {
         distanceToNearestPlayer = Min(LucKey::Distance(nearestPlayerA->GetPosition(), oldPosition),
                                       LucKey::Distance(nearestPlayerB->GetPosition(), newPosition));
@@ -111,25 +129,27 @@ void SceneObject::Blink(Vector3 newPosition)
         distanceToNearestPlayer = 23.0f;
     }
 
-    PlaySample(MC->GetSample("Flash"), Max(0.07f, 0.13f - distanceToNearestPlayer * 0.0042f));
+    PlaySample(MC->GetSample("Flash"), Max(0.07f, 0.13f - distanceToNearestPlayer * 0.0023f));
 }
 
 void SceneObject::BlinkCheck(StringHash eventType, VariantMap &eventData)
 { (void)eventType; (void)eventData;
 
-    if (MC->IsPaused()) return;
+    if (MC->IsPaused())
+        return;
 
-    Vector3 flatPosition{LucKey::Scale(node_->GetPosition(), Vector3::ONE-Vector3::UP)};
-    float radius{20.0f};
+    Vector3 flatPosition{ node_->GetPosition() * Vector3(1.0f, 0.0f, 1.0f) };
+    float radius{ 20.0f };
+
     if (flatPosition.Length() > radius){
-        Vector3 hexantNormal{Vector3::FORWARD};
-        int sides{6};
+        Vector3 hexantNormal{ Vector3::FORWARD };
+        int sides{ 6 };
         for (int h{0}; h < sides; ++h){
-            Vector3 otherHexantNormal{Quaternion(h * (360.0f/sides), Vector3::UP) * Vector3::FORWARD};
+            Vector3 otherHexantNormal{Quaternion(h * (360.0f / sides), Vector3::UP) * Vector3::FORWARD};
             hexantNormal = flatPosition.Angle(otherHexantNormal) < flatPosition.Angle(hexantNormal)
                     ? otherHexantNormal : hexantNormal;
         }
-        float boundsCheck{flatPosition.Length() * LucKey::Cosine(M_DEGTORAD * flatPosition.Angle(hexantNormal))};
+        float boundsCheck{ flatPosition.Length() * LucKey::Cosine(M_DEGTORAD * flatPosition.Angle(hexantNormal)) };
         if (boundsCheck > radius){
             if (node_->HasComponent<Bullet>()){
 

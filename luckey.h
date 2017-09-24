@@ -22,7 +22,9 @@
 #include <Urho3D/Urho3D.h>
 #include <Urho3D/Audio/Audio.h>
 #include <Urho3D/Audio/Sound.h>
+#include <Urho3D/Audio/SoundListener.h>
 #include <Urho3D/Audio/SoundSource.h>
+#include <Urho3D/Audio/SoundSource3D.h>
 #include <Urho3D/Container/HashBase.h>
 #include <Urho3D/Container/HashMap.h>
 #include <Urho3D/Container/Vector.h>

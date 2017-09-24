@@ -21,6 +21,9 @@
 #include "mastercontrol.h"
 #include "tile.h"
 
+#include "explosion.h"
+#include "brick.h"
+
 void Arena::RegisterObject(Context *context)
 {
     context->RegisterFactory<Arena>();
@@ -50,7 +53,7 @@ void Arena::OnNodeSet(Node *node)
                     i > (bigHexSize / 4) - (j + 1) / 2 &&                                   //Exclude bottom left
                     i + 1 < (bigHexSize - bigHexSize / 4) + ((bigHexSize - j + 1)) / 2 &&   //Exclude top right
                     i - 1 > (bigHexSize / 4) - ((bigHexSize - j + 2) / 2)) {                //Exclude top left
-                Vector3 tilePos = Vector3((-bigHexSize / 2.0f + i) * 2.0f + j % 2, -0.1f, (-bigHexSize / 2.0f + j + 0.5f) * 1.8f);
+                Vector3 tilePos{ (-bigHexSize / 2.0f + i) * 2.0f + j % 2, -0.1f, (-bigHexSize / 2.0f + j + 0.5f) * 1.8f };
 
                 Node* tileNode{ node_->CreateChild("Tile", LOCAL) };
                 tileNode->SetPosition(tilePos);
@@ -59,7 +62,7 @@ void Arena::OnNodeSet(Node *node)
         }
     }
     //Add a directional light to the arena.
-    Node* lightNode = node_->CreateChild("Sun", LOCAL);
+    Node* lightNode{ node_->CreateChild("Sun", LOCAL) };
     lightNode->SetPosition(Vector3::UP*5.0f);
     lightNode->SetRotation(Quaternion(90.0f, 0.0f, 0.0f));
     playLight_ = lightNode->CreateComponent<Light>();
@@ -106,6 +109,10 @@ const Vector<Pair<Vector3, float> > Arena::GetEffectVector() const
             Pair<Vector3, float> pair{};
             pair.first_ = node->GetWorldPosition();
             pair.second_ = node->GetComponent<RigidBody>()->GetMass();
+
+            if (node->HasComponent<Explosion>() || node->HasTag("Pickup"))
+                pair.second_ *= 1.5f;
+
             result.Push(pair);
         }
     }

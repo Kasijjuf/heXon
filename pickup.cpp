@@ -34,7 +34,8 @@ void Pickup::OnNodeSet(Node *node)
 
     SceneObject::OnNodeSet(node);
 
-    node_->SetName("Pickup");
+    node_->AddTag("Pickup");
+    MC->arena_->AddToAffectors(node_);
     graphicsNode_ = node_->CreateChild("Graphics");
 
     model_ = graphicsNode_->CreateComponent<StaticModel>();
@@ -56,8 +57,6 @@ void Pickup::OnNodeSet(Node *node)
 
     CollisionShape* collisionShape = node_->CreateComponent<CollisionShape>();
     collisionShape->SetSphere(2.3f);
-
-    MC->arena_->AddToAffectors(node_);
 
     triggerNode_ = node_->CreateChild("PickupTrigger");
     triggerBody_ = triggerNode_->CreateComponent<RigidBody>();
@@ -122,7 +121,6 @@ void Pickup::Respawn(bool restart)
     rigidBody_->ResetForces();
 
     Set(restart ? initialPosition_ : GetSubsystem<SpawnMaster>()->SpawnPoint());
-    MC->arena_->AddToAffectors(node_);
 }
 void Pickup::Deactivate()
 {

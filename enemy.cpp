@@ -44,6 +44,7 @@ void Enemy::OnNodeSet(Node *node)
     SceneObject::OnNodeSet(node);
 
     node_->AddTag("Enemy");
+    MC->arena_->AddToAffectors(node_);
 
     health_ = initialHealth_;
 
@@ -109,7 +110,6 @@ void Enemy::Set(const Vector3 position)
     SceneObject::Set(position);
     particleEmitter_->RemoveAllParticles();
     particleEmitter_->SetEmitting(true);
-    MC->arena_->AddToAffectors(node_);
     SubscribeToEvent(node_, E_NODECOLLISION, URHO3D_HANDLER(Enemy, HandleNodeCollision));
 
     soundSource_->Stop();

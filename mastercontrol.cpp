@@ -185,10 +185,11 @@ void MasterControl::Start()
     }
 
 
-    CreateScene();
 
-    Node* announcerNode{ scene_->CreateChild("Announcer") };
+    Node* announcerNode{ new Node(context_) };
     announcerNode->CreateComponent<SoundSource>()->Play(GetSample("Welcome"));
+
+    CreateScene();
 
     menuMusic_ = GetMusic("Modanung - BulletProof MagiRex");
     gameMusic_ = GetMusic("Alien Chaos - Disorder");

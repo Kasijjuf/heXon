@@ -35,8 +35,7 @@ void Brick::RegisterObject(Context* context)
 
 Brick::Brick(Context* context) : SceneObject(context),
     damage_{4.2f},
-    blunk_{0},
-    free_{false}
+    traveled_{}
 {
 
 }
@@ -47,6 +46,7 @@ void Brick::OnNodeSet(Node* node)
     SceneObject::OnNodeSet(node);
 
     big_ = false;
+    MC->arena_->AddToAffectors(node_);
 
     rigidBody_ = node_->CreateComponent<RigidBody>();
     rigidBody_->SetMass(2.3f);
@@ -72,12 +72,10 @@ void Brick::Set(Vector3 position, Vector3 direction)
 {
     SceneObject::Set(position);
 
-    blunk_ = 0;
-    free_ = false;
+    traveled_ = 0.0f;
 
     rigidBody_->ResetForces();
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
-    MC->arena_->AddToAffectors(node_);
 
     particleEmitter_->RemoveAllParticles();
     particleEmitter_->SetEmitting(true);
@@ -86,22 +84,6 @@ void Brick::Set(Vector3 position, Vector3 direction)
     rigidBody_->ApplyImpulse(direction * 123.0f);
 
     SubscribeToEvent(node_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Brick, HandleTriggerStart));
-    SubscribeToEvent(node_, E_NODECOLLISIONEND, URHO3D_HANDLER(Brick, HandleTriggerEnd));
-}
-
-void Brick::Blink(Vector3 newPosition)
-{
-    if (blunk_ > 1) {
-        GetSubsystem<SpawnMaster>()->Create<HitFX>()
-                ->Set(node_->GetPosition(), 0, false);
-        Disable();
-        return;
-    }
-
-
-    SceneObject::Blink(newPosition);
-
-    ++blunk_;
 }
 
 void Brick::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
@@ -127,31 +109,29 @@ void Brick::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
 
             chaoMine->Hit(damage_, 0);
 
-        } else if (Spire* spire = collider->GetNode()->GetComponent<Spire>()) {
+        } /*else if (Spire* spire = collider->GetNode()->GetComponent<Spire>()) {
 
             spire->Shoot(false)->SetLinearVelocity(rigidBody_->GetLinearVelocity() * 0.23f);
             Disable();
-        } else if (Brick* brick = collider->GetNode()->GetComponent<Brick>()) {
-            if (free_ && node_->GetDirection().DotProduct(brick->GetNode()->GetDirection()) < -0.9f){
-                if (brick->GetNode()->IsEnabled())
-                    GetSubsystem<SpawnMaster>()->Create<HitFX>()
-                            ->Set((node_->GetPosition() + brick->GetNode()->GetPosition()) * 0.5f, 0, false);
-                Disable();
-            }
-        }
+        }*/
     }
-}
-void Brick::HandleTriggerEnd(StringHash eventType, VariantMap &eventData)
-{ (void)eventType; (void)eventData;
-
-    if (!free_)
-        free_ = true;
 }
 
 void Brick::Disable()
 {
+    GetSubsystem<SpawnMaster>()->Create<HitFX>()
+            ->Set(node_->GetPosition(), 0, false);
+
     SceneObject::Disable();
 
     particleEmitter_->GetNode()->SetEnabled(true);
     particleEmitter_->SetEmitting(false);
+}
+
+void Brick::Update(float timeStep)
+{
+    traveled_ += rigidBody_->GetLinearVelocity().Length() * timeStep;
+
+    if (traveled_ > 35.0f)
+        Disable();
 }

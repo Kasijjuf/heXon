@@ -281,12 +281,11 @@ void InputMaster::HandleJoystickAxisMove(Urho3D::StringHash eventType, Urho3D::V
     int axis{ eventData[JoystickAxisMove::P_AXIS].GetInt() };
     float position{ eventData[JoystickAxisMove::P_POSITION].GetFloat() };
 
-    if (axis == 0){
-        leftStickPosition_[joystickId].x_ = position;
+    if (axis == 0) {        leftStickPosition_[joystickId].x_  =  position;
 
-    } else if (axis == 1) { leftStickPosition_[joystickId].y_ = -position;
+    } else if (axis == 1) { leftStickPosition_[joystickId].y_  = -position;
 
-    } else if (axis == 2) { rightStickPosition_[joystickId].x_ = position;
+    } else if (axis == 2) { rightStickPosition_[joystickId].x_ =  position;
 
     } else if (axis == 3) { rightStickPosition_[joystickId].y_ = -position;
 

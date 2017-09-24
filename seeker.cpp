@@ -48,6 +48,8 @@ void Seeker::OnNodeSet(Node *node)
     SceneObject::OnNodeSet(node);
 
     node_->SetName("Seeker");
+    MC->arena_->AddToAffectors(node_);
+
     big_ = false;
 
     rigidBody_ = node_->CreateComponent<RigidBody>();
@@ -140,7 +142,6 @@ void Seeker::Set(Vector3 position, bool sound)
     SceneObject::Set(position);
     rigidBody_->ResetForces();
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
-    MC->arena_->AddToAffectors(node_);
     AddTail();
 
     if (sound)
