@@ -5,17 +5,12 @@ language: cpp
 sudo: false
 cache:
   apt: true
-  directories:
-    - $HOME/cmake-3.9.2-Linux-x86_64/bin
-    - $HOME/cmake-3.9.2-Linux-x86_64/share
-git:
 submodules: false
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
       - george-edison55-precise-backports
-      - kalakris-cmake
     packages:
       - build-essential
       - make
@@ -25,14 +20,6 @@ addons:
       - libasound2-dev
       - git
 script: |
-# Update CMake to 3.3 (minimum required version)
-  if [[ ! -f $HOME/cmake-3.3.2-Linux-x86_64/bin/cmake ]];
-  then
-      wget --no-check-certificate https://cmake.org/files/v3.3/cmake-3.3.2-Linux-x86_64.tar.gz -O $HOME/cmake.tar.gz && \
-      tar xf $HOME/cmake.tar.gz -C $HOME && \
-      rm $HOME/cmake.tar.gz
-  fi
-  export PATH=$HOME/cmake-3.3.2-Linux-x86_64/bin:$PATH
 
   git clone https://github.com/Urho3D/Urho3D
   cd Urho3D
