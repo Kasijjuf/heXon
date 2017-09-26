@@ -78,7 +78,7 @@ void Arena::OnNodeSet(Node *node)
     logoNode_->SetPosition(Vector3(0.0f, -4.0f, 0.0f));
     logoNode_->SetRotation(Quaternion(0.0f, 180.0f, 0.0f));
     logoNode_->SetScale(16.0f);
-    StaticModel* logoModel = logoNode_->CreateComponent<StaticModel>();
+    StaticModel* logoModel{ logoNode_->CreateComponent<StaticModel>() };
     logoModel->SetModel(MC->GetModel("heXon"));
     logoMaterial_ = MC->GetMaterial("Loglow");
     xMaterial_ = MC->GetMaterial("X");

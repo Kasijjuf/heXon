@@ -43,7 +43,7 @@ Pilot::Pilot(Context* context) : Controllable(context),
     hairStyle_{ 0 },
     pilotColors_{}
 {
-    thrust_ = 512.0f;
+    thrust_ = 1024.0f;
     maxSpeed_ = 1.23f;
 }
 

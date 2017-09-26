@@ -115,9 +115,9 @@ void SpawnMaster::Restart()
 
 Vector3 SpawnMaster::SpawnPoint(bool forMason)
 {
-    Tile* randomTile{MC->arena_->GetRandomTile(forMason)};
+    Tile* randomTile{ MC->arena_->GetRandomTile(forMason) };
     if (randomTile) {
-        Vector3 tilePosition = randomTile->node_->GetPosition();
+        Vector3 tilePosition{ randomTile->node_->GetPosition() };
         return Vector3(tilePosition.x_, -23.0f, tilePosition.z_);
     }
     else return Vector3(Random(-5.0f, 5.0f), -42.0f, Random(-5.0f, 5.0f));
@@ -135,13 +135,13 @@ void SpawnMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
     sinceSpireSpawn_ += timeStep;
     sinceMasonSpawn_ += timeStep;
 
-    if (sinceRazorSpawn_ > razorInterval_ && CountActive<Razor>() < MaxRazors()) {
+    if ((sinceRazorSpawn_ > razorInterval_ || CountActive<Razor>() == 0) && CountActive<Razor>() < MaxRazors()) {
 
         Razor* razor{ Create<Razor>() };
         razor->Set(SpawnPoint());
 
         sinceRazorSpawn_ = 0.0f;
-        razorInterval_ = (7.0f - CountActive<Ship>() * 0.42f)
+        razorInterval_ = (7.0f - CountActive<Ship>())
                 * pow(0.95f, ((MC->SinceLastReset()) + 10.0f) / 10.0f);
 
     }
@@ -151,7 +151,7 @@ void SpawnMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
         spire->Set(SpawnPoint());
 
         sinceSpireSpawn_ = 0.0f;
-        spireInterval_ = (23.0f - CountActive<Ship>() * 0.42f)
+        spireInterval_ = (23.0f - CountActive<Ship>() * 2)
                 * pow(0.95f, ((MC->scene_->GetElapsedTime() - MC->world.lastReset) + 42.0f) / 42.0f);
 
     }
@@ -161,7 +161,7 @@ void SpawnMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
         mason->Set(SpawnPoint(true));
 
         sinceMasonSpawn_ = 0.0f;
-        masonInterval_ = (123.0f - CountActive<Ship>() * 0.42f)
+        masonInterval_ = (123.0f - CountActive<Ship>() * 3)
                 * pow(0.95f, ((MC->scene_->GetElapsedTime() - MC->world.lastReset) + 123.0f) / 123.0f);
 
     }
