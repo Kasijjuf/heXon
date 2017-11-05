@@ -46,7 +46,8 @@ public:
 
     void Set(const Vector3 position) override;
     void Update(float timeStep) override;
-    virtual void Hit(const float damage, const int colorSet);
+    void FixedUpdate(float timeStep) override;
+    virtual void Hit(float damage, const int colorSet);
     virtual void Explode();
     
     float GetHealth() const { return health_; }

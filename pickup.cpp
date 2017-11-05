@@ -67,11 +67,10 @@ void Pickup::OnNodeSet(Node *node)
     CollisionShape* triggerShape = triggerNode_->CreateComponent<CollisionShape>();
     triggerShape->SetSphere(2.5f);
 
-    particleEmitter_ = graphicsNode_->CreateComponent<ParticleEmitter>();
-
-    particleEmitter_->SetEffect(CACHE->GetTempResource<ParticleEffect>("Particles/Shine.xml"));
-
     SubscribeToEvent(triggerNode_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Pickup, HandleTriggerStart));
+
+    particleEmitter_ = graphicsNode_->CreateComponent<ParticleEmitter>();
+    particleEmitter_->SetEffect(CACHE->GetTempResource<ParticleEffect>("Particles/Shine.xml"));
 }
 
 void Pickup::Update(float timeStep)
@@ -83,7 +82,7 @@ void Pickup::FixedUpdate(float timeStep)
 {
     //Update linear damping
     if (!IsEmerged()) {
-        rigidBody_->SetLinearDamping(Min(1.0f, -node_->GetPosition().y_ * 0.42f));
+        rigidBody_->SetLinearDamping(Min(1.0f, 0.5f - node_->GetPosition().y_ * 0.42f));
     } else {
         rigidBody_->SetLinearDamping(0.5f);
     }

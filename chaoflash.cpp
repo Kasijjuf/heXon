@@ -26,6 +26,7 @@
 #include "seeker.h"
 #include "brick.h"
 #include "coin.h"
+#include "soundeffect.h"
 #include "spawnmaster.h"
 
 void ChaoFlash::RegisterObject(Context *context)
@@ -104,6 +105,10 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
 
     age_ = 0.0f;
     SceneObject::Set(position);
+
+    SoundEffect* chaosSound{ SPAWN->Create<SoundEffect>() };
+    chaosSound->Set(node_->GetWorldPosition());
+    chaosSound->PlaySample(MC->GetSample("Chaos"), 0.9f);
 
     PODVector<RigidBody* > hitResults{};
     float radius{7.666f};

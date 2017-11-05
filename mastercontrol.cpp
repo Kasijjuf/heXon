@@ -46,6 +46,7 @@
 #include "mason.h"
 
 #include "effectinstance.h"
+#include "soundeffect.h"
 #include "flash.h"
 #include "hitfx.h"
 #include "explosion.h"
@@ -75,6 +76,7 @@ MasterControl* MasterControl::GetInstance()
 
 MasterControl::MasterControl(Context *context):
     Application(context),
+    antiAliasing_{true},
     aspectRatio_{},
     paused_{false},
     currentState_{GS_INTRO},
@@ -121,10 +123,53 @@ void MasterControl::Setup()
 //    engineParameters_[EP_WINDOW_HEIGHT] = 1080/2;
 //    engineParameters_[EP_BORDERLESS] = true;
 
+    LoadSettings();
 }
+void MasterControl::LoadSettings()
+{
+    if (FILES->FileExists("Resources/Settings.xml")){
+        File file(context_, "Resources/Settings.xml", FILE_READ);
+        XMLFile configFile(context_);
+        configFile.Load(file);
+        XMLElement graphics{ configFile.GetRoot().GetChild("Graphics") };
+        XMLElement audio{ configFile.GetRoot().GetChild("Audio") };
+
+        if (graphics) {
+
+            engineParameters_[EP_WINDOW_WIDTH] = graphics.GetInt("Width");
+            engineParameters_[EP_WINDOW_HEIGHT] = graphics.GetInt("Height");
+            engineParameters_[EP_FULL_SCREEN] = graphics.GetBool("Fullscreen");
+
+            antiAliasing_ = graphics.GetBool("AntiAliasing");
+        }
+        if (audio) {
+
+            AUDIO->SetMasterGain(SOUND_MUSIC, audio.GetFloat("MusicGain"));
+        }
+    }
+}
+void MasterControl::SaveSettings()
+{
+    XMLFile file(context_);
+    XMLElement root(file.CreateRoot("Settings"));
+
+    XMLElement graphicsElement(root.CreateChild("Graphics"));
+    graphicsElement.SetInt("Width", GRAPHICS->GetWidth());
+    graphicsElement.SetInt("Height", GRAPHICS->GetHeight());
+    graphicsElement.SetBool("Fullscreen", GRAPHICS->GetFullscreen());
+    graphicsElement.SetBool("AntiAliasing", antiAliasing_);
+
+    XMLElement audioElement(root.CreateChild("Audio"));
+    audioElement.SetFloat("MusicGain", AUDIO->GetMasterGain(SOUND_MUSIC));
+
+    file.SaveFile("Resources/Settings.xml");
+}
+
 void MasterControl::Start()
 {
     ENGINE->SetMaxFps(80);
+
+    CreateColorSets();
 
     TailGenerator::RegisterObject(context_);
 
@@ -157,6 +202,7 @@ void MasterControl::Start()
     Brick::RegisterObject(context_);
 
     EffectInstance::RegisterObject(context_);
+    SoundEffect::RegisterObject(context_);
     HitFX::RegisterObject(context_);
     Bubble::RegisterObject(context_);
     Flash::RegisterObject(context_);
@@ -164,13 +210,13 @@ void MasterControl::Start()
     Line::RegisterObject(context_);
     Coin::RegisterObject(context_);
 
-    CreateColorSets();
-
+//    context_->RegisterSubsystem(this);
     context_->RegisterSubsystem(new EffectMaster(context_));
     context_->RegisterSubsystem(new InputMaster(context_));
     context_->RegisterSubsystem(new SpawnMaster(context_));
 
     if (GRAPHICS) {
+
         aspectRatio_ = static_cast<float>(GRAPHICS->GetWidth()) / GRAPHICS->GetHeight();
 
         // Precache shaders if possible
@@ -181,10 +227,8 @@ void MasterControl::Start()
 
         CreateUI();
 
-//        GRAPHICS->BeginDumpShaders("Resources/Shaders/Shaders2.xml");
+//        GRAPHICS->BeginDumpShaders("Resources/Shaders/LatestShaders.xml");
     }
-
-
 
     Node* announcerNode{ new Node(context_) };
     announcerNode->CreateComponent<SoundSource>()->Play(GetSample("Welcome"));
@@ -195,10 +239,11 @@ void MasterControl::Start()
     gameMusic_ = GetMusic("Alien Chaos - Disorder");
     Node* musicNode{ scene_->CreateChild("Music") };
     musicSource_ = musicNode->CreateComponent<SoundSource>();
-    musicSource_->SetGain(0.32f);
     musicSource_->SetSoundType(SOUND_MUSIC);
 
-//    GetSubsystem<Audio>()->Stop(); ///////////////////////////////////////////////////////////////////////
+    //    GetSubsystem<Audio>()->Stop(); ///////////////////////////////////////////////////////////////////////
+//    AUDIO->SetMasterGain(SOUND_MASTER, 1.0);
+//    AUDIO->SetMasterGain(SOUND_EFFECT, 1.0f);
 
     SetGameState(GS_LOBBY);
 
@@ -206,6 +251,8 @@ void MasterControl::Start()
 }
 void MasterControl::Stop()
 {
+    SaveSettings();
+
     engine_->DumpResources(true);
 //    GRAPHICS->EndDumpShaders();
 }
@@ -237,11 +284,13 @@ Sound* MasterControl::GetMusic(String name) const
 Sound* MasterControl::GetSample(String name)
 {
     unsigned nameHash{ name.ToHash() };
+
     if (samples_.Contains(nameHash))
         return samples_[nameHash].Get();
 
     Sound* sample{ CACHE->GetResource<Sound>("Samples/" + name + ".ogg") };
     samples_[nameHash] = sample;
+
     return sample;
 }
 
@@ -304,9 +353,10 @@ void MasterControl::AddPlayer()
     if (players_.Size() >= 4)
         return;
 
-    int playerId{1};
+    int playerId{ 1 };
 
     Vector<int> takenIds{};
+
     for (SharedPtr<Player> player : players_)
         takenIds.Push(player.Get()->GetPlayerId());
 
@@ -326,14 +376,18 @@ void MasterControl::AddPlayer()
 
 void MasterControl::RemoveAutoPilot()
 {
-    if (players_.Size() > 1 || NoHumans())
+    if (players_.Size() > 1 || NoHumans()) {
         for (Pilot* pilot : GetComponentsInScene<Pilot>()) {
+
             Player* player{ pilot->GetPlayer() };
-            if (player && !player->IsHuman()){
+
+            if (player && !player->IsHuman()) {
+
                 pilot->LeaveLobby();
                 return;
             }
         }
+    }
 }
 
 void MasterControl::RemovePlayer(Player* player)
@@ -348,6 +402,7 @@ void MasterControl::RemovePlayer(Player* player)
     inputMaster->SetPlayerControl(player->GetPlayerId(), nullptr);
 
     for (SharedPtr<Player> playerPtr : players_) {
+
         if (playerPtr.Get() == player)
             players_.Remove(playerPtr);
     }
@@ -390,7 +445,8 @@ void MasterControl::CreateScene()
     planeObject->SetMaterial(GetMaterial("PitchBlack"));
 
     //Create camera
-    if (GRAPHICS){
+    if (GRAPHICS) {
+
         Node* cameraNode{ scene_->CreateChild("Camera", LOCAL) };
         world.camera = cameraNode->CreateComponent<heXoCam>();
     }
@@ -406,6 +462,7 @@ void MasterControl::CreateScene()
     lobby_ = lobbyNode->CreateComponent<Lobby>();
     //Create ships
     for (int s : { 3, 4, 2, 1 }) {
+
         GetSubsystem<SpawnMaster>()->Create<Ship>()
                 ->Set(Quaternion(60.0f + ((s % 2) * 60.0f - (s / 2) * 180.0f), Vector3::UP) * Vector3(0.0f, 0.6f, 2.3f),
                       Quaternion(60.0f + ((s % 2) * 60.0f - (s / 2) * 180.0f), Vector3::UP));
@@ -426,7 +483,7 @@ void MasterControl::CreateScene()
     navMesh->SetTileSize(256);
     navMesh->Build();
 
-    for (unsigned p{1}; p <= Max(INPUT->GetNumJoysticks(), 1 * !engineParameters_[EP_HEADLESS].GetBool()); ++p){
+    for (unsigned p{1}; p <= Max(INPUT->GetNumJoysticks(), 1 * !engineParameters_[EP_HEADLESS].GetBool()); ++p) {
 
         AddPlayer();
     }
@@ -441,6 +498,21 @@ void MasterControl::SetGameState(const GameState newState)
         currentState_ = newState;
         sinceStateChange_ = 0.0f;
         EnterGameState();
+    }
+}
+
+void MasterControl::SetPaused(bool paused)
+{
+    paused_ = paused;
+    scene_->SetUpdateEnabled(!paused);
+
+    if (paused) {
+
+        AUDIO->PauseSoundType(SOUND_MUSIC);
+
+    } else {
+
+        AUDIO->ResumeSoundType(SOUND_MUSIC);
     }
 }
 void MasterControl::LeaveGameState()
@@ -574,11 +646,11 @@ void MasterControl::UpdateCursor(const float timeStep)
 
 bool MasterControl::CursorRayCast(const float maxDistance, PODVector<RayQueryResult> &hitResults)
 {
-    IntVector2 mousePos{world.cursor.uiCursor->GetPosition()};
+    IntVector2 mousePos{ world.cursor.uiCursor->GetPosition() };
     Ray cameraRay{ world.camera->camera_->GetScreenRay((float)mousePos.x_/GRAPHICS->GetWidth(),
                                                        (float)mousePos.y_/GRAPHICS->GetHeight())
                  };
-    RayOctreeQuery query{hitResults, cameraRay, RAY_TRIANGLE, maxDistance, DRAWABLE_GEOMETRY};
+    RayOctreeQuery query{ hitResults, cameraRay, RAY_TRIANGLE, maxDistance, DRAWABLE_GEOMETRY };
     scene_->GetComponent<Octree>()->Raycast(query);
 
     if (hitResults.Size())
@@ -600,8 +672,11 @@ bool MasterControl::PhysicsSphereCast(PODVector<RigidBody*> &hitResults, const V
                                       const float radius, const unsigned collisionMask)
 {
     physicsWorld_->GetRigidBodies(hitResults, Sphere(center, radius), collisionMask);
-    if (hitResults.Size()) return true;
-    else return false;
+
+    if (hitResults.Size())
+        return true;
+    else
+        return false;
 }
 
 void MasterControl::Exit()
@@ -611,8 +686,9 @@ void MasterControl::Exit()
 
 float MasterControl::Sine(const float freq, const float min, const float max, const float shift)
 {
-    float phase{SinePhase(freq, shift)};
-    float add{0.5f * (min + max)};
+    float phase{ SinePhase(freq, shift) };
+    float add{ 0.5f * (min + max) };
+
     return LucKey::Sine(phase) * 0.5f * (max - min) + add;
 }
 float MasterControl::Cosine(const float freq, const float min, const float max, const float shift)
@@ -650,8 +726,9 @@ Player* MasterControl::GetPlayerByColorSet(int colorSet)
 Player* MasterControl::GetNearestPlayer(Vector3 pos)
 {
     Player* nearest{};
-    for (Player* p : players_){
-        if (p->IsAlive()){
+
+    for (Player* p : players_) {
+        if (p->IsAlive()) {
 
             if (!nearest
             || (Distance(GetSubsystem<InputMaster>()->GetControllableByPlayer(p->GetPlayerId())->GetPosition(), pos) <
@@ -661,22 +738,27 @@ Player* MasterControl::GetNearestPlayer(Vector3 pos)
             }
         }
     }
+
     return nearest;
 }
 bool MasterControl::AllPlayersAtZero(bool onlyHuman)
 {
-    for (Player* p : players_)
+    for (Player* p : players_) {
+
         if ((p->IsHuman() || !onlyHuman) && p->GetScore() != 0)
             return false;
+    }
 
     return true;
 }
 
 Ship* MasterControl::GetShipByColorSet(int colorSet_)
 {
-    for (Ship* s : GetComponentsInScene<Ship>())
+    for (Ship* s : GetComponentsInScene<Ship>()) {
+
         if (s->GetColorSet() == colorSet_)
             return s;
+    }
 
     return nullptr;
 }
@@ -691,14 +773,18 @@ Door *MasterControl::GetDoor()
 
 bool MasterControl::NoHumans()
 {
-    for (Player* p : players_)
+    for (Player* p : players_) {
+
         if (p->IsHuman())
             return false;
+    }
+
     return true;
 }
 
 void MasterControl::HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 { (void)eventType; (void)eventData;
+
     return;
 
     physicsWorld_->DrawDebugGeometry(true);

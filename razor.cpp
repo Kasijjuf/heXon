@@ -104,10 +104,3 @@ void Razor::Set(Vector3 position)
     aimSpeed_ = 0.25f * topSpeed_;
     Enemy::Set(position);
 }
-
-void Razor::Explode()
-{
-    Enemy::Explode();
-
-
-}

@@ -16,36 +16,23 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef RAZOR_H
-#define RAZOR_H
+#ifndef OPTIONS_H
+#define OPTIONS_H
 
 #include <Urho3D/Urho3D.h>
+#include "luckey.h"
 
-#include "enemy.h"
-
-class Razor : public Enemy
+class Options : public Object
 {
-    URHO3D_OBJECT(Razor, Enemy);
+    URHO3D_OBJECT(Options, Object);
 public:
-    Razor(Context* context);
-    static void RegisterObject(Context* context);
-    void OnNodeSet(Node* node) override;
-    void Update(float timeStep) override;
-
-    void Hit(float damage, int ownerID) override;
-    void Set(Vector3 position) override;
-    void FixedUpdate(float timeStep) override;
-protected:
-    float topSpeed_;
-    float aimSpeed_;
-
-    Node* topNode_;
-    Node* bottomNode_;
-    StaticModel* topModel_;
-    StaticModel* bottomModel_;
-    Vector2 textureOffset;
-    Vector2 textureOffsetDelta;
-
+    Options(Context* context);
+    
+private:
+    Scene* optionsScene_;
+    Camera* optionsCam_;
+    
+    Vector<Node*> panels_;
 };
 
-#endif // RAZOR_H
+#endif // OPTIONS_H

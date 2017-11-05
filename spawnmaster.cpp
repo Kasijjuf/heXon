@@ -34,6 +34,7 @@
 #include "bubble.h"
 #include "line.h"
 #include "coin.h"
+#include "phaser.h"
 
 SpawnMaster::SpawnMaster(Context* context):
     Object(context),
@@ -86,7 +87,8 @@ void SpawnMaster::Clear()
              || c->IsInstanceOf<Effect>()
              || c->IsInstanceOf<Seeker>()
              || c->IsInstanceOf<Brick>()
-             || c->IsInstanceOf<Coin>())
+             || c->IsInstanceOf<Coin>()
+             || c->IsInstanceOf<Phaser>())
             {
                 SceneObject* s{ static_cast<SceneObject*>(c.Get()) };
                 s->Disable();

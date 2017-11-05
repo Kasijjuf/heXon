@@ -73,7 +73,9 @@ SOURCES += \
     coin.cpp \
     effectinstance.cpp \
     mason.cpp \
-    brick.cpp
+    brick.cpp \
+    options.cpp \
+    soundeffect.cpp
 
 HEADERS += \
     apple.h \
@@ -120,7 +122,9 @@ HEADERS += \
     coin.h \
     effectinstance.h \
     mason.h \
-    brick.h
+    brick.h \
+    options.h \
+    soundeffect.h
 
 OTHER_FILES += \
     Docs/Todo.md

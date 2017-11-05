@@ -16,36 +16,19 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef RAZOR_H
-#define RAZOR_H
 
-#include <Urho3D/Urho3D.h>
 
-#include "enemy.h"
+#ifndef SOUNDEFFECT_H
+#define SOUNDEFFECT_H
 
-class Razor : public Enemy
+#include "effect.h"
+
+class SoundEffect : public Effect
 {
-    URHO3D_OBJECT(Razor, Enemy);
+    URHO3D_OBJECT(SoundEffect, Effect);
 public:
-    Razor(Context* context);
+    SoundEffect(Context* context);
     static void RegisterObject(Context* context);
-    void OnNodeSet(Node* node) override;
-    void Update(float timeStep) override;
-
-    void Hit(float damage, int ownerID) override;
-    void Set(Vector3 position) override;
-    void FixedUpdate(float timeStep) override;
-protected:
-    float topSpeed_;
-    float aimSpeed_;
-
-    Node* topNode_;
-    Node* bottomNode_;
-    StaticModel* topModel_;
-    StaticModel* bottomModel_;
-    Vector2 textureOffset;
-    Vector2 textureOffsetDelta;
-
 };
 
-#endif // RAZOR_H
+#endif // SOUNDEFFECT_H

@@ -83,6 +83,8 @@ void Brick::Set(Vector3 position, Vector3 direction)
     node_->LookAt(position + direction);
     rigidBody_->ApplyImpulse(direction * 123.0f);
 
+    PlaySample(MC->GetSample("Brick"), 0.88f);
+
     SubscribeToEvent(node_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Brick, HandleTriggerStart));
 }
 
@@ -97,17 +99,18 @@ void Brick::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
 
     for (unsigned i{0}; i < collidingBodies.Size(); ++i) {
         RigidBody* collider{ collidingBodies[i] };
-        if (Ship* hitShip = collider->GetNode()->GetComponent<Ship>()) {
+        Node* collidingNode{ collider->GetNode() };
 
-            hitShip->Hit(damage_, false);
+        if (collidingNode->HasComponent<Ship>()) {
 
-            GetSubsystem<SpawnMaster>()->Create<HitFX>()
-                    ->Set(node_->GetPosition(), 0, false);
+            collidingNode->GetComponent<Ship>()->Hit(damage_, false);
             collider->ApplyImpulse(rigidBody_->GetLinearVelocity() * 0.5f);
-            Disable();
-        } else if (ChaoMine* chaoMine = collider->GetNode()->GetComponent<ChaoMine>()) {
 
-            chaoMine->Hit(damage_, 0);
+            Disable();
+
+        } else if (collidingNode->HasComponent<ChaoMine>()) {
+
+            collidingNode->GetComponent<ChaoMine>()->Hit(damage_, 0);
 
         } /*else if (Spire* spire = collider->GetNode()->GetComponent<Spire>()) {
 

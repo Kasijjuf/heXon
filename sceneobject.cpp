@@ -109,13 +109,7 @@ bool SceneObject::IsPlayingSound()
 void SceneObject::Blink(Vector3 newPosition)
 {
     Vector3 oldPosition{ GetPosition() };
-    GetSubsystem<SpawnMaster>()->Create<Flash>()
-            ->Set(oldPosition, big_);
-
     node_->SetPosition(newPosition);
-
-    GetSubsystem<SpawnMaster>()->Create<Flash>()
-            ->Set(newPosition, big_);
 
     Player* nearestPlayerA{ MC->GetNearestPlayer(oldPosition) };
     Player* nearestPlayerB{ MC->GetNearestPlayer(newPosition) };
@@ -129,7 +123,10 @@ void SceneObject::Blink(Vector3 newPosition)
         distanceToNearestPlayer = 23.0f;
     }
 
-    PlaySample(MC->GetSample("Flash"), Max(0.07f, 0.13f - distanceToNearestPlayer * 0.0023f));
+    float gain{ Max(0.07f, 0.13f - distanceToNearestPlayer * 0.0023f) };
+
+    SPAWN->Create<Flash>()->Set(oldPosition, gain, big_);
+    SPAWN->Create<Flash>()->Set(newPosition, gain, big_);
 }
 
 void SceneObject::BlinkCheck(StringHash eventType, VariantMap &eventData)

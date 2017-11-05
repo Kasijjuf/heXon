@@ -32,7 +32,6 @@ void Effect::OnNodeSet(Node *node)
 
     blink_ = false;
 
-    node_->SetName("Effect");
     particleEmitter_ = node_->CreateComponent<ParticleEmitter>();
 }
 
@@ -40,23 +39,27 @@ void Effect::Update(float timeStep)
 {
     age_ += timeStep;
 
-    ParticleEffect* effect{ particleEmitter_->GetEffect() };
-    if (effect) {
-        if (age_ > emitTime_ + effect->GetMaxTimeToLive()) {
-            Disable();
+    bool livingParticles{ true };
+
+    ParticleEffect* particleEffect{ particleEmitter_->GetEffect() };
+    if (particleEffect) {
+        if (age_ > emitTime_ + particleEffect->GetMaxTimeToLive()) {
+            livingParticles = false;
         } else if (age_ > emitTime_) {
             particleEmitter_->SetEmitting(false);
         }
     }
+
+    if (!livingParticles && !IsPlayingSound())
+        Disable();
 }
 
 void Effect::Set(const Vector3 position)
 {
     SceneObject::Set(position);
     age_ = 0.0f;
-    ParticleEffect* effect{ particleEmitter_->GetEffect() };
-    if (effect) {
-        particleEmitter_->RemoveAllParticles();
+    ParticleEffect* particleEffect{ particleEmitter_->GetEffect() };
+    if (particleEffect) {
         particleEmitter_->SetEmitting(true);
     }
 }

@@ -117,9 +117,12 @@ void Enemy::Set(const Vector3 position)
 }
 
 // Takes care of dealing damage and keeps track of who deserves how many points.
-void Enemy::Hit(const float damage, const int colorSet) {
+void Enemy::Hit(float damage, const int colorSet) {
 
     lastHitBy_ = colorSet;
+
+    if (damage > health_)
+        damage = health_;
 
     SetHealth(health_ - damage);
 
@@ -213,6 +216,16 @@ void Enemy::Update(float timeStep)
     centerModel_->GetMaterial()->SetShaderParameter("VOffset",
                 Vector4(0.0f, LucKey::Cycle(time * 3.0f, 0.0f, 1.0f), 0.0f, 0.0f));
     centerNode_->Rotate(Quaternion((1.0f + panic_) * timeStep * 333.0f, Vector3::UP));
+}
+void Enemy::FixedUpdate(float timeStep)
+{ (void)timeStep;
+
+    //Update linear damping
+    if (!IsEmerged()) {
+        rigidBody_->SetLinearDamping(Min(1.0f, 0.1f - node_->GetPosition().y_ * 0.666f));
+    } else {
+        rigidBody_->SetLinearDamping(0.1f);
+    }
 }
 
 void Enemy::HandleNodeCollision(StringHash eventType, VariantMap &eventData)

@@ -43,7 +43,7 @@ public:
 
     SharedPtr<Light> light_;
 
-    void Set(const Vector3 position, bool big);
+    void Set(const Vector3 position, float gain, bool big);
     void Disable();
 private:
     ParticleEffect* bigFlash_;

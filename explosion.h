@@ -56,6 +56,7 @@ private:
     int playerID_;
     float initialMass_;
     float initialBrightness_;
+    float fixedAge_;
 };
 
 #endif // EXPLOSION_H

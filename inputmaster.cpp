@@ -281,9 +281,9 @@ void InputMaster::HandleJoystickAxisMove(Urho3D::StringHash eventType, Urho3D::V
     int axis{ eventData[JoystickAxisMove::P_AXIS].GetInt() };
     float position{ eventData[JoystickAxisMove::P_POSITION].GetFloat() };
 
-    if (axis == 0) {        leftStickPosition_[joystickId].x_  =  position;
+    if (axis == 0) {         leftStickPosition_[joystickId].x_  =  position;
 
-    } else if (axis == 1) { leftStickPosition_[joystickId].y_  = -position;
+    } else if (axis == 1) {  leftStickPosition_[joystickId].y_  = -position;
 
     } else if (axis == 2) { rightStickPosition_[joystickId].x_ =  position;
 
@@ -317,7 +317,8 @@ void InputMaster::EjectButtonPressed(int playerId)
     //Keyboard
     if (playerId == 0) {
         for (Ship* s : MC->GetComponentsInScene<Ship>()) {
-            if (s->IsEnabled()){
+
+            if (s->IsEnabled()) {
                 s->Eject();
                 return;
             }

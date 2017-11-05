@@ -21,6 +21,7 @@
 #include "player.h"
 #include "ship.h"
 #include "chaomine.h"
+#include "soundeffect.h"
 #include "spawnmaster.h"
 
 #include "seeker.h"
@@ -74,9 +75,6 @@ void Seeker::OnNodeSet(Node *node)
 
 void Seeker::Update(float timeStep)
 {
-    if (!IsEnabled())
-        return;
-
     age_ += timeStep;
     if (age_ > lifeTime_ && node_->IsEnabled()) {
         HitFX* hitFx{ GetSubsystem<SpawnMaster>()->Create<HitFX>() };
@@ -88,9 +86,6 @@ void Seeker::Update(float timeStep)
 
 void Seeker::FixedUpdate(float timeStep)
 {
-    if (!IsEnabled())
-        return;
-
     rigidBody_->ApplyForce((TargetPosition() - node_->GetPosition()).Normalized() * timeStep * 666.0f);
 }
 
@@ -144,8 +139,12 @@ void Seeker::Set(Vector3 position, bool sound)
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
     AddTail();
 
-    if (sound)
-        PlaySample(MC->GetSample("Seeker"), 0.666f);
+    if (sound){
+//        PlaySample(MC->GetSample("Seeker"), 0.666f);
+        SoundEffect* seekerSound{ SPAWN->Create<SoundEffect>() };
+        seekerSound->Set(node_->GetWorldPosition());
+        seekerSound->PlaySample(MC->GetSample("Seeker"), 0.8f);
+    }
 
     SubscribeToEvent(node_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Seeker, HandleTriggerStart));
 

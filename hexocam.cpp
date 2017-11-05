@@ -40,10 +40,10 @@ void heXoCam::OnNodeSet(Node *node)
     stereoCam_.second_ = rightEye->CreateComponent<Camera>();
     */
 
-    Node* mike{ GetScene()->CreateChild("Microphone") };
-    mike->SetPosition(Vector3(0.0f, 23.0f, -5.0f));
-    mike->LookAt(Vector3::ZERO);
-    AUDIO->SetListener(mike->CreateComponent<SoundListener>());
+//    Node* mike{ GetScene()->CreateChild("Microphone") };
+//    mike->SetPosition(Vector3(0.0f, 23.0f, -10.0f));
+//    mike->LookAt(Vector3::ZERO);
+    AUDIO->SetListener(node_->CreateComponent<SoundListener>());
 
     camera_ = node_->CreateComponent<Camera>();
     camera_->SetFarClip(128.0f);
@@ -64,10 +64,10 @@ void heXoCam::SetupViewport()
     //Add anti-asliasing, bloom and a greyscale effects
     effectRenderPath_ = viewport_->GetRenderPath()->Clone();
     effectRenderPath_->Append(CACHE->GetResource<XMLFile>("PostProcess/FXAA3.xml"));
-    effectRenderPath_->SetEnabled("FXAA3", true);
+    effectRenderPath_->SetEnabled("FXAA3", MC->GetAntiAliasing());
     effectRenderPath_->Append(CACHE->GetResource<XMLFile>("PostProcess/BloomHDR.xml"));
     effectRenderPath_->SetShaderParameter("BloomHDRThreshold", 0.42f);
-    effectRenderPath_->SetShaderParameter("BloomHDRMix", Vector2(1.75f, 2.25f));
+    effectRenderPath_->SetShaderParameter("BloomHDRMix", Vector2(2.0f, 2.25f));
     effectRenderPath_->SetEnabled("BloomHDR", true);
     effectRenderPath_->Append(CACHE->GetResource<XMLFile>("PostProcess/GreyScale.xml"));
     SetGreyScale(false);

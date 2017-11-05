@@ -34,7 +34,8 @@ Explosion::Explosion(Context* context):
     Effect(context),
     playerID_{0},
     initialMass_{3.0f},
-    initialBrightness_{8.0f}
+    initialBrightness_{8.0f},
+    fixedAge_{}
 {
 }
 
@@ -64,13 +65,17 @@ void Explosion::Update(float timeStep)
     Effect::Update(timeStep);
     light_->SetBrightness(Max(initialBrightness_ * (0.32f - age_) / 0.32f, 0.0f));
 }
+
 void Explosion::FixedUpdate(float timeStep)
 {
-    rigidBody_->SetMass(Max(initialMass_ * ((0.1f - age_) / 0.1f), 0.01f));
+    fixedAge_ += timeStep;
+
+    rigidBody_->SetMass(Max(initialMass_ * ((0.1f - fixedAge_) / 0.1f), 0.01f));
 
     if (node_->IsEnabled() && MC->scene_->IsUpdateEnabled()) {
+
         PODVector<RigidBody*> hitResults{};
-        float radius{ 2.0f * initialMass_ + age_ * 7.0f };
+        float radius{ 2.0f * initialMass_ + fixedAge_ * 7.0f };
 
         if (MC->PhysicsSphereCast(hitResults, node_->GetPosition(), radius, M_MAX_UNSIGNED)) {
 
@@ -86,9 +91,9 @@ void Explosion::FixedUpdate(float timeStep)
                     //positionDelta is used for force calculation
                     Vector3 positionDelta{ hitNodeWorldPos - node_->GetWorldPosition() };
                     float distance{ positionDelta.Length() };
-                    Vector3 force{ positionDelta.Normalized() * Max(radius-distance, 0.0f)
-                                 * timeStep * 2342.0f * rigidBody_->GetMass() };
-                    h->ApplyForce(force);
+                    Vector3 force{ positionDelta.Normalized() * Max(radius - distance, 0.0f)
+                                 * 2342.0f * (rigidBody_->GetMass() - 0.01f) };
+                    h->ApplyForce(force * timeStep);
 
                     //Deal damage
                     float damage{rigidBody_->GetMass() * timeStep};
@@ -108,6 +113,8 @@ void Explosion::Set(const Vector3 position, const Color color, const float size,
 {
     playerID_ = colorSet;
     Effect::Set(position);
+    fixedAge_ = 0.0f;
+
     node_->SetScale(size);
     initialMass_ = 3.0f * size;
     rigidBody_->SetMass(initialMass_);

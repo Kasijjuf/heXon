@@ -141,10 +141,11 @@ public:
     GameState GetPreviousGameState(){ return previousState_; }
     float GetAspectRatio() const noexcept { return aspectRatio_; }
     bool IsPaused() { return paused_; }
-    void SetPaused(bool paused) { paused_ = paused; scene_->SetUpdateEnabled(!paused);}
+    void SetPaused(bool paused);
     void Pause() { SetPaused(true);}
     void Unpause() { SetPaused(false); }
     float GetSinceStateChange() const noexcept { return sinceStateChange_; }
+    bool GetAntiAliasing() const noexcept { return antiAliasing_; }
 
     bool PhysicsRayCast(PODVector<PhysicsRaycastResult> &hitResults, Urho3D::Ray ray, const float distance, const unsigned collisionMask = M_MAX_UNSIGNED);
     bool PhysicsSphereCast(PODVector<RigidBody*> &hitResults, Vector3 center, const float radius, const unsigned collisionMask = M_MAX_UNSIGNED);
@@ -184,6 +185,7 @@ private:
     String resourceFolder_;
 
     Vector<double> sine_;
+    bool antiAliasing_;
 
     float aspectRatio_;
     bool paused_;
@@ -215,6 +217,8 @@ private:
     float secondsPerFrame_;
     float sinceFrameRateReport_;
     float SinePhase(float freq, float shift);
+    void LoadSettings();
+    void SaveSettings();
 };
 
 #endif // MASTERCONTROL_H

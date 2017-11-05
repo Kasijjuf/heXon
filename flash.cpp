@@ -54,7 +54,7 @@ void Flash::Update(float timeStep)
     light_->SetBrightness(Max(initialBrightness_ * (0.25f - age_) / 0.25f, 0.0f));
 }
 
-void Flash::Set(const Vector3 position, bool big)
+void Flash::Set(const Vector3 position, float gain, bool big)
 {
     if (big && particleEmitter_->GetEffect() != bigFlash_){
         particleEmitter_->SetEffect(bigFlash_);
@@ -63,6 +63,8 @@ void Flash::Set(const Vector3 position, bool big)
     }
 
     Effect::Set(position);
+
+    PlaySample(MC->GetSample("Flash"), gain);
 }
 
 void Flash::Disable()

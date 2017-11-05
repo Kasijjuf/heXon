@@ -30,7 +30,7 @@ void Phaser::RegisterObject(Context *context)
 
 Phaser::Phaser(Context* context) : Effect(context),
     staticModel_{},
-    phaseMaterial_{MC->GetMaterial("Phase")->Clone()},
+    phaseMaterial_{ MC->GetMaterial("Phase")->Clone() },
     velocity_{},
     stateChanger_{}
 {
@@ -65,17 +65,20 @@ void Phaser::Update(float timeStep)
     Effect::Update(timeStep);
 
     node_->Translate(velocity_ * timeStep, TS_WORLD);
-    phaseMaterial_->SetShaderParameter("Dissolve", age_ * 2.3f);
-    if (age_ > 2.0f){
+    phaseMaterial_->SetShaderParameter("Dissolve", Clamp(age_ * 2.3f, 0.0f, 1.0f));
 
-        Disable();
+    if (age_ > 2.0f) {
+
         if (stateChanger_) {
+            for (Controllable* c : GetSubsystem<InputMaster>()->GetControlled()) {
 
-            for (Controllable* c : GetSubsystem<InputMaster>()->GetControlled())
                 if (c->IsEnabled())
                     return;
+            }
 
             MC->SetGameState(GS_LOBBY);
         }
+
+        Disable();
     }
 }

@@ -48,3 +48,7 @@ Makefile*
 *.blend*
 CMakeFiles/
 CMakeCache.txt
+
+# Settings
+
+Resources/Settings.xml

@@ -103,6 +103,7 @@
 #define GRAPHICS GetSubsystem<Graphics>()
 #define RENDERER GetSubsystem<Renderer>()
 #define AUDIO GetSubsystem<Audio>()
+#define SPAWN GetSubsystem<SpawnMaster>()
 
 constexpr int Layer(int x) { return 1 << (x - 1); }
 

@@ -36,6 +36,7 @@
 #include "mason.h"
 #include "brick.h"
 #include "coin.h"
+#include "soundeffect.h"
 
 #include "ship.h"
 
@@ -197,15 +198,18 @@ void Ship::EnterLobby(StringHash eventType, VariantMap &eventData)
 }
 void Ship::SetTailsEnabled(bool enabled)
 {
-    for (TailGenerator* t : tailGens_){
+    for (TailGenerator* t : tailGens_) {
+
         t->SetEnabled(enabled);
     }
 }
 
 void Ship::RemoveTails()
 {
-    for (TailGenerator* t : tailGens_)
+    for (TailGenerator* t : tailGens_) {
+
         t->GetNode()->Remove();
+    }
 
     tailGens_.Clear();
 }
@@ -216,14 +220,15 @@ void Ship::CreateTails()
 
     for (int t{0}; t < 3; ++t) {
 
-        Node* tailNode{node_->CreateChild("Tail")};
+        Node* tailNode{ node_->CreateChild("Tail") };
         tailNode->SetPosition(Vector3(-0.85f + 0.85f * t, t==1? 0.0f : -0.5f, t==1? -0.5f : -0.23f));
+
         TailGenerator* tailGen{ tailNode->CreateComponent<TailGenerator>() };
         tailGen->SetDrawHorizontal(true);
         tailGen->SetDrawVertical(false);
-        tailGen->SetTailLength(t==1? 0.05f : 0.025f);
-        tailGen->SetNumTails(t==1? 13 : 7);
-        tailGen->SetWidthScale(t==1? 0.5f : 0.13f);
+        tailGen->SetTailLength(t==1 ? 0.05f : 0.025f);
+        tailGen->SetNumTails(t==1 ? 13 : 7);
+        tailGen->SetWidthScale(t==1 ? 0.5f : 0.13f);
         tailGen->SetColorForHead(MC->colorSets_[colorSet_].colors_.first_);
         tailGen->SetColorForTip(MC->colorSets_[colorSet_].colors_.first_);
         tailGens_.Push(tailGen);
@@ -233,9 +238,10 @@ void Ship::CreateTails()
 void Ship::ApplyMovement(float timeStep)
 {
     Vector3 force{ move_ * thrust_ * timeStep };
+
     if (rigidBody_->GetLinearVelocity().Length() < maxSpeed_
-     || (rigidBody_->GetLinearVelocity().Normalized() + force.Normalized()).Length() < 1.0f)
-    {
+     || (rigidBody_->GetLinearVelocity().Normalized() + force.Normalized()).Length() < 1.0f) {
+
         rigidBody_->ApplyForce(force);
     }
 }
@@ -267,9 +273,10 @@ void Ship::Update(float timeStep)
 
 
     //Update rotation according to direction of the ship's movement.
-    if (rigidBody_->GetLinearVelocity().Length() > 0.1f)
-//        AlignWithMovement(timeStep);
+    if (rigidBody_->GetLinearVelocity().Length() > 0.1f) {
+        //        AlignWithMovement(timeStep);
         node_->LookAt(node_->GetPosition() + rigidBody_->GetLinearVelocity());
+    }
 
     //Update tails
     float velocityToScale{ Clamp(0.13f * rigidBody_->GetLinearVelocity().Length(), 0.0f, 1.0f) };
@@ -279,11 +286,13 @@ void Ship::Update(float timeStep)
         bool centerTail{ tailGen->GetNode()->GetPosition().x_ == 0.0f };
 
         tailGen->SetTailLength(velocityToScale * (centerTail ? 0.1f : 0.075f));
+        tailGen->SetNumTails((centerTail ? 13 : 7) * (1 / (23.0f * timeStep + 1.0f)));
         tailGen->SetWidthScale(velocityToScale * (centerTail ? 0.666f : 0.23f));
     }
 
     //Shooting
     sinceLastShot_ += timeStep;
+
     if (aim_.Length()) {
 
         if (sinceLastShot_ > shotInterval_)
@@ -292,8 +301,10 @@ void Ship::Update(float timeStep)
 
     //Attract coin
     for (Coin* c : MC->GetComponentsInScene<Coin>(true)) {
+
         c->GetNode()->GetComponent<RigidBody>()->ApplyForce((GetPosition() - c->GetPosition()).Normalized() * Pow(0.5f, LucKey::Distance(c->GetPosition(), GetPosition())) * 23500.0f * timeStep);
     }
+
 }
 
 void Ship::Shoot(Vector3 aim)
@@ -320,12 +331,16 @@ void Ship::Shoot(Vector3 aim)
         Vector3 direction{ Quaternion(angle, Vector3::UP) * aim };
         FireBullet(direction);
     }
+
     sinceLastShot_ = 0.0f;
     //Create a single muzzle flash
     if (bulletAmount_ > 0) {
 
         MoveMuzzle();
-        PlaySample(MC->GetSample("Shot"), 0.17f);
+
+        SoundEffect* shotSound{ SPAWN->Create<SoundEffect>() };
+        shotSound->Set(node_->GetWorldPosition());
+        shotSound->PlaySample(MC->GetSample("Shot"), 0.17f);
         PlaySample(MC->GetSample("Shot_s"), 0.17f, false);
     }
 }
@@ -333,7 +348,7 @@ void Ship::FireBullet(Vector3 direction)
 {
     direction.Normalize();
 
-    Vector3 position{ node_->GetPosition() + direction + Vector3::DOWN * 0.42 };
+    Vector3 position{ node_->GetPosition() + direction + Vector3::DOWN * 0.42f };
     Vector3 force{ direction * (23.0f + 0.42f * weaponLevel_) };
     float damage{ 0.1f + 0.0023f * weaponLevel_ };
 
@@ -375,7 +390,7 @@ void Ship::Pickup(PickupType pickup)
         }
     } break;
     case PT_CHAOBALL: {
-       PickupChaoBall();
+        PickupChaoBall();
     } break;
     case PT_RESET: {
         appleCount_ = 0;
@@ -388,16 +403,21 @@ void Ship::Pickup(PickupType pickup)
 
 void Ship::PlayPickupSample(int pickupCount)
 {
-    PlaySample(MC->GetSample("Pickup" + String(Clamp(pickupCount, 1, 4))), 0.42f);
+
+    SoundEffect* pickupSound{ SPAWN->Create<SoundEffect>() };
+    pickupSound->Set(node_->GetWorldPosition());
+    pickupSound->PlaySample(MC->GetSample("Pickup" + String(Clamp(pickupCount, 1, 4))), 0.42f);
 }
 
 void Ship::PowerupWeapons()
 {
     if (weaponLevel_ < 23) {
+
         ++weaponLevel_;
         bulletAmount_ = 1 + ((weaponLevel_ + 5) / 6);
         shotInterval_ = initialShotInterval_ - 0.0042f * weaponLevel_;
         PlaySample(MC->GetSample("Powerup"), 0.42f, false);
+
     } else {
         ///BOOM?
     }
@@ -411,7 +431,7 @@ void Ship::PickupChaoBall()
 {
     ChaoFlash* chaoFlash{ GetSubsystem<SpawnMaster>()->Create<ChaoFlash>() };
     chaoFlash->Set(MC->chaoBall_->GetPosition(), colorSet_);
-    PlaySample(MC->GetSample("Chaos"), 0.9f);
+
     PlaySample(MC->GetSample("Chaos_s"), 0.6f, false);
 }
 
@@ -420,21 +440,25 @@ void Ship::SetHealth(float health)
     health_ = Clamp(health, 0.0f, 15.0f);
     GetPlayer()->gui3d_->SetHealth(health_);
 
-    if (health_ <= 0.0f){
+    if (health_ <= 0.0f) {
+
         Explode();
     }
 }
 
 void Ship::Hit(float damage, bool melee)
 {
-    if (health_ > 10.0f){
+    if (health_ > 10.0f) {
+
         damage *= (melee ? 0.75f : 0.25f);
         shieldMaterial_->SetShaderParameter("MatDiffColor", Color(2.0f, 3.0f, 5.0f, 0.25f + 0.75f * (health_ - damage > 10.0f)));
         PlaySample(MC->GetSample((health_ - damage) > 10.0f ? "ShieldHit"
                                                             : "ShieldDown"), 0.23f);
+    } else {
+        if (!melee)
+            PlaySample(MC->GetSample("SeekerHit" + String(Random(4) + 1)));
     }
-    else if (!melee)
-        PlaySample(MC->GetSample("SeekerHit" + String(Random(4)+1)));
+
     SetHealth(health_ - damage);
 }
 
@@ -452,11 +476,12 @@ void Ship::Explode()
 
     Pickup(PT_RESET);
 
-    for (Player* p : MC->GetPlayers())
-    {
+    for (Player* p : MC->GetPlayers()) {
+
         if (p->GetShip()->IsEnabled())
             return;
     }
+
     MC->SetGameState(GS_DEAD);
 }
 
@@ -490,7 +515,7 @@ void Ship::Think()
 
     Vector3 pickupPos{ Vector3::ZERO };
     Vector3 smell{ Sniff(playerFactor, move, false) * playerFactor };
-    Vector3 taste{ Sniff(playerFactor, move, true) * playerFactor };
+//    Vector3 taste{ Sniff(playerFactor, move, true) * playerFactor };
 
     if (health_ < (5.0f - appleCount_)
      || GetPlayer()->GetFlightScore() == 0
@@ -499,8 +524,11 @@ void Ship::Think()
      || (weaponLevel_==23 && health_ <= 10.0f)
      ||  heartCount_ == 4)
     {
+
         pickupPos = MC->heart_->GetPosition();
+
     } else {
+
         pickupPos = MC->apple_->GetPosition();
     }
     //Calculate shortest route
@@ -513,8 +541,10 @@ void Ship::Think()
     pickupPos = newPickupPos;
     //Calculate move vector
     if (pickupPos.y_ < -10.0f || LucKey::Distance(
-                GetPosition(), LucKey::Scale(pickupPos, Vector3(1.0f, 0.0f, 1.0f))) < playerFactor)
+                GetPosition(), LucKey::Scale(pickupPos, Vector3(1.0f, 0.0f, 1.0f))) < playerFactor) {
+
         pickupPos = GetPosition() + node_->GetDirection() * playerFactor;
+    }
 
     move = 0.5f * (move +
                     LucKey::Scale(pickupPos - node_->GetPosition()
@@ -522,8 +552,11 @@ void Ship::Think()
                                   - 0.1f * playerFactor * node_->GetDirection()
                                   , Vector3(1.0f, 0.0f, 1.0f)).Normalized());
 
-    if (LucKey::Distance(pickupPos, GetPosition()) > playerFactor)
+    if (LucKey::Distance(pickupPos, GetPosition()) > playerFactor) {
+
         move += smell * 5.0f;
+    }
+
     move += Vector3(
                  MC->Sine(playerFactor, -0.05f, 0.05f, playerFactor),
                  0.0f,
@@ -533,7 +566,9 @@ void Ship::Think()
     //Pick firing target
     bool fire{ false };
     Pair<float, Vector3> target{};
-    for (Razor* r : MC->GetComponentsInScene<Razor>()){
+
+    for (Razor* r : MC->GetComponentsInScene<Razor>()) {
+
         if (r->IsEnabled() && r->GetPosition().y_ > (-playerFactor * 0.1f)){
             float distance{ LucKey::Distance(this->GetPosition(), r->GetPosition()) };
             float panic{ r->GetPanic() };
@@ -545,69 +580,91 @@ void Ship::Think()
             }
         }
     }
-    for (Spire* s : MC->GetComponentsInScene<Spire>()){
-        if (s->IsEnabled() && s->GetPosition().y_ > (-playerFactor * 0.23f) && GetPlayer()->GetFlightScore() != 0){
+
+    for (Spire* s : MC->GetComponentsInScene<Spire>()) {
+
+        if (s->IsEnabled() && s->GetPosition().y_ > (-playerFactor * 0.23f) && GetPlayer()->GetFlightScore() != 0) {
+
             float distance{ LucKey::Distance(this->GetPosition(), s->GetPosition()) };
             float panic{ s->GetPanic() };
             float weight{ (23.0f * panic) - (distance / playerFactor) + 32.0f };
-            if (weight > target.first_){
+
+            if (weight > target.first_) {
+
                 target.first_ = weight;
                 target.second_ = s->GetPosition();
                 fire = true;
             }
         }
     }
-    for (Mason* m : MC->GetComponentsInScene<Mason>()){
-        if (m->IsEnabled() && m->GetPosition().y_ > (-playerFactor * 0.42f) && GetPlayer()->GetFlightScore() != 0){
+
+    for (Mason* m : MC->GetComponentsInScene<Mason>()) {
+
+        if (m->IsEnabled() && m->GetPosition().y_ > (-playerFactor * 0.42f) && GetPlayer()->GetFlightScore() != 0) {
+
             float distance{ LucKey::Distance(this->GetPosition(), m->GetPosition()) };
             float panic{ m->GetPanic() };
             float weight{ (42.0f * panic) - (distance / playerFactor) + 42.0f };
-            if (weight > target.first_){
+
+            if (weight > target.first_) {
+
                 target.first_ = weight;
                 target.second_ = m->GetPosition();
                 fire = true;
             }
         }
     }
-    if (fire){
+
+    if (fire) {
+
         SetAim((target.second_ - GetPosition()).Normalized());
+
         float aimFactor{ 23.0f / playerFactor };
-        if (bulletAmount_ == 2 || bulletAmount_ == 3)
+
+        if (bulletAmount_ == 2 || bulletAmount_ == 3) {
+
             SetAim((Quaternion((GetPlayer()->GetPlayerId() == 2 ? -1.0f : 1.0f)
                                * (Min(0.666f * LucKey::Distance(this->GetPosition(),target.second_), 5.0f) + MC->Sine(aimFactor * aimFactor, -aimFactor, aimFactor))
                                , Vector3::UP) * aim_).Normalized());
-        else SetAim((Quaternion((GetPlayer()->GetPlayerId() == 2 ? -1.0f : 1.0f)
+
+        } else {
+
+            SetAim((Quaternion((GetPlayer()->GetPlayerId() == 2 ? -1.0f : 1.0f)
                                 * MC->Sine(aimFactor * aimFactor, -aimFactor, aimFactor)
                                 , Vector3::UP) * aim_).Normalized());
+        }
+    } else {
+
+        SetAim(Vector3::ZERO);
     }
-    else SetAim(Vector3::ZERO);
 //    SetAim((aim_ - taste).Normalized());
 }
 
 Vector3 Ship::Sniff(float playerFactor, Vector3& move, bool taste)
 {
-    Vector3 smell;
+    Vector3 smell{};
     int whiskers{ 23 };
     int detected{ 0 };
 
     //Smell across borders
-    for (int p{-1}; p < (taste ? 0 : 6); ++p){
-        Vector3 projectedPlayerPos{( (p != -1) ? GetPosition() + (Quaternion(p * 60.0f, Vector3::UP) * Vector3::FORWARD * 46.0f)
-                                               : GetPosition() )};
-        for (int w{0}; w < whiskers; ++w){
+    for (int p{-1}; p < (taste ? 0 : 6); ++p) {
+
+        Vector3 projectedPlayerPos{ ( (p != -1) ? GetPosition() + (Quaternion(p * 60.0f, Vector3::UP) * Vector3::FORWARD * 46.0f)
+                                                : GetPosition() ) };
+        for (int w{0}; w < whiskers; ++w) {
+
             PODVector<PhysicsRaycastResult> hitResults{};
             Vector3 whiskerDirection{ Quaternion((360.0f / whiskers) * w, Vector3::UP)
-                                      * (2.0f * node_->GetDirection() + 3.0f * move_.Normalized())
-                                    };
+                                      * (2.0f * node_->GetDirection() + 3.0f * move_.Normalized())};
             Ray whiskerRay{ projectedPlayerPos + Vector3::DOWN * Random(0.666f), whiskerDirection };
+
             if (MC->PhysicsRayCast(hitResults, whiskerRay, playerFactor + playerFactor * (w == 0), M_MAX_UNSIGNED)) {
 
                 ++detected;
                 PhysicsRaycastResult r{ hitResults[0] };
                 Node* node{ r.body_->GetNode() };
-                float distSquared{(r.distance_ * r.distance_) *
-                            (0.005f * whiskerDirection.Angle(move_) +
-                             playerFactor * playerFactor)};
+                float distSquared{ (r.distance_ * r.distance_)
+                                   * (0.005f * whiskerDirection.Angle(move_) + playerFactor * playerFactor) };
 
                 if (node->HasComponent<Apple>()) {
                     smell += 230.0f * (whiskerDirection / (distSquared)) * (appleCount_ - static_cast<float>(GetPlayer()->GetFlightScore() == 0));
@@ -644,8 +701,9 @@ Vector3 Ship::Sniff(float playerFactor, Vector3& move, bool taste)
         }
     }
     //Rely more on scent in crowded spaces
-    if (!taste){
-        float scentEffect{0.23f * static_cast<float>(detected) / whiskers};
+    if (!taste) {
+
+        float scentEffect{ 0.23f * static_cast<float>(detected) / whiskers };
         move = move * (1.0f - scentEffect);
         move = move - 0.5f * scentEffect * rigidBody_->GetLinearVelocity();
         smell *= 1.0f + (0.5f * scentEffect);
