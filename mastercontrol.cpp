@@ -25,6 +25,7 @@
 #include "effectmaster.h"
 #include "inputmaster.h"
 #include "spawnmaster.h"
+#include "settings.h"
 
 #include "player.h"
 #include "pilot.h"
@@ -76,7 +77,6 @@ MasterControl* MasterControl::GetInstance()
 
 MasterControl::MasterControl(Context *context):
     Application(context),
-    antiAliasing_{true},
     aspectRatio_{},
     paused_{false},
     currentState_{GS_INTRO},
@@ -117,52 +117,19 @@ void MasterControl::Setup()
     engineParameters_[EP_RESOURCE_PATHS] = resourcePaths;
 
 //    engineParameters_[EP_VSYNC] = true;
-//    engineParameters_[EP_FULL_SCREEN] = false;
+//    engineParameters_[EP_REFRESH_RATE] = ;
 //    engineParameters_[EP_HEADLESS] = true;
-//    engineParameters_[EP_WINDOW_WIDTH] = 1920/2;
-//    engineParameters_[EP_WINDOW_HEIGHT] = 1080/2;
 //    engineParameters_[EP_BORDERLESS] = true;
 
-    LoadSettings();
-}
-void MasterControl::LoadSettings()
-{
-    if (FILES->FileExists("Resources/Settings.xml")){
-        File file(context_, "Resources/Settings.xml", FILE_READ);
-        XMLFile configFile(context_);
-        configFile.Load(file);
-        XMLElement graphics{ configFile.GetRoot().GetChild("Graphics") };
-        XMLElement audio{ configFile.GetRoot().GetChild("Audio") };
+    Settings* settings{ new Settings(context_) };
+    context_->RegisterSubsystem(settings);
 
-        if (graphics) {
+    if (settings->Load()) {
 
-            engineParameters_[EP_WINDOW_WIDTH] = graphics.GetInt("Width");
-            engineParameters_[EP_WINDOW_HEIGHT] = graphics.GetInt("Height");
-            engineParameters_[EP_FULL_SCREEN] = graphics.GetBool("Fullscreen");
-
-            antiAliasing_ = graphics.GetBool("AntiAliasing");
-        }
-        if (audio) {
-
-            AUDIO->SetMasterGain(SOUND_MUSIC, audio.GetFloat("MusicGain"));
-        }
+        engineParameters_[EP_WINDOW_WIDTH] = settings->GetResolution().x_;
+        engineParameters_[EP_WINDOW_HEIGHT] = settings->GetResolution().y_;
+        engineParameters_[EP_FULL_SCREEN] = settings->GetFullScreen();
     }
-}
-void MasterControl::SaveSettings()
-{
-    XMLFile file(context_);
-    XMLElement root(file.CreateRoot("Settings"));
-
-    XMLElement graphicsElement(root.CreateChild("Graphics"));
-    graphicsElement.SetInt("Width", GRAPHICS->GetWidth());
-    graphicsElement.SetInt("Height", GRAPHICS->GetHeight());
-    graphicsElement.SetBool("Fullscreen", GRAPHICS->GetFullscreen());
-    graphicsElement.SetBool("AntiAliasing", antiAliasing_);
-
-    XMLElement audioElement(root.CreateChild("Audio"));
-    audioElement.SetFloat("MusicGain", AUDIO->GetMasterGain(SOUND_MUSIC));
-
-    file.SaveFile("Resources/Settings.xml");
 }
 
 void MasterControl::Start()
@@ -251,7 +218,7 @@ void MasterControl::Start()
 }
 void MasterControl::Stop()
 {
-    SaveSettings();
+    GetSubsystem<Settings>()->Save();
 
     engine_->DumpResources(true);
 //    GRAPHICS->EndDumpShaders();

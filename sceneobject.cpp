@@ -20,6 +20,7 @@
 
 #include "arena.h"
 #include "spawnmaster.h"
+#include "settings.h"
 #include "bullet.h"
 #include "brick.h"
 #include "flash.h"
@@ -56,6 +57,12 @@ void SceneObject::Set(const Vector3 position)
 
     if (blink_)
         SubscribeToEvent(E_BEGINFRAME, URHO3D_HANDLER(SceneObject, BlinkCheck));
+
+    if (node_->HasComponent<Light>()) {
+
+        node_->GetComponent<Light>()->SetEnabled(GetSubsystem<Settings>()->GetManyLights());
+    }
+
 }
 void SceneObject::Set(const Vector3 position, const Quaternion rotation){
     node_->SetRotation(rotation);
@@ -75,6 +82,7 @@ void SceneObject::Disable()
 void SceneObject::PlaySample(Sound* sample, const float gain, bool localized)
 {
     if (localized) {
+
         for (SoundSource3D* s : sampleSources3D_)
             if (!s->IsPlaying()){
                 s->SetGain(gain);
@@ -82,6 +90,7 @@ void SceneObject::PlaySample(Sound* sample, const float gain, bool localized)
                 return;
             }
     } else {
+
         for (SoundSource* s : sampleSources_)
             if (!s->IsPlaying()){
                 s->SetGain(gain);
@@ -94,6 +103,7 @@ void SceneObject::StopAllSound()
 {
     for (SoundSource3D* s : sampleSources3D_)
         s->Stop();
+
     for (SoundSource* s : sampleSources_)
         s->Stop();
 }

@@ -16,8 +16,6 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
-
 #include "soundeffect.h"
 
 void SoundEffect::RegisterObject(Context* context)

@@ -16,6 +16,8 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "settings.h"
+
 #include "hexocam.h"
 
 void heXoCam::RegisterObject(Context *context)
@@ -62,9 +64,13 @@ void heXoCam::SetupViewport()
     viewport_ = viewport;
 
     //Add anti-asliasing, bloom and a greyscale effects
+//    XMLFile* file{ new XMLFile(context_) };
+//    file->LoadFile("RenderPaths/Deferred.xml");
+//    viewport_->SetRenderPath(file);
+
     effectRenderPath_ = viewport_->GetRenderPath()->Clone();
     effectRenderPath_->Append(CACHE->GetResource<XMLFile>("PostProcess/FXAA3.xml"));
-    effectRenderPath_->SetEnabled("FXAA3", MC->GetAntiAliasing());
+    effectRenderPath_->SetEnabled("FXAA3", GetSubsystem<Settings>()->GetAntiAliasing());
     effectRenderPath_->Append(CACHE->GetResource<XMLFile>("PostProcess/BloomHDR.xml"));
     effectRenderPath_->SetShaderParameter("BloomHDRThreshold", 0.42f);
     effectRenderPath_->SetShaderParameter("BloomHDRMix", Vector2(2.0f, 2.25f));

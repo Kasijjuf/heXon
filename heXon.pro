@@ -74,8 +74,8 @@ SOURCES += \
     effectinstance.cpp \
     mason.cpp \
     brick.cpp \
-    options.cpp \
-    soundeffect.cpp
+    soundeffect.cpp \
+    settings.cpp
 
 HEADERS += \
     apple.h \
@@ -123,11 +123,12 @@ HEADERS += \
     effectinstance.h \
     mason.h \
     brick.h \
-    options.h \
-    soundeffect.h
+    soundeffect.h \
+    settings.h
 
 OTHER_FILES += \
-    Docs/Todo.md
+    Docs/Todo.md \
+    Resources/Settings.xml
 
 DISTFILES += \
     LICENSE_TEMPLATE

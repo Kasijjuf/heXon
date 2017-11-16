@@ -16,10 +16,39 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "options.h"
+#ifndef SETTINGS_H
+#define SETTINGS_H
 
-Options::Options(Context* context) : Object(context)
+#include <Urho3D/Urho3D.h>
+#include "luckey.h"
+
+class Settings : public Object
 {
+    URHO3D_OBJECT(Settings, Object);
+public:
+    Settings(Context* context);
     
+    bool Load();
+    void Save();
+
+    bool GetAntiAliasing() const noexcept { return antiAliasing_; }
+    bool GetManyLights() const noexcept { return manyLights_; }
+
+    IntVector2 GetResolution() const { return IntVector2(width_, height_); }
+    bool GetFullScreen() const noexcept { return fullScreen_; }
+private:
+    Scene* settingsScene_;
+    Camera* settingsCam_;
     
-}
+    Vector<Node*> panels_;
+
+    int width_;
+    int height_;
+    int refreshRate_;
+    bool fullScreen_;
+
+    bool antiAliasing_;
+    bool manyLights_;
+};
+
+#endif // SETTINGS_H

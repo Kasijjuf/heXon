@@ -224,7 +224,7 @@ void InputMaster::HandleKeyDown(StringHash eventType, VariantMap &eventData)
         PauseButtonPressed();
     } break;
     //Toggle music on M
-    case KEY_M: MC->musicSource_->SetGain(MC->musicSource_->GetGain() == 0.0f ? 0.32f : 0.0f);
+    case KEY_M: AUDIO->SetMasterGain(SOUND_MUSIC, AUDIO->GetMasterGain(SOUND_MUSIC) == 0.0f ? 0.32f : 0.0f);
         break;
     }
 }
@@ -281,13 +281,17 @@ void InputMaster::HandleJoystickAxisMove(Urho3D::StringHash eventType, Urho3D::V
     int axis{ eventData[JoystickAxisMove::P_AXIS].GetInt() };
     float position{ eventData[JoystickAxisMove::P_POSITION].GetFloat() };
 
-    if (axis == 0) {         leftStickPosition_[joystickId].x_  =  position;
+    if (axis == 0) {
+         leftStickPosition_[joystickId].x_ =  position;
 
-    } else if (axis == 1) {  leftStickPosition_[joystickId].y_  = -position;
+    } else if (axis == 1) { 
+         leftStickPosition_[joystickId].y_ = -position;
 
-    } else if (axis == 2) { rightStickPosition_[joystickId].x_ =  position;
+    } else if (axis == 2) {
+        rightStickPosition_[joystickId].x_ =  position;
 
-    } else if (axis == 3) { rightStickPosition_[joystickId].y_ = -position;
+    } else if (axis == 3) {
+        rightStickPosition_[joystickId].y_ = -position;
 
     }
 }

@@ -98,8 +98,10 @@ void Bullet::Set(Vector3 position, int colorSet, Vector3 direction, Vector3 forc
     damage_ = damage;
 
     Light* light{ node_->GetComponent<Light>() };
-    light->SetColor( MC->colorSets_[colorSet].colors_.first_ * (1.0f + damage_) );// colorSet_ == 2 ? Color(1.0f + damage_, 0.6f, 0.2f) : Color(0.6f, 1.0f+damage_, 0.2f));
-    light->SetBrightness(3.4f + damage_ * 2.3f);
+    if (light->IsEnabled()) {
+        light->SetColor( MC->colorSets_[colorSet].colors_.first_ * (1.0f + damage_) );// colorSet_ == 2 ? Color(1.0f + damage_, 0.6f, 0.2f) : Color(0.6f, 1.0f+damage_, 0.2f));
+        light->SetBrightness(3.4f + damage_ * 2.3f);
+    }
 
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
     rigidBody_->ResetForces();

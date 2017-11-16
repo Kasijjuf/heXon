@@ -63,7 +63,9 @@ void Explosion::OnNodeSet(Node *node)
 void Explosion::Update(float timeStep)
 {
     Effect::Update(timeStep);
-    light_->SetBrightness(Max(initialBrightness_ * (0.32f - age_) / 0.32f, 0.0f));
+
+    if (light_->IsEnabled())
+        light_->SetBrightness(Max(initialBrightness_ * (0.32f - age_) / 0.32f, 0.0f));
 }
 
 void Explosion::FixedUpdate(float timeStep)
@@ -118,8 +120,12 @@ void Explosion::Set(const Vector3 position, const Color color, const float size,
     node_->SetScale(size);
     initialMass_ = 3.0f * size;
     rigidBody_->SetMass(initialMass_);
-    light_->SetColor(color);
-    light_->SetBrightness(initialBrightness_);
+
+    if (light_->IsEnabled()) {
+
+        light_->SetColor(color);
+        light_->SetBrightness(initialBrightness_);
+    }
 
     if (bubbles) {
         EffectInstance* bubbles{ GetSubsystem<SpawnMaster>()->Create<EffectInstance>() };
