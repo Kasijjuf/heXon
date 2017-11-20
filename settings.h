@@ -35,7 +35,7 @@ public:
     bool GetManyLights() const noexcept { return manyLights_; }
 
     IntVector2 GetResolution() const { return IntVector2(width_, height_); }
-    bool GetFullScreen() const noexcept { return fullScreen_; }
+    bool GetFullscreen() const noexcept { return fullscreen_; }
 private:
     Scene* settingsScene_;
     Camera* settingsCam_;
@@ -45,7 +45,7 @@ private:
     int width_;
     int height_;
     int refreshRate_;
-    bool fullScreen_;
+    bool fullscreen_;
 
     bool antiAliasing_;
     bool manyLights_;

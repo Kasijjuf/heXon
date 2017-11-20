@@ -98,6 +98,7 @@ void Brick::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
     rigidBody_->GetCollidingBodies(collidingBodies);
 
     for (unsigned i{0}; i < collidingBodies.Size(); ++i) {
+
         RigidBody* collider{ collidingBodies[i] };
         Node* collidingNode{ collider->GetNode() };
 

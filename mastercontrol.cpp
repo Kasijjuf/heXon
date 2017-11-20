@@ -128,7 +128,7 @@ void MasterControl::Setup()
 
         engineParameters_[EP_WINDOW_WIDTH] = settings->GetResolution().x_;
         engineParameters_[EP_WINDOW_HEIGHT] = settings->GetResolution().y_;
-        engineParameters_[EP_FULL_SCREEN] = settings->GetFullScreen();
+        engineParameters_[EP_FULL_SCREEN] = settings->GetFullscreen();
     }
 }
 

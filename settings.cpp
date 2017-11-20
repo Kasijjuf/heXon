@@ -40,7 +40,7 @@ bool Settings::Load()
 
             width_ = graphics.GetInt("Width");
             height_ = graphics.GetInt("Height");
-            fullScreen_ = graphics.GetBool("Fullscreen");
+            fullscreen_ = graphics.GetBool("Fullscreen");
 
             antiAliasing_ = graphics.GetBool("AntiAliasing");
             manyLights_ = graphics.GetBool("ManyLights");
@@ -50,7 +50,7 @@ bool Settings::Load()
                 GRAPHICS->SetMode(width_,
                                   height_);
 
-                if (GRAPHICS->GetFullscreen() != fullScreen_)
+                if (GRAPHICS->GetFullscreen() != fullscreen_)
                     GRAPHICS->ToggleFullscreen();
             }
         }
