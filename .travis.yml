@@ -13,21 +13,20 @@ addons:
     packages:
       - build-essential
       - make
-      - cmake
       - g++-4.9
       - libx11-dev
       - libxrandr-dev
       - libasound2-dev
       - git
-script: |
-
-  sudo add-apt-repository --yes ppa:george-edison55/cmake-3.x
-  sudo apt-get update -q
-  sudo apt-get -y install cmake
-
-  git clone https://github.com/Urho3D/Urho3D
-  cd Urho3D
-  cmake . -Wno-dev -DURHO3D_SAMPLES=0 -DURHO3D_URHO2D=0 -DURHO3D_TOOLS=0 -DURHO3D_ANGELSCRIPT=0 -DURHO3D_LUA=0 && make
-  cd ..
-  qmake heXon.pro -Wnone
-  make
+script:
+  - cat /etc/apt/sources.list.d/cmake.list
+  - sudo rm /etc/apt/sources.list.d/cmake.list
+  - sudo add-apt-repository --yes ppa:george-edison55/cmake-3.x
+  - sudo apt-get update -q
+  - sudo apt-get -y install cmake
+  - git clone https://github.com/Urho3D/Urho3D
+  - cd Urho3D
+  - cmake . -Wno-dev -DURHO3D_SAMPLES=0 -DURHO3D_URHO2D=0 -DURHO3D_TOOLS=0 -DURHO3D_ANGELSCRIPT=0 -DURHO3D_LUA=0 && make
+  - cd ..
+  - qmake heXon.pro -Wnone
+  - make
