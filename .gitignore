@@ -1,4 +1,4 @@
-# C++ objects and libs
+# C++ objects, libs and executables
 
 *.slo
 *.lo
@@ -9,8 +9,8 @@
 *.so
 *.dll
 *.dylib
-install
 *.lkp
+hexon
 
 #CMake
 
