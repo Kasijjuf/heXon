@@ -6,7 +6,7 @@ LIBS += \
     -ldl \
     -lGL
 
-QMAKE_CXXFLAGS += -std=c++0x -O2
+QMAKE_CXXFLAGS += -std=c++11 -O2
 
 INCLUDEPATH += \
     ../heXon/Urho3D/include \
@@ -19,7 +19,7 @@ CONFIG -= qt
 #LIBS += -ldl -lGL
 
 # From http://stackoverflow.com/questions/35772562/inlining-failed-in-call-to-always-inline-m128i-mm-cvtepu8-epi32-m128i-t
-QMAKE_CXX_FLAGS += msse4.2 -mavx
+#QMAKE_CXX_FLAGS += msse4.2 -mavx
 #QMAKE_CFLAGS+=-msse4.2
 #QMAKE_CFLAGS+="-march=native -O3"
 #QMAKE_CFLAGS    += -msse4.2 -O -g

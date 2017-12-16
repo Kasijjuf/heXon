@@ -568,7 +568,7 @@ void MasterControl::HandleUpdate(StringHash eventType, VariantMap &eventData)
     secondsPerFrame_ += timeStep * timeStep;
     sinceFrameRateReport_ += timeStep;
     if (sinceFrameRateReport_ >= 1.0f) {
-        Log::Write(1, String(1.0f / secondsPerFrame_));
+        Log::Write(3, String(1.0f / secondsPerFrame_));
         sinceFrameRateReport_ = 0.0f;
     }
     */

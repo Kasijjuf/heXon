@@ -24,6 +24,7 @@ All edges of the hexagonal arena are connected to its opposite like portals, mak
 
 Visit [heXon's itch.io page](http://luckeyproductions.itch.io/hexon) and hit **Download Now**. Or download heXon through the [itch app](https://itch.io/app).
 
+<!--
 #### Compiling from source
 
 If the binary is not working you may try compiling by running this line in a terminal:
@@ -31,6 +32,7 @@ If the binary is not working you may try compiling by running this line in a ter
 ```
 git clone https://github.com/LucKeyProductions/heXon; cd heXon; ./install.sh; cd ..; rm -rf heXon
 ```
+-->
 
 [![Build Status](https://travis-ci.org/LucKeyProductions/heXon.svg?branch=master)](https://travis-ci.org/LucKeyProductions/heXon)
 
