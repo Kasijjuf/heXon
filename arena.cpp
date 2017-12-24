@@ -87,6 +87,8 @@ void Arena::OnNodeSet(Node *node)
 
     SubscribeToEvent(E_ENTERLOBBY, URHO3D_HANDLER(Arena, EnterLobby));
     SubscribeToEvent(E_ENTERPLAY,  URHO3D_HANDLER(Arena, EnterPlay));
+
+    SubscribeToEvent(E_POSTUPDATE,  URHO3D_HANDLER(Arena, UpdateEffectVector));
 }
 
 void Arena::AddToAffectors(Node* affector)
@@ -100,9 +102,9 @@ void Arena::RemoveFromAffectors(Node* affector)
         hexAffectors_.Erase(affector);
 }
 
-const Vector<Pair<Vector3, float> > Arena::GetEffectVector() const
+void Arena::UpdateEffectVector(StringHash, VariantMap&)
 {
-    Vector<Pair<Vector3, float>> result{};
+    effectVector_.Clear();
     for (Node* node : hexAffectors_) {
         if (node->IsEnabled()) {
 
@@ -113,11 +115,14 @@ const Vector<Pair<Vector3, float> > Arena::GetEffectVector() const
             if (node->HasComponent<Explosion>() || node->HasTag("Pickup"))
                 pair.second_ *= 1.5f;
 
-            result.Push(pair);
+            effectVector_.Push(pair);
         }
     }
+}
 
-    return result;
+const PODVector<Pair<Vector3, float> >& Arena::GetEffectVector() const
+{
+    return effectVector_;
 }
 
 void Arena::EnterPlay(StringHash eventType, VariantMap &eventData)

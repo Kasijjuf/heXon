@@ -47,7 +47,7 @@ public:
     void AddToAffectors(Node* affector);
     void RemoveFromAffectors(Node* affector);
 //    const HashMap<Node*, RigidBody* >& GetAffectors() const { return hexAffectors_; }
-    const Vector<Pair<Vector3, float> > GetEffectVector() const;
+    const PODVector<Pair<Vector3, float> >& GetEffectVector() const;
 
     Tile* GetRandomTile(bool forMason = false);
     void FlashX(Color color);
@@ -60,12 +60,14 @@ private:
     Light* playLight_;
     HashSet<Node*> hexAffectors_;
     Vector<Tile*> tiles_;
+    PODVector<Pair<Vector3, float> > effectVector_;
 
     void Update(float timeStep) override;
 
     void EnterPlay(StringHash eventType, VariantMap &eventData);
     void EnterLobby(StringHash eventType, VariantMap &eventData);
 
+    void UpdateEffectVector(StringHash, VariantMap&);
 };
 
 #endif // TILEMASTER_H

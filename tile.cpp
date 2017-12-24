@@ -56,9 +56,7 @@ void Tile::Update(float timeStep)
     //Calculate periodic tile movement
     wave_ = 6.0f * pow(LucKey::Sine(Abs(centerDistExp_ - elapsedTime * 5.2625f)), 4.0f);
 
-    const Vector<Pair<Vector3, float>> hexAffectors{ node_->GetParentComponent<Arena>()->GetEffectVector() };
-
-    for (Pair<Vector3, float> hexAffector : hexAffectors) {
+    for (Pair<Vector3, float> hexAffector : node_->GetParentComponent<Arena>()->GetEffectVector()) {
 
         float offsetYPart{ Sqrt(hexAffector.second_) - (0.1f * LucKey::Distance(referencePosition_, hexAffector.first_)) };
         if (offsetYPart > 0.0f) {
