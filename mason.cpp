@@ -152,6 +152,8 @@ void Mason::Shoot()
 
     sinceShot_ = 0.0f;
     ++shots_;
+
+    PlaySample(MC->GetSample("Brick"), 0.88f);
 }
 
 int Mason::MaxShots()

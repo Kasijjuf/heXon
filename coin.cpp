@@ -20,7 +20,7 @@ Coin::Coin(Context* context) : SceneObject(context),
 }
 
 void Coin::OnNodeSet(Node* node)
-{ (void)node;
+{ if (!node) return;
 
     bubbleEmitter_ = node_->CreateChild("Bubbles")->CreateComponent<ParticleEmitter>();
     bubbleEmitter_->SetEffect(CACHE->GetResource<ParticleEffect>("Particles/Bubbles.xml"));
@@ -71,9 +71,8 @@ void Coin::Disable()
     bubbleEmitter_->SetEmitting(false);
 }
 
-void Coin::Update(float timeStep)
-{ (void)timeStep;
-
+void Coin::Update(float)
+{
     if (GetPosition().y_ < -23.0f) {
         Disable();
     }
@@ -82,12 +81,12 @@ void Coin::Update(float timeStep)
     bubbles->SetMinEmissionRate(Max(0.0f, Min(GetPosition().y_ + 2.3f, 2.3f * (rigidBody_->GetLinearVelocity().Length() - 3.0f))));
     bubbles->SetMaxEmissionRate(Max(0.0f, Min(GetPosition().y_ + 4.2f, 2.3f * (rigidBody_->GetLinearVelocity().Length() - 2.0f))));}
 
-void Coin::HandleNodeCollisionStart(StringHash eventType, VariantMap& eventData)
-{ (void)eventType;
-
+void Coin::HandleNodeCollisionStart(StringHash, VariantMap& eventData)
+{
     Node* otherNode{ static_cast<Node*>(eventData[NodeCollisionStart::P_OTHERNODE].GetPtr()) };
 
     if (otherNode->HasComponent<Ship>()) {
+
         Ship* ship{ otherNode->GetComponent<Ship>() };
         ship->GetPlayer()->AddScore(10);
         ship->PlaySample(MC->GetSample("Coin"), 0.16f);

@@ -19,7 +19,6 @@
 #ifndef LUCKEY_H
 #define LUCKEY_H
 
-#include <Urho3D/Urho3D.h>
 #include <Urho3D/Audio/Audio.h>
 #include <Urho3D/Audio/Sound.h>
 #include <Urho3D/Audio/SoundListener.h>
@@ -120,11 +119,12 @@ class Camera;
 using namespace Urho3D;
 namespace LucKey {
 
-enum SixaxisButton {  SB_SELECT, SB_LEFTSTICK, SB_RIGHTSTICK, SB_START,
-                      SB_DPAD_UP, SB_DPAD_RIGHT, SB_DPAD_DOWN, SB_DPAD_LEFT,
-                      SB_L2, SB_R2, SB_L1, SB_R1,
-                      SB_TRIANGLE, SB_CIRCLE, SB_CROSS, SB_SQUARE,
-                      SB_PS };
+enum SixaxisButton {  SB_CROSS, SB_CIRCLE, SB_SQUARE, SB_TRIANGLE,
+                      SB_SELECT, SB_PS, SB_START,
+                      SB_LEFTSTICK, SB_RIGHTSTICK,
+                      SB_L1, SB_R1,
+                      SB_DPAD_UP, SB_DPAD_DOWN, SB_DPAD_LEFT, SB_DPAD_RIGHT
+                   };
 
 unsigned IntVector2ToHash(IntVector2 vec);
 

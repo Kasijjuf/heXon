@@ -158,7 +158,7 @@ void SceneObject::BlinkCheck(StringHash eventType, VariantMap &eventData)
         }
         float boundsCheck{ flatPosition.Length() * LucKey::Cosine(M_DEGTORAD * flatPosition.Angle(hexantNormal)) };
         if (boundsCheck > radius){
-            if (node_->HasComponent<Bullet>()){
+            if (node_->HasComponent<Bullet>() || node_->HasComponent<Brick>()){
 
                 HitFX* hitFx{ GetSubsystem<SpawnMaster>()->Create<HitFX>() };
                 hitFx->Set(GetPosition(), 0, false);

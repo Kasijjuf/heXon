@@ -33,17 +33,17 @@ bool Settings::Load()
         File file(context_, MC->GetResourceFolder() + "/Settings.xml", FILE_READ);
         XMLFile configFile(context_);
         configFile.Load(file);
-        XMLElement graphics{ configFile.GetRoot().GetChild("Graphics") };
-        XMLElement audio{ configFile.GetRoot().GetChild("Audio") };
+        XMLElement graphicsElem{ configFile.GetRoot().GetChild("Graphics") };
+        XMLElement audioElem{ configFile.GetRoot().GetChild("Audio") };
 
-        if (graphics) {
+        if (graphicsElem) {
 
-            width_ = graphics.GetInt("Width");
-            height_ = graphics.GetInt("Height");
-            fullscreen_ = graphics.GetBool("Fullscreen");
+            width_ = graphicsElem.GetInt("Width");
+            height_ = graphicsElem.GetInt("Height");
+            fullscreen_ = graphicsElem.GetBool("Fullscreen");
 
-            antiAliasing_ = graphics.GetBool("AntiAliasing");
-            manyLights_ = graphics.GetBool("ManyLights");
+            antiAliasing_ = graphicsElem.GetBool("AntiAliasing");
+            manyLights_ = graphicsElem.GetBool("ManyLights");
 
             if (ENGINE->IsInitialized()) {
 
@@ -54,9 +54,9 @@ bool Settings::Load()
                     GRAPHICS->ToggleFullscreen();
             }
         }
-        if (audio) {
+        if (audioElem) {
 
-            AUDIO->SetMasterGain(SOUND_MUSIC, audio.GetFloat("MusicGain"));
+            AUDIO->SetMasterGain(SOUND_MUSIC, audioElem.GetFloat("MusicGain"));
         }
         return true;
 

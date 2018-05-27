@@ -49,7 +49,7 @@ protected:
     float countDown_;
 
     void CheckHealth();
-    void HandleNodeCollision(StringHash eventType, VariantMap &eventData);
+    void HandleNodeCollision(StringHash, VariantMap &eventData);
 private:
     int colorSet_;
 };

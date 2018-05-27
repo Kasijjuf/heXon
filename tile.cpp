@@ -41,6 +41,8 @@ void Tile::OnNodeSet(Node *node)
 
     referencePosition_ = node_->GetPosition();
     centerDistExp_ = static_cast<float>(exp2(static_cast<double>(0.75f * LucKey::Distance(Vector3::ZERO, referencePosition_))));
+
+    SetUpdateEventMask(1);
 }
 
 void Tile::Update(float timeStep)

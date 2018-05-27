@@ -19,8 +19,6 @@
 #ifndef MASTERCONTROL_H
 #define MASTERCONTROL_H
 
-#include <Urho3D/Urho3D.h>
-
 #include "luckey.h"
 #include "player.h"
 

@@ -34,13 +34,13 @@ public:
     void OnNodeSet(Node* node) override;
     void Set(Vector3 position, Vector3 direction);
     void Disable() override;
-    void HandleTriggerStart(StringHash eventType, VariantMap& eventData);
+    void HandleTriggerStart(StringHash, VariantMap&);
     void Update(float timeStep) override;
 private:
     RigidBody* rigidBody_;
     ParticleEmitter* particleEmitter_;
     float damage_;
-    float traveled_;
+//    float traveled_;
 };
 
 #endif // BRICK_H

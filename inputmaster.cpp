@@ -116,7 +116,7 @@ void InputMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
                     activeActions.player_[pId].Push(action);
             }
         //Handle eject
-        if (pressedButtons.Contains(SB_L2) && pressedButtons.Contains(SB_R2))
+        if (pressedButtons.Contains(SB_L1) && pressedButtons.Contains(SB_R1))
             if (p->GetShip())
                 p->GetShip()->Eject();
     }
@@ -243,6 +243,8 @@ void InputMaster::HandleJoystickButtonDown(Urho3D::StringHash eventType, Urho3D:
     int joystickId{ eventData[JoystickButtonDown::P_JOYSTICKID].GetInt() };
     SixaxisButton button{ static_cast<SixaxisButton>(eventData[JoystickButtonDown::P_BUTTON].GetInt()) };
 
+    Log::Write(LOG_INFO, String{eventData[JoystickButtonDown::P_BUTTON].GetInt()});
+
     if (!pressedJoystickButtons_[joystickId].Contains(button))
         pressedJoystickButtons_[joystickId].Push(button);
 
@@ -251,16 +253,16 @@ void InputMaster::HandleJoystickButtonDown(Urho3D::StringHash eventType, Urho3D:
     switch (button) {
     case SB_START: PauseButtonPressed();
         break;
-    case SB_L2: case SB_R2:
-        if (joystickState->GetButtonDown(SB_L2) &&
-                joystickState->GetButtonDown(SB_R2))
-            EjectButtonPressed(static_cast<int>(joystickId+1));
-        break;
     case SB_L1: case SB_R1:
         if (joystickState->GetButtonDown(SB_L1) &&
                 joystickState->GetButtonDown(SB_R1))
-            Screenshot();
+            EjectButtonPressed(static_cast<int>(joystickId + 1));
         break;
+//    case SB_L1: case SB_R1:
+//        if (joystickState->GetButtonDown(SB_L1) &&
+//                joystickState->GetButtonDown(SB_R1))
+//            Screenshot();
+//        break;
     default: break;
     }
 }

@@ -19,8 +19,6 @@
 #ifndef PICKUP_H
 #define PICKUP_H
 
-#include <Urho3D/Urho3D.h>
-
 #include "sceneobject.h"
 
 class Pickup : public SceneObject

@@ -12,11 +12,11 @@ public:
     Coin(Context* context);
     static void RegisterObject(Context* context);
     void OnNodeSet(Node* node) override;
-    void Update(float timeStep) override;
+    void Update(float) override;
     void Set(const Vector3 position) override;
     void Disable() override;
 
-    void HandleNodeCollisionStart(StringHash eventType, VariantMap& eventData);
+    void HandleNodeCollisionStart(StringHash, VariantMap& eventData);
 private:
     static StaticModelGroup* coinGroup_;
 

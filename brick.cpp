@@ -34,8 +34,8 @@ void Brick::RegisterObject(Context* context)
 }
 
 Brick::Brick(Context* context) : SceneObject(context),
-    damage_{4.2f},
-    traveled_{}
+    damage_{4.2f}
+//    traveled_{}
 {
 
 }
@@ -45,7 +45,6 @@ void Brick::OnNodeSet(Node* node)
 
     SceneObject::OnNodeSet(node);
 
-    big_ = false;
     MC->arena_->AddToAffectors(node_);
 
     rigidBody_ = node_->CreateComponent<RigidBody>();
@@ -63,7 +62,7 @@ void Brick::OnNodeSet(Node* node)
     particleEmitter_->SetEffect(CACHE->GetResource<ParticleEffect>("Particles/Brick.xml"));
 
     Light* light{ node_->CreateComponent<Light>() };
-    light->SetRange(4.2f);
+    light->SetRange(2.3f);
     light->SetBrightness(3.4f);
     light->SetColor(Color(1.0f, 1.0f, 1.0f));
 }
@@ -72,7 +71,7 @@ void Brick::Set(Vector3 position, Vector3 direction)
 {
     SceneObject::Set(position);
 
-    traveled_ = 0.0f;
+//    traveled_ = 0.0f;
 
     rigidBody_->ResetForces();
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
@@ -83,13 +82,11 @@ void Brick::Set(Vector3 position, Vector3 direction)
     node_->LookAt(position + direction);
     rigidBody_->ApplyImpulse(direction * 123.0f);
 
-    PlaySample(MC->GetSample("Brick"), 0.88f);
-
     SubscribeToEvent(node_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Brick, HandleTriggerStart));
 }
 
-void Brick::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
-{ (void)eventType; (void)eventData;
+void Brick::HandleTriggerStart(StringHash, VariantMap&)
+{
 
     if (!node_->IsEnabled())
         return;
@@ -113,11 +110,11 @@ void Brick::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
 
             collidingNode->GetComponent<ChaoMine>()->Hit(damage_, 0);
 
-        } /*else if (Spire* spire = collider->GetNode()->GetComponent<Spire>()) {
+        } else if (Spire* spire = collider->GetNode()->GetComponent<Spire>()) {
 
             spire->Shoot(false)->SetLinearVelocity(rigidBody_->GetLinearVelocity() * 0.23f);
             Disable();
-        }*/
+        }
     }
 }
 
@@ -134,8 +131,8 @@ void Brick::Disable()
 
 void Brick::Update(float timeStep)
 {
-    traveled_ += rigidBody_->GetLinearVelocity().Length() * timeStep;
+//    traveled_ += rigidBody_->GetLinearVelocity().Length() * timeStep;
 
-    if (traveled_ > 35.0f)
-        Disable();
+//    if (traveled_ > 35.0f)
+//        Disable();
 }

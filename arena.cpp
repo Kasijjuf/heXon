@@ -31,8 +31,8 @@ void Arena::RegisterObject(Context *context)
 
 Arena::Arena(Context* context):
     LogicComponent(context),
-    targetPosition_{Vector3::UP * 0.666f},
-    targetScale_{Vector3::ONE * 0.05f},
+    targetPosition_{ Vector3::UP * 0.666f },
+    targetScale_{ Vector3::ONE * 0.05f },
     hexAffectors_{}
 {
 
@@ -46,13 +46,14 @@ void Arena::OnNodeSet(Node *node)
 
     //Create hexagonal field
     //Lays a field of hexagons at the origin
-    int bigHexSize = 23;
-    for (int i = 0; i < bigHexSize; i++) {
-        for (int j = 0; j < bigHexSize; j++) {
+    int bigHexSize{ 23 };
+    for (int i{0}; i < bigHexSize; i++) {
+        for (int j{0}; j < bigHexSize; j++) {
             if (    i < (bigHexSize - bigHexSize / 4) + j / 2 &&                            //Exclude bottom right
                     i > (bigHexSize / 4) - (j + 1) / 2 &&                                   //Exclude bottom left
                     i + 1 < (bigHexSize - bigHexSize / 4) + ((bigHexSize - j + 1)) / 2 &&   //Exclude top right
                     i - 1 > (bigHexSize / 4) - ((bigHexSize - j + 2) / 2)) {                //Exclude top left
+
                 Vector3 tilePos{ (-bigHexSize / 2.0f + i) * 2.0f + j % 2, -0.1f, (-bigHexSize / 2.0f + j + 0.5f) * 1.8f };
 
                 Node* tileNode{ node_->CreateChild("Tile", LOCAL) };
@@ -106,6 +107,7 @@ void Arena::UpdateEffectVector(StringHash, VariantMap&)
 {
     effectVector_.Clear();
     for (Node* node : hexAffectors_) {
+
         if (node->IsEnabled()) {
 
             Pair<Vector3, float> pair{};
@@ -125,9 +127,8 @@ const PODVector<Pair<Vector3, float> >& Arena::GetEffectVector() const
     return effectVector_;
 }
 
-void Arena::EnterPlay(StringHash eventType, VariantMap &eventData)
-{ (void)eventType; (void)eventData;
-
+void Arena::EnterPlay(StringHash, VariantMap&)
+{
     targetPosition_ = Vector3::DOWN * 0.23f;
     targetScale_ = Vector3::ONE;
     for (Tile* t : tiles_){
@@ -136,9 +137,8 @@ void Arena::EnterPlay(StringHash eventType, VariantMap &eventData)
 
     playLight_->SetEnabled(true);
 }
-void Arena::EnterLobby(StringHash eventType, VariantMap &eventData)
-{ (void)eventType; (void)eventData;
-
+void Arena::EnterLobby(StringHash, VariantMap&)
+{
     targetPosition_ = Vector3::UP * 0.35f;
     targetScale_ = Vector3::ONE * 0.05f;
 
@@ -173,9 +173,10 @@ void Arena::Update(float timeStep)
 
 Tile* Arena::GetRandomTile(bool forMason)
 {
-    if (tiles_.Size()){
+    if (tiles_.Size()) {
         Tile* tile{ nullptr };
         while (!tile) {
+
             Tile* tryTile{ tiles_[Random((int)tiles_.Size())] };
             PODVector<PhysicsRaycastResult> hitResults;
             Ray spawnRay(tryTile->node_->GetPosition() - Vector3::UP, Vector3::UP);
@@ -198,6 +199,7 @@ Tile* Arena::GetRandomTile(bool forMason)
         }
         return tile;
     }
+    return nullptr;
 }
 
 void Arena::FlashX(Color color)

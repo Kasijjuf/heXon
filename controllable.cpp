@@ -66,8 +66,12 @@ void Controllable::Update(float timeStep)
                 actionSince_[a] += timeStep;
         }
     } else {
+        untilThought_ -= timeStep;
+        if (untilThought_ < 0.0f) {
+            untilThought_ = Random(0.023f, 0.1f);
 
-        Think();
+            Think();
+        }
     }
 }
 
@@ -77,6 +81,7 @@ void Controllable::SetMove(Vector3 move)
 
     if (move.Length() > 1.0f)
         move.Normalize();
+
     move_ = move;
 }
 

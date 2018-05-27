@@ -19,8 +19,6 @@
 #ifndef APPLE_H
 #define APPLE_H
 
-#include <Urho3D/Urho3D.h>
-
 #include "pickup.h"
 
 namespace Urho3D {

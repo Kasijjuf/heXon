@@ -46,7 +46,6 @@ public:
 
     void AddToAffectors(Node* affector);
     void RemoveFromAffectors(Node* affector);
-//    const HashMap<Node*, RigidBody* >& GetAffectors() const { return hexAffectors_; }
     const PODVector<Pair<Vector3, float> >& GetEffectVector() const;
 
     Tile* GetRandomTile(bool forMason = false);
@@ -64,8 +63,8 @@ private:
 
     void Update(float timeStep) override;
 
-    void EnterPlay(StringHash eventType, VariantMap &eventData);
-    void EnterLobby(StringHash eventType, VariantMap &eventData);
+    void EnterPlay(StringHash, VariantMap &);
+    void EnterLobby(StringHash, VariantMap &);
 
     void UpdateEffectVector(StringHash, VariantMap&);
 };

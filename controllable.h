@@ -40,8 +40,8 @@ public:
     virtual void HandleSetControlled() {};
     virtual void ClearControl();
 
-    virtual void EnterLobby(StringHash eventType, VariantMap& eventData) {};
-    virtual void EnterPlay(StringHash eventType, VariantMap& eventData) {};
+    virtual void EnterLobby(StringHash eventType, VariantMap& eventData) {}
+    virtual void EnterPlay(StringHash eventType, VariantMap& eventData) {}
     virtual void Think();
 
     Player* GetPlayer();
@@ -57,6 +57,7 @@ protected:
 
     std::bitset<4> actions_;
     HashMap<int, float> actionSince_;
+    float untilThought_;
 
     AnimatedModel* model_;
     RigidBody* rigidBody_;
