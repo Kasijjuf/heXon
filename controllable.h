@@ -39,6 +39,7 @@ public:
     void SetAim(Vector3 aim);
     virtual void HandleSetControlled() {};
     virtual void ClearControl();
+    bool HasPath() const { return path_.Size() != 0; }
 
     virtual void EnterLobby(StringHash eventType, VariantMap& eventData) {}
     virtual void EnterPlay(StringHash eventType, VariantMap& eventData) {}

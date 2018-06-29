@@ -184,18 +184,20 @@ void InputMaster::HandleActions(const InputActions& actions)
         auto playerInputActions = actions.player_[pId];
 
         Controllable* controlled{ controlledByPlayer_[pId] };
-        if (controlled && controlled->GetPlayer()->IsHuman()){
+        if (controlled && controlled->GetPlayer()->IsHuman()) {
+            if (!controlled->HasPath()) {
 
-            Vector3 stickMove{ Vector3(leftStickPosition_[pId-1].x_, 0.0f, leftStickPosition_[pId-1].y_) };
-            Vector3 stickAim{  Vector3(rightStickPosition_[pId-1].x_, 0.0f, rightStickPosition_[pId-1].y_) };
+                Vector3 stickMove{ Vector3(leftStickPosition_[pId-1].x_, 0.0f, leftStickPosition_[pId-1].y_) };
+                Vector3 stickAim{  Vector3(rightStickPosition_[pId-1].x_, 0.0f, rightStickPosition_[pId-1].y_) };
 
-            controlled->SetMove(GetMoveFromActions(playerInputActions) + stickMove);
-            controlled->SetAim(GetAimFromActions(playerInputActions) + stickAim);
+                controlled->SetMove(GetMoveFromActions(playerInputActions) + stickMove);
+                controlled->SetAim(GetAimFromActions(playerInputActions) + stickAim);
 
-            std::bitset<4>restActions{};
-            restActions[0] = playerInputActions->Contains(PlayerInputAction::RUN);
+                std::bitset<4>restActions{};
+                restActions[0] = playerInputActions->Contains(PlayerInputAction::RUN);
 
-            controlled->SetActions(restActions);
+                controlled->SetActions(restActions);
+            }
         }
     }
 }

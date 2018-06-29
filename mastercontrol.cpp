@@ -381,6 +381,7 @@ void MasterControl::CreateScene()
     scene_->SetTimeScale(1.23f);
 
     world.octree = scene_->CreateComponent<Octree>();
+    world.octree->SetSize(BoundingBox(-42.0f * Vector3::ONE, 42.0f * Vector3::ONE), 8);
     physicsWorld_ = scene_->CreateComponent<PhysicsWorld>();
 //    physicsWorld_->SetGravity(Vector3::ZERO);
     scene_->CreateComponent<DebugRenderer>();
