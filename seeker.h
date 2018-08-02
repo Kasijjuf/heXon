@@ -46,14 +46,14 @@ protected:
     RigidBody* rigidBody_;
     Node* target_;
 //    RibbonTrail* tailGen_;
-    TailGenerator* tailGen_;
+    Pair<TailGenerator*, TailGenerator*> tailGens_;
 
     float age_;
     float lifeTime_;
     float damage_;
 private:
-    void AddTail();
-    void RemoveTail();
+    void AddTails();
+    void RemoveTails();
     Vector3 TargetPosition();
 };
 

@@ -42,8 +42,10 @@ void Heart::OnNodeSet(Node *node)
 
     Vector<ColorFrame> colorFrames{};
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 0.0f));
-    colorFrames.Push(ColorFrame(Color(0.7f, 0.23f, 0.23f, 0.42f), 0.1f));
+    colorFrames.Push(ColorFrame(Color(0.7f, 0.23f, 0.23f, 0.42f), 0.2f));
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 0.4f));
+    colorFrames.Push(ColorFrame(Color(0.7f, 0.23f, 0.23f, 0.75f), 0.7f));
+    colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 1.2f));
     particleEmitter_->GetEffect()->SetColorFrames(colorFrames);
 }
 

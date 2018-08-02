@@ -119,10 +119,11 @@ class Camera;
 using namespace Urho3D;
 namespace LucKey {
 
-enum SixaxisButton {  SB_CROSS, SB_CIRCLE, SB_SQUARE, SB_TRIANGLE,
-                      SB_SELECT, SB_PS, SB_START,
-                      SB_LEFTSTICK, SB_RIGHTSTICK,
+enum SixaxisButton {  SB_CROSS, SB_CIRCLE, SB_TRIANGLE, SB_SQUARE,
                       SB_L1, SB_R1,
+                      SB_L2, SB_R2,
+                      SB_SELECT, SB_START, SB_PS,
+                      SB_LEFTSTICK, SB_RIGHTSTICK,
                       SB_DPAD_UP, SB_DPAD_DOWN, SB_DPAD_LEFT, SB_DPAD_RIGHT
                    };
 

@@ -72,7 +72,8 @@ private:
     int heartCount_;
 
     Muzzle* muzzle_;
-    ParticleEmitter* particleEmitter_;
+    ParticleEmitter* shineEmitter_;
+    Vector<ParticleEmitter*> bubbleEmitters_;
     Vector<TailGenerator*> tailGens_;
     Node* shieldNode_;
     StaticModel* shieldModel_;

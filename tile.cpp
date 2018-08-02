@@ -26,7 +26,8 @@ void Tile::RegisterObject(Context *context)
 Tile::Tile(Context* context):
     LogicComponent(context),
     lastOffsetY_{ 0.666f },
-    flipped_{ static_cast<bool>(Random(2)) }
+    flipped_{ static_cast<bool>(Random(2)) },
+    untilFreeCheck_{Random(0.23f)}
 {
 }
 
@@ -36,17 +37,28 @@ void Tile::OnNodeSet(Node *node)
     node_->SetScale(1.1f);
     model_ = node_->CreateComponent<StaticModel>();
     model_->SetModel(MC->GetModel("Hexagon"));
-    model_->SetMaterial(MC->GetMaterial("BackgroundTile")->Clone());
+    model_->SetMaterial(MC->GetMaterial("BackgroundTile"));
     model_->SetCastShadows(false);
 
     referencePosition_ = node_->GetPosition();
     centerDistExp_ = static_cast<float>(exp2(static_cast<double>(0.75f * LucKey::Distance(Vector3::ZERO, referencePosition_))));
 
-    SetUpdateEventMask(1);
+    SetUpdateEventMask(USE_UPDATE);
 }
 
 void Tile::Update(float timeStep)
-{ (void)timeStep;
+{
+    untilFreeCheck_ -= timeStep;
+    if (untilFreeCheck_ < 0.0f){
+        PODVector<PhysicsRaycastResult> hitResults;
+        Ray tileRay(node_->GetWorldPosition() - Vector3::UP, Vector3::UP);
+        if (MC->PhysicsRayCast(hitResults, tileRay, 5.0f)) {
+            free_ = false;
+        } else {
+            free_ = true;
+        }
+        untilFreeCheck_ = 0.23f - Random(0.05f);
+    }
 
     float elapsedTime{ MC->scene_->GetElapsedTime() };
     float offsetY{ 0.0f };
@@ -56,11 +68,11 @@ void Tile::Update(float timeStep)
         node_->SetRotation(Quaternion(Random(3) * 120.0f + 60.0f * flipped_, Vector3::UP));
 
     //Calculate periodic tile movement
-    wave_ = 6.0f * pow(LucKey::Sine(Abs(centerDistExp_ - elapsedTime * 5.2625f)), 4.0f);
+    wave_ = 8.0f * pow(LucKey::Sine(Abs(centerDistExp_ - elapsedTime * 5.2625f)), 4.0f);
 
     for (Pair<Vector3, float> hexAffector : node_->GetParentComponent<Arena>()->GetEffectVector()) {
 
-        float offsetYPart{ Sqrt(hexAffector.second_) - (0.1f * LucKey::Distance(referencePosition_, hexAffector.first_)) };
+        float offsetYPart{ hexAffector.second_ - (0.1f * LucKey::Distance(referencePosition_, hexAffector.first_)) };
         if (offsetYPart > 0.0f) {
             offsetYPart = Pow(offsetYPart, 4.0f);
             offsetY += offsetYPart;
@@ -82,5 +94,5 @@ void Tile::Update(float timeStep)
     Color color{ brightness + offsetY * lobby,
                  brightness + offsetY * 0.00042f * (MC->Sine(23.0f, -23.0f - 1000.0f * lobby, 23.0f + 1000.0f * lobby, 23.0f) * wave_),
                  brightness - Random(0.23f) * lobby, brightness + (0.023f * wave_) };
-    model_->GetMaterial(0)->SetShaderParameter("MatDiffColor", color);
+//    model_->GetMaterial(0)->SetShaderParameter("MatDiffColor", color);
 }

@@ -37,6 +37,7 @@ public:
     Tile(Context* context);
     static void RegisterObject(Context* context);
     void OnNodeSet(Node* node) override;
+    bool IsFree() const { return free_; }
 private:
     void Update(float timeStep) override;
 
@@ -46,6 +47,8 @@ private:
     float lastOffsetY_;
     StaticModel* model_;
     bool flipped_;
+    bool free_;
+    float untilFreeCheck_;
 };
 
 #endif // TILE_H

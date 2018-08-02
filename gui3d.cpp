@@ -242,7 +242,7 @@ void GUI3D::CountScore()
 void GUI3D::EnterLobby(StringHash eventType, VariantMap &eventData)
 { (void)eventType; (void)eventData;
 
-    node_->SetEnabledRecursive(true );
+    node_->SetEnabledRecursive(true);
     SetHeartsAndApples(0, 0);
     SetScore(score_);
 

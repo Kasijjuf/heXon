@@ -60,7 +60,7 @@ void Enemy::OnNodeSet(Node *node)
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 0.0f));
     colorFrames.Push(ColorFrame(Color(color_.r_ * 0.666f,
                                       color_.g_ * 0.666f,
-                                      color_.b_ * 0.666f, 0.5f), 0.1f));
+                                      color_.b_ * 0.666f, 0.75f), 0.1f));
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 1.0f));
     particleEffect_->SetColorFrames(colorFrames);
     particleEmitter_->SetEffect(particleEffect_);

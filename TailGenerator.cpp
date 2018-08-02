@@ -40,6 +40,7 @@ TailGenerator::TailGenerator(Context* context) :
     bbmax = Vector3::ZERO;
     bbmin = Vector3::ZERO;
     vertical_ = horizontal_ = true;
+    mirrored_ = false;
 }
 
 TailGenerator::~TailGenerator()
@@ -76,19 +77,22 @@ void TailGenerator::Update(const FrameInfo &frame)
 {
     Drawable::Update(frame);
 }
-
+void TailGenerator::ClearPointPath()
+{
+    fullPointPath.Clear();
+}
 void TailGenerator::UpdateTail()
 {
-    Vector3 wordPosition = node_->GetWorldPosition();
-    float path = (previousPosition_ - wordPosition).Length();
+    Vector3 worldPosition = node_->GetWorldPosition();
+    float path = (previousPosition_ - worldPosition).Length();
 
     if (path > tailLength_)
     {
         // новая точка пути
         Tail newPoint;
-        newPoint.position = wordPosition;
+        newPoint.position = worldPosition;
 
-        Vector3 forwardmotion = matchNode_ ? GetNode()->GetWorldDirection() : (previousPosition_ - wordPosition).Normalized();
+        Vector3 forwardmotion = matchNode_ ? GetNode()->GetWorldDirection() : (previousPosition_ - worldPosition).Normalized();
         Vector3 rightmotion = matchNode_ ? GetNode()->GetWorldRight() : forwardmotion.CrossProduct(Vector3::UP);
         rightmotion.Normalize();
         newPoint.worldRight = rightmotion;
@@ -96,7 +100,7 @@ void TailGenerator::UpdateTail()
 
         //forceBuildMeshInWorkerThread_ = true;
         forceUpdateVertexBuffer_ = true;
-        previousPosition_ = wordPosition;
+        previousPosition_ = worldPosition;
         fullPointPath.Push(newPoint);    // Весь путь, все точки за все время работы компонента.
         //knots.Push(wordPosition);        // Для сплайна опорные
 
@@ -302,9 +306,18 @@ void TailGenerator::UpdateVertexBuffer(const FrameInfo& frame)
 
             //v.color_ = c.ToUInt();
             v.uv_ = Vector2(0.0f, 1.0f);
-            v.position_ = t[sub].position - t[sub].worldRight * scale_;
+            v.position_ = t[sub].position - t[sub].worldRight * scale_ / M_SQRT2 + Vector3::UP / M_SQRT2 * (i % 2 ? scale_ : -scale_);
             tailMesh.Push(v);
         }
+
+        if (mirrored_) {
+
+            for (TailVertex& tv : tailMesh) {
+
+                tv.position_ -= 2.0f * (tv.position_ - node_->GetWorldPosition()).DotProduct(node_->GetWorldDirection()) * node_->GetWorldDirection();
+            }
+        }
+
     }
 
     // Upper part of tail (strip in xy-plane)
@@ -331,7 +344,7 @@ void TailGenerator::UpdateVertexBuffer(const FrameInfo& frame)
 
     // copy new mesh to vertex buffer
     unsigned meshVertexCount = tailMesh.Size();
-    batches_[0].geometry_->SetDrawRange(TRIANGLE_STRIP, 0, meshVertexCount + (horizontal_ && vertical_ ? 2 : 0), false);
+    batches_[0].geometry_->SetDrawRange(LINE_STRIP, 0, meshVertexCount + (horizontal_ && vertical_ ? 2 : 0), false);
     // get pointer
     TailVertex* dest = (TailVertex*)vertexBuffer_->Lock(0, meshVertexCount, true);
     if (!dest)
@@ -392,6 +405,11 @@ void TailGenerator::SetDrawVertical(bool value)
 void TailGenerator::SetDrawHorizontal(bool value)
 {
     horizontal_ = value;
+    //SetupBatches();
+}
+void TailGenerator::SetDrawMirrored(bool value)
+{
+    mirrored_ = value;
     //SetupBatches();
 }
 

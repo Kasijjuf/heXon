@@ -115,6 +115,11 @@ void SpawnMaster::Restart()
     Activate();
 }
 
+//void SpawnMaster::SpawnPattern()
+//{
+
+//}
+
 Vector3 SpawnMaster::SpawnPoint(bool forMason)
 {
     Tile* randomTile{ MC->arena_->GetRandomTile(forMason) };

@@ -99,8 +99,11 @@ void Ship::OnNodeSet(Node *node)
     model_ = node_->CreateChild("Model")->CreateComponent<AnimatedModel>();
     model_->SetModel(MC->GetModel("KlåMk10"));
 
-    particleEmitter_ = node_->CreateComponent<ParticleEmitter>();
-    particleEmitter_->SetEmitting(false);
+    shineEmitter_ = node_->CreateComponent<ParticleEmitter>();
+    shineEmitter_->SetEmitting(false);
+
+    CreateTails();
+    SetTailsEnabled(false);
 
     shieldNode_ = node_->CreateChild("Shield");
     shieldModel_ = shieldNode_->CreateComponent<StaticModel>();
@@ -148,10 +151,18 @@ void Ship::SetColors()
     SharedPtr<ParticleEffect> particleEffect{ CACHE->GetTempResource<ParticleEffect>("Particles/Shine.xml") };
     Vector<ColorFrame> colorFrames{};
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 0.0f));
-    colorFrames.Push(ColorFrame(MC->colorSets_[colorSet_].colors_.first_ * 0.23f));
-    colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 0.4f));
+    colorFrames.Push(ColorFrame(MC->colorSets_[colorSet_].colors_.first_ * 0.23f, 0.42f));
+    colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 1.2f));
     particleEffect->SetColorFrames(colorFrames);
-    particleEmitter_->SetEffect(particleEffect);
+    shineEmitter_->SetEffect(particleEffect);
+
+    for (ParticleEmitter* be : bubbleEmitters_) {
+        Vector<ColorFrame> colorFrames{};
+        colorFrames.Push(ColorFrame(MC->colorSets_[colorSet_].colors_.first_ * 23.0f, 0.0f));
+        colorFrames.Push(ColorFrame(MC->colorSets_[colorSet_].colors_.first_, 0.2f));
+        colorFrames.Push(ColorFrame(Color(1.0f, 1.0f, 1.0f, 0.0f), 0.3f));
+        be->GetEffect()->SetColorFrames(colorFrames);
+    }
 }
 
 void Ship::HandleSetControlled()
@@ -174,10 +185,9 @@ void Ship::EnterPlay(StringHash eventType, VariantMap &eventData)
 
     rigidBody_->SetMass(1.0f);
     rigidBody_->ApplyImpulse(node_->GetDirection() * 13.0f);
-    particleEmitter_->SetEmitting(true);
+    shineEmitter_->SetEmitting(true);
 
-    CreateTails();
-
+    SetTailsEnabled(true);
 }
 void Ship::EnterLobby(StringHash eventType, VariantMap &eventData)
 {
@@ -190,17 +200,27 @@ void Ship::EnterLobby(StringHash eventType, VariantMap &eventData)
     Set(initialPosition_, initialRotation_);
     model_->GetNode()->SetPosition(Vector3::ZERO);
     rigidBody_->SetMass(0.0f);
-    particleEmitter_->SetEmitting(false);
+    shineEmitter_->SetEmitting(false);
 
     shieldMaterial_->SetShaderParameter("MatDiffColor", Color::BLACK);
 
-    RemoveTails();
+    SetTailsEnabled(false);
 }
-void Ship::SetTailsEnabled(bool enabled)
+void Ship::SetTailsEnabled(bool enable)
 {
     for (TailGenerator* t : tailGens_) {
 
-        t->SetEnabled(enabled);
+        if (enable)
+            t->ClearPointPath();
+
+        t->SetEnabled(enable);
+    }
+    for (ParticleEmitter* be : bubbleEmitters_) {
+
+        if (!enable)
+            be->RemoveAllParticles();
+
+        be->SetEmitting(enable);
     }
 }
 
@@ -220,18 +240,24 @@ void Ship::CreateTails()
 
     for (int t{0}; t < 3; ++t) {
 
+        bool center{ t==1 };
         Node* tailNode{ node_->CreateChild("Tail") };
-        tailNode->SetPosition(Vector3(-0.85f + 0.85f * t, t==1? 0.0f : -0.5f, t==1? -0.5f : -0.23f));
+        tailNode->SetPosition(Vector3(-0.85f + 0.85f * t, center ? 0.0f : -0.5f, center ? -0.5f : -0.23f));
+        tailNode->SetRotation(Quaternion(-30.0f * t, Vector3::FORWARD));
 
         TailGenerator* tailGen{ tailNode->CreateComponent<TailGenerator>() };
+        tailGen->SetMatchNodeOrientation(true);
         tailGen->SetDrawHorizontal(true);
         tailGen->SetDrawVertical(false);
-        tailGen->SetTailLength(t==1 ? 0.05f : 0.025f);
-        tailGen->SetNumTails(t==1 ? 13 : 7);
-        tailGen->SetWidthScale(t==1 ? 0.5f : 0.13f);
+        tailGen->SetNumTails(10);
         tailGen->SetColorForHead(MC->colorSets_[colorSet_].colors_.first_);
-        tailGen->SetColorForTip(MC->colorSets_[colorSet_].colors_.first_);
+        tailGen->SetColorForTip(MC->colorSets_[colorSet_].colors_.first_ * 0.0f);
         tailGens_.Push(tailGen);
+
+        ParticleEmitter* bubbleEmitter{ tailNode->CreateComponent<ParticleEmitter>() };
+        bubbleEmitter->SetEffect(CACHE->GetTempResource<ParticleEffect>("Particles/TailBubbles.xml"));
+
+        bubbleEmitters_.Push(bubbleEmitter);
     }
 }
 
@@ -279,15 +305,25 @@ void Ship::Update(float timeStep)
     }
 
     //Update tails
-    float velocityToScale{ Clamp(0.13f * rigidBody_->GetLinearVelocity().Length(), 0.0f, 1.0f) };
+    float velocityToScale{ Clamp(0.13f * rigidBody_->GetLinearVelocity().Length() - 0.1f, 0.0f, 1.0f) };
 
     for (TailGenerator* tailGen : tailGens_) {
 
         bool centerTail{ tailGen->GetNode()->GetPosition().x_ == 0.0f };
 
-        tailGen->SetTailLength(velocityToScale * (centerTail ? 0.1f : 0.075f));
-        tailGen->SetNumTails((centerTail ? 13 : 7) * (1 / (23.0f * timeStep + 1.0f)));
-        tailGen->SetWidthScale(velocityToScale * (centerTail ? 0.666f : 0.23f));
+        tailGen->SetTailLength(velocityToScale * (centerTail ? 0.42f : 0.23f));
+        tailGen->SetWidthScale(velocityToScale * (centerTail ? 0.42f : 0.23f));
+    }
+    for (ParticleEmitter* be : bubbleEmitters_) {
+
+        ParticleEffect* bubbleEffect{ be->GetEffect() };
+
+        bubbleEffect->SetMinDirection(-node_->GetDirection());
+        bubbleEffect->SetMaxDirection(-node_->GetDirection());
+        bubbleEffect->SetMinVelocity(velocityToScale);
+        bubbleEffect->SetMaxVelocity(velocityToScale * 2.3f);
+        bubbleEffect->SetMinEmissionRate(23.0f * Max(0.0f, velocityToScale));
+        bubbleEffect->SetMaxEmissionRate(42.0f * Max(0.0f, velocityToScale));
     }
 
     //Shooting
@@ -500,6 +536,7 @@ void Ship::Think()
 {
     Vector3 move{ move_ };
 
+    //Variation between auto pilots
     float playerFactor{ 1.0f };
     switch (GetPlayer()->GetPlayerId()){
     case 1: playerFactor = 2.3f; break;
@@ -508,6 +545,7 @@ void Ship::Think()
     case 4: playerFactor = 5.0f; break;
     }
 
+    //Slight delay
     if (MC->GetSinceStateChange() < playerFactor * 0.1f){
         move = Vector3::ZERO;
         return;

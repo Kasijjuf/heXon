@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <particleeffect>
 	<material name="Materials/SmallBubble.xml" />
-	<numparticles value="235" />
+	<numparticles value="123" />
 	<updateinvisible enable="true" />
 	<relative enable="false" />
 	<scaled enable="true" />

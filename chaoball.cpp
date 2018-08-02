@@ -47,11 +47,11 @@ void ChaoBall::OnNodeSet(Node *node)
 
     Vector<ColorFrame> colorFrames;
     colorFrames.Push(ColorFrame(Color(0.0f, 1.0f, 0.0f, 0.0f), 0.0f));
-    colorFrames.Push(ColorFrame(Color(0.23f, 0.05f, 0.5f, 0.23f), 0.1f));
+    colorFrames.Push(ColorFrame(Color(0.23f, 0.05f, 0.5f, 0.42f), 0.1f));
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 0.2f));
-    colorFrames.Push(ColorFrame(Color(0.666f, 0.0f, 0.0f, 0.42f), 0.25f));
-    colorFrames.Push(ColorFrame(Color(0.0f, 0.666f, 0.0f, 0.42f), 0.3f));
-    colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.666f, 0.42f), 0.35f));
+    colorFrames.Push(ColorFrame(Color(0.666f, 0.0f, 0.0f, 0.55f), 0.25f));
+    colorFrames.Push(ColorFrame(Color(0.0f, 0.666f, 0.0f, 0.55f), 0.3f));
+    colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.666f, 0.55f), 0.35f));
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 0.4f));
     particleEmitter_->GetEffect()->SetColorFrames(colorFrames);
 

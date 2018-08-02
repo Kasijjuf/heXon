@@ -114,8 +114,13 @@ void Arena::UpdateEffectVector(StringHash, VariantMap&)
             pair.first_ = node->GetWorldPosition();
             pair.second_ = node->GetComponent<RigidBody>()->GetMass();
 
-            if (node->HasComponent<Explosion>() || node->HasTag("Pickup"))
-                pair.second_ *= 1.5f;
+            if (node->HasComponent<Explosion>())
+                pair.second_ *= 1.23f;
+
+            pair.second_ = sqrt(pair.second_);
+
+            if (node->HasTag("Pickup"))
+                pair.second_ *= -2.3f;
 
             effectVector_.Push(pair);
         }
@@ -177,24 +182,21 @@ Tile* Arena::GetRandomTile(bool forMason)
         Tile* tile{ nullptr };
         while (!tile) {
 
-            Tile* tryTile{ tiles_[Random((int)tiles_.Size())] };
-            PODVector<PhysicsRaycastResult> hitResults;
-            Ray spawnRay(tryTile->node_->GetPosition() - Vector3::UP, Vector3::UP);
-            if (!MC->PhysicsRayCast(hitResults, spawnRay, 23.0f, 10.0f)) {
-                if (!forMason)
-                    tile = tryTile;
-                else {
-                    bool central{ false };
-                    for (float angle : {0.0f, 60.0f, 120.0f}) {
-                        Vector3 axis{ Quaternion(angle, Vector3::UP) * Vector3::FORWARD };
-                        float distanceToCenter{ Abs(tryTile->GetNode()->GetWorldPosition().ProjectOntoAxis(axis)) };
-                        if ( distanceToCenter < 1.0f || distanceToCenter > 19.0f){
-                            central = true;
-                        }
+            Tile* tryTile{ tiles_[Random() * tiles_.Size()] };
+
+            if (forMason) {
+
+                for (float angle : {0.0f, 60.0f, 120.0f}) {
+                    Vector3 axis{ Quaternion(angle, Vector3::UP) * Vector3::FORWARD };
+                    float distanceToCenter{ Abs(tryTile->GetNode()->GetWorldPosition().ProjectOntoAxis(axis)) };
+                    if ( distanceToCenter < 1.0f || distanceToCenter > 19.0f){
+                        continue;
                     }
-                    if (!central)
-                        tile = tryTile;
                 }
+            }
+
+            if (tryTile->IsFree()) {
+                tile = tryTile;
             }
         }
         return tile;

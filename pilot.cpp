@@ -356,10 +356,12 @@ void Pilot::EnterLobbyThroughDoor()
     node_->SetEnabledRecursive(true);
 
     node_->SetPosition(SPAWNPOS);
-    node_->SetRotation(Quaternion(180.0f, Vector3::UP));
-    rigidBody_->ApplyImpulse(Vector3::BACK);
+    path_.Clear();
+    path_.Push(Vector3(node_->GetPosition().x_, node_->GetPosition().y_, 4.5f));
 
-    NAVMESH->FindPath(path_, node_->GetPosition(), node_->GetPosition() + Vector3::BACK * 3.0f);
+    node_->SetRotation(Quaternion(180.0f, Vector3::UP));
+    rigidBody_->ApplyImpulse(Vector3::BACK * 5.0f);
+
 
     MC->GetComponentsInScene<Door>()[0]->hasBeenOpen_ = false;
 

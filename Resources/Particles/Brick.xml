@@ -1,30 +1,29 @@
 <?xml version="1.0"?>
 <particleeffect>
 	<material name="Materials/Flash.xml" />
-	<numparticles value="666" />
+	<numparticles value="42" />
 	<updateinvisible enable="true" />
 	<relative enable="false" />
 	<scaled enable="true" />
-	<sorted enable="true" />
+	<sorted enable="false" />
 	<fixedscreensize enable="false" />
 	<animlodbias value="0" />
 	<emittertype value="Sphere" />
 	<emittersize value="0 0 0" />
-	<direction min="-0.01 -1 -0.01" max="0.01 -1 0.01" />
+	<direction min="-0.01 -2 -0.01" max="0.01 -2 0.01" />
 	<constantforce value="0 42 0" />
-	<dampingforce value="10" />
+	<dampingforce value="5" />
 	<activetime value="0" />
 	<inactivetime value="0" />
-	<emissionrate min="512" max="512" />
-	<particlesize min="0.23 2" max="0.5 1.23" />
-	<timetolive min="0.13" max="0.13" />
-	<velocity min="5" max="-23" />
+	<emissionrate min="123" max="420" />
+	<particlesize min="0.42 2.3" max="0.55 2.0" />
+	<timetolive min="0.13" max="0.23" />
+	<velocity min="2" max="3" />
 	<rotation min="-5" max="5" />
-	<rotationspeed min="-5" max="5" />
+	<rotationspeed min="-13" max="13" />
 	<sizedelta add="-5" mul="-3" />
 	<faceCameraMode value="Direction" />
-	<colorfade color="0 0 0 0" time="0" />
-	<colorfade color="0.42 0.5 1 1" time="0.01" />
+	<colorfade color="0.42 0.5 1 1" time="0" />
 	<colorfade color="1 0.5 1 1" time="0.1" />
-	<colorfade color="0 0 0 0" time="0.13" />
+	<colorfade color="0 0 0 0" time="0.23" />
 </particleeffect>

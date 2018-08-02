@@ -96,6 +96,8 @@ public:
     const Color& GetColorForHead() const { return tailHeadColor; }
     const Color& GetColorForTip() const { return tailTipColor;  }
 
+    void ClearPointPath();
+    void SetDrawMirrored(bool value);
 protected:
     /// Handle node being assigned.
     virtual void OnNodeSet(Node* node);
@@ -129,6 +131,8 @@ private:
     bool forceUpdateVertexBuffer_;
     ///
     bool vertical_;
+    ///
+    bool mirrored_;
     ///
     bool matchNode_;
     ///

@@ -30,7 +30,7 @@ enum Hair{HAIR_BALD, HAIR_SHORT, HAIR_MOHAWK, HAIR_SEAGULL, HAIR_MUSTAIN, HAIR_F
 
 class Pilot : public Controllable
 {
-#define SPAWNPOS Vector3(playerId_ * 0.8f - 2.1f - Random(0.05f), 0.0f, 7.0f)
+#define SPAWNPOS Vector3(playerId_ * 0.666f - 1.8f - Random(0.03f), 0.0f, 8.0f)
 
     URHO3D_OBJECT(Pilot, Controllable);
     friend class Highest;

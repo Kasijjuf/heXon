@@ -30,7 +30,7 @@ void Spire::RegisterObject(Context *context)
 
 Spire::Spire(Context* context):
     Enemy(context),
-    initialShotInterval_{5.0f},
+    initialShotInterval_{2.3f},
     shotInterval_{initialShotInterval_},
     sinceLastShot_{0.0f}
 {
@@ -93,7 +93,7 @@ void Spire::Update(float timeStep)
 void Spire::Hit(float damage, int ownerID)
 {
     Enemy::Hit(damage, ownerID);
-    shotInterval_ = initialShotInterval_ - 3.0f * panic_;
+    shotInterval_ = initialShotInterval_ - panic_;
 }
 
 void Spire::Set(Vector3 position)

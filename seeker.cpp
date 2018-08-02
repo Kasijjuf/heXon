@@ -35,10 +35,10 @@ void Seeker::RegisterObject(Context *context)
 
 Seeker::Seeker(Context* context):
     SceneObject(context),
-    tailGen_{},
+    tailGens_{},
     age_{0.0f},
-    lifeTime_{7.5f},
-    damage_{2.3f}
+    lifeTime_{4.2f},
+    damage_{1.23f}
 {
 
 }
@@ -54,21 +54,21 @@ void Seeker::OnNodeSet(Node *node)
     big_ = false;
 
     rigidBody_ = node_->CreateComponent<RigidBody>();
-    rigidBody_->SetMass(2.3f);
-    rigidBody_->SetLinearDamping(0.23f);
+    rigidBody_->SetMass(1.23f);
+    rigidBody_->SetLinearDamping(0.42f);
     rigidBody_->SetTrigger(true);
     rigidBody_->SetLinearFactor(Vector3::ONE - Vector3::UP);
 
     CollisionShape* trigger{ node_->CreateComponent<CollisionShape>() };
-    trigger->SetSphere(1.0f);
+    trigger->SetSphere(0.666f);
 
     ParticleEmitter* particleEmitter{ node_->CreateComponent<ParticleEmitter>() };
     particleEmitter->SetEffect(CACHE->GetResource<ParticleEffect>("Particles/Seeker.xml"));
 
-    AddTail();
+    AddTails();
 
     Light* light{ node_->CreateComponent<Light>() };
-    light->SetRange(6.66f);
+    light->SetRange(4.2f);
     light->SetBrightness(2.3f);
     light->SetColor(Color(1.0f, 1.0f, 1.0f));
 }
@@ -82,6 +82,14 @@ void Seeker::Update(float timeStep)
         Disable();
     }
 
+    node_->LookAt(node_->GetWorldPosition() + rigidBody_->GetLinearVelocity().Normalized());
+
+    for (TailGenerator* tg : {tailGens_.first_, tailGens_.second_} ) {
+        if (tg) {
+            tg->SetTailLength(rigidBody_->GetLinearVelocity().Length() * 0.023 + 0.042f);
+            tg->SetWidthScale(MC->Sine(rigidBody_->GetLinearVelocity().Length(), 0.23f, 0.42f, Random(0.5f)));
+        }
+    }
 }
 
 void Seeker::FixedUpdate(float timeStep)
@@ -137,7 +145,7 @@ void Seeker::Set(Vector3 position, bool sound)
     SceneObject::Set(position);
     rigidBody_->ResetForces();
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
-    AddTail();
+    AddTails();
 
     if (sound){
 //        PlaySample(MC->GetSample("Seeker"), 0.666f);
@@ -152,7 +160,7 @@ void Seeker::Set(Vector3 position, bool sound)
 }
 void Seeker::Disable()
 {
-    RemoveTail();
+    RemoveTails();
     SceneObject::Disable();
 }
 
@@ -161,21 +169,35 @@ void Seeker::SetLinearVelocity(const Vector3& velocity)
     rigidBody_->SetLinearVelocity(velocity);
 }
 
-void Seeker::AddTail()
+void Seeker::AddTails()
 {
-    RemoveTail();
+    RemoveTails();
 
-    tailGen_ = node_->CreateComponent<TailGenerator>();
-    tailGen_->SetWidthScale(0.666f);
-    tailGen_->SetTailLength(0.13f);
-    tailGen_->SetNumTails(7);
-    tailGen_->SetColorForHead(Color(0.5f, 0.23f, 0.666f, 0.42f));
-    tailGen_->SetColorForTip(Color(0.0f, 0.1f, 0.23f, 0.0f));
+    for (bool first : {true, false}) {
+
+        TailGenerator* tg{ node_->CreateComponent<TailGenerator>() };
+        tg->SetMatchNodeOrientation(true);
+        tg->SetDrawHorizontal(true);
+        tg->SetDrawMirrored(first);
+        tg->SetDrawVertical(false);
+        tg->SetNumTails(5);
+        tg->SetColorForHead(Color(0.666f, 0.42f, 1.0f, 1.0f));
+        tg->SetColorForTip(Color(0.0f, 0.1f, 0.23f, 0.42f));
+
+        if (first)
+            tailGens_.first_ = tg;
+        else
+            tailGens_.second_ = tg;
+    }
 }
-void Seeker::RemoveTail()
+void Seeker::RemoveTails()
 {
-    if (tailGen_){
-        tailGen_->Remove();
-        tailGen_ = nullptr;
+    if (tailGens_.first_) {
+        tailGens_.first_->Remove();
+        tailGens_.first_ = nullptr;
+    }
+    if (tailGens_.second_) {
+        tailGens_.second_->Remove();
+        tailGens_.second_ = nullptr;
     }
 }

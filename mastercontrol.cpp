@@ -134,7 +134,7 @@ void MasterControl::Setup()
 
 void MasterControl::Start()
 {
-    ENGINE->SetMaxFps(80);
+    GetSubsystem<Engine>()->SetMaxFps(GetSubsystem<Graphics>()->GetRefreshRate());
 
     CreateColorSets();
 
@@ -208,7 +208,7 @@ void MasterControl::Start()
     musicSource_ = musicNode->CreateComponent<SoundSource>();
     musicSource_->SetSoundType(SOUND_MUSIC);
 
-    //    GetSubsystem<Audio>()->Stop(); ///////////////////////////////////////////////////////////////////////
+//        GetSubsystem<Audio>()->Stop(); ///////////////////////////////////////////////////////////////////////
 //    AUDIO->SetMasterGain(SOUND_MASTER, 1.0);
 //    AUDIO->SetMasterGain(SOUND_EFFECT, 1.0f);
 
@@ -291,18 +291,18 @@ void MasterControl::CreateColorSets()
         set.addMaterial_ = GetMaterial("Add")->Clone();
         set.panelMaterial_ = GetMaterial("Panel")->Clone();
 
-        set.glowMaterial_->SetShaderParameter("MatEmissiveColor", set.colors_.first_);
+        set.glowMaterial_->SetShaderParameter("MatEmissiveColor", set.colors_.first_ * 0.8f);
         set.glowMaterial_->SetShaderParameter("MatDiffColor", set.colors_.first_ * 0.23f);
-        set.glowMaterial_->SetShaderParameter("MatSpecColor", (set.colors_.first_ + Color::WHITE) * 0.23f);
+        set.glowMaterial_->SetShaderParameter("MatSpecColor", (set.colors_.first_ + Color::WHITE) * 0.05f);
 
         set.hullMaterial_->SetShaderParameter("MatDiffColor", set.colors_.second_);
-        set.hullMaterial_->SetShaderParameter("MatSpecColor", set.colors_.second_);
+        set.hullMaterial_->SetShaderParameter("MatSpecColor", set.colors_.second_.Lerp(Color::WHITE, 0.13f));
 
-        set.bulletMaterial_->SetShaderParameter("MatDiffColor", set.colors_.first_ * 1.42f);
+        set.bulletMaterial_->SetShaderParameter("MatDiffColor", set.colors_.first_);
 
         set.addMaterial_->SetShaderParameter("MatDiffColor", set.colors_.first_ * 1.13f);
 
-        set.panelMaterial_->SetShaderParameter("MatEmissiveColor", set.colors_.first_);
+        set.panelMaterial_->SetShaderParameter("MatEmissiveColor", set.colors_.first_ * 0.666f);
         set.panelMaterial_->SetShaderParameter("MatDiffColor", set.colors_.first_ * 0.23f);
         set.panelMaterial_->SetShaderParameter("MatSpecColor", (set.colors_.first_ + Color::WHITE) * 0.23f);
 

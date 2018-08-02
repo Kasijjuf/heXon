@@ -51,7 +51,7 @@ void Explosion::OnNodeSet(Node *node)
     rigidBody_->SetLinearFactor(Vector3::ONE - Vector3::UP);
 
     light_ = node_->CreateComponent<Light>();
-    light_->SetRange(13.0f);
+    light_->SetRange(10.0f);
     light_->SetBrightness(initialBrightness_);
 
     particleEmitter_->SetEffect(CACHE->GetResource<ParticleEffect>("Particles/Explosion.xml"));

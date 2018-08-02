@@ -101,7 +101,7 @@ void Lobby::OnNodeSet(Node *node)
 }
 
 void Lobby::Update(float timeStep)
-{ (void)timeStep;
+{
 
     PODVector<Node*> lightNodes{};
     node_->GetChildrenWithComponent<Light>(lightNodes);
@@ -113,23 +113,23 @@ void Lobby::Update(float timeStep)
 }
 
 void Lobby::EnterLobby(StringHash eventType, VariantMap &eventData)
-{ (void)eventType; (void)eventData;
+{
 
     node_->SetEnabledRecursive(true);
 }
 void Lobby::EnterPlay(StringHash eventType, VariantMap &eventData)
-{ (void)eventType; (void)eventData;
+{
 
     node_->SetEnabledRecursive(false);
 }
 
 void Lobby::AddButtonPressed(StringHash eventType, VariantMap &eventData)
-{ (void)eventType; (void)eventData;
+{
 
     MC->AddPlayer();
 }
 void Lobby::RemoveButtonPressed(StringHash eventType, VariantMap &eventData)
-{ (void)eventType; (void)eventData;
+{
 
     MC->RemoveAutoPilot();
 }

@@ -34,7 +34,7 @@ void Brick::RegisterObject(Context* context)
 }
 
 Brick::Brick(Context* context) : SceneObject(context),
-    damage_{4.2f}
+    damage_{2.3f}
 //    traveled_{}
 {
 
@@ -57,7 +57,7 @@ void Brick::OnNodeSet(Node* node)
     trigger->SetSphere(0.666f);
 
     Node* particleNode{ node_->CreateChild("Particles") };
-    particleNode->SetPosition(Vector3::UP);
+    particleNode->SetPosition(Vector3::UP * 1.5f);
     particleEmitter_ = particleNode->CreateComponent<ParticleEmitter>();
     particleEmitter_->SetEffect(CACHE->GetResource<ParticleEffect>("Particles/Brick.xml"));
 

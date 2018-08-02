@@ -23,6 +23,7 @@
 #include "settings.h"
 #include "bullet.h"
 #include "brick.h"
+#include "seeker.h"
 #include "flash.h"
 #include "hitfx.h"
 
@@ -36,13 +37,13 @@ SceneObject::SceneObject(Context* context):
 void SceneObject::OnNodeSet(Node *node)
 { if (!node) return;
 
-    for (int i{0}; i < 5; ++i){
+    for (int i{0}; i < 2; ++i){
         SoundSource3D* sampleSource3D{ node_->CreateComponent<SoundSource3D>() };
         sampleSource3D->SetDistanceAttenuation(42.0f, 256.0f, 2.0f);
         sampleSource3D->SetSoundType(SOUND_EFFECT);
         sampleSources3D_.Push(sampleSource3D);
     }
-    for (int i{0}; i < 5; ++i){
+    for (int i{0}; i < 3; ++i){
         SoundSource* sampleSource{ node_->CreateComponent<SoundSource>() };
         sampleSource->SetSoundType(SOUND_EFFECT);
         sampleSources_.Push(sampleSource);
@@ -158,7 +159,7 @@ void SceneObject::BlinkCheck(StringHash eventType, VariantMap &eventData)
         }
         float boundsCheck{ flatPosition.Length() * LucKey::Cosine(M_DEGTORAD * flatPosition.Angle(hexantNormal)) };
         if (boundsCheck > radius){
-            if (node_->HasComponent<Bullet>() || node_->HasComponent<Brick>()){
+            if (node_->HasComponent<Bullet>()|| node_->HasComponent<Seeker>() || node_->HasComponent<Brick>()){
 
                 HitFX* hitFx{ GetSubsystem<SpawnMaster>()->Create<HitFX>() };
                 hitFx->Set(GetPosition(), 0, false);

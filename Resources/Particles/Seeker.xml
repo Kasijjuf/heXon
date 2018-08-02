@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <particleeffect>
 	<material name="Materials/Flash.xml" />
-	<numparticles value="128" />
+	<numparticles value="23" />
 	<updateinvisible enable="true" />
 	<relative enable="true" />
 	<scaled enable="true" />
@@ -14,9 +14,9 @@
 	<dampingforce value="0" />
 	<activetime value="0" />
 	<inactivetime value="0" />
-	<emissionrate min="36" max="42" />
-	<particlesize min="0.2 0.5" max="0.75 1.5" />
-	<timetolive min="0.5" max="0.5" />
+	<emissionrate min="23" max="42" />
+	<particlesize min="0.23 0.34" max="0.42 1.23" />
+	<timetolive min="0.13" max="1" />
 	<velocity min="0" max="0.2" />
 	<rotation min="0" max="180" />
 	<rotationspeed min="0" max="0" />

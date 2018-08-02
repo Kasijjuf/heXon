@@ -288,7 +288,7 @@ void InputMaster::HandleJoystickAxisMove(Urho3D::StringHash eventType, Urho3D::V
     if (axis == 0) {
          leftStickPosition_[joystickId].x_ =  position;
 
-    } else if (axis == 1) { 
+    } else if (axis == 1) {
          leftStickPosition_[joystickId].y_ = -position;
 
     } else if (axis == 2) {

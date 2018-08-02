@@ -29,7 +29,7 @@ Controllable::Controllable(Context* context) : SceneObject(context),
 
     actions_{},
     actionSince_{},
-
+    untilThought_{},
     model_{},
     rigidBody_{},
     collisionShape_{},
@@ -151,7 +151,7 @@ void Controllable::Think()
         {
             path_.Erase(0);
         } else
-            SetMove(path_[0] - node_->GetPosition());
+            SetMove((path_[0] - node_->GetPosition()).Normalized());
     }
 }
 
