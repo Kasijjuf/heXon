@@ -33,7 +33,7 @@ Highest::Highest(Context* context) : LogicComponent(context),
 void Highest::OnNodeSet(Node *node)
 { if (!node) return;
 
-    node_->Translate(Vector3(0.0f, 2.3f, -3.4f));
+    node_->SetPosition(HIGHEST_POS);
     node_->Rotate(Quaternion(45.0f, Vector3::RIGHT));
     node_->Rotate(Quaternion(180.0f, Vector3::UP));
     Node* podiumNode{ node_->CreateChild("Podium") };
@@ -85,6 +85,10 @@ void Highest::OnNodeSet(Node *node)
 
     SubscribeToEvent(E_ENTERLOBBY, URHO3D_HANDLER(Highest, EnterLobby));
     SubscribeToEvent(E_ENTERPLAY,  URHO3D_HANDLER(Highest, EnterPlay));
+}
+void Highest::Update(float timeStep)
+{
+    node_->SetPosition(HIGHEST_POS + Vector3::UP * MC->Sine(0.1f, -0.23f, 0.0f));
 }
 
 void Highest::SetPilot(Pilot* pilot, unsigned score)

@@ -48,9 +48,11 @@
 //}
 
 enum class MasterInputAction { UP, RIGHT, DOWN, LEFT, CONFIRM, CANCEL, PAUSE, MENU, SCREENSHOT };
-enum class PlayerInputAction { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, RUN,
+enum class PlayerInputAction { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT,
                                FIRE_N, FIRE_NE, FIRE_E, FIRE_SE,
-                               FIRE_S, FIRE_SW, FIRE_W, FIRE_NW };
+                               FIRE_S, FIRE_SW, FIRE_W, FIRE_NW,
+                               RAM, DIVE, DEPTHCHARGE, REPEL, EJECT };
+enum class PlayerInputAxis { MOVE_X, MOVE_Y, FIRE_X, FIRE_Y };
 
 struct InputActions {
     Vector<MasterInputAction> master_;
@@ -71,6 +73,7 @@ private:
     HashMap<int, MasterInputAction> buttonBindingsMaster_;
     HashMap<int, HashMap<int, PlayerInputAction>> keyBindingsPlayer_;
     HashMap<int, HashMap<int, PlayerInputAction>> buttonBindingsPlayer_;
+    HashMap<int, HashMap<int, PlayerInputAxis>> axisBindingsPlayer_;
 
     Vector<int> pressedKeys_;
     HashMap<int, Vector<LucKey::SixaxisButton>> pressedJoystickButtons_;

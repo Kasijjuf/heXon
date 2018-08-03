@@ -40,11 +40,13 @@ public:
     static void RegisterObject(Context* context);
     void OnNodeSet(Node* node) override;
     void Update(float timeStep) override;
-    virtual void Set(Model* model, const Vector3 position, const Vector3 velocity, const bool stateChanger = true);
+    virtual void Set(Model* model, const Vector3 position, const Vector3 velocity, const bool stateChanger = true, bool audible = true);
+    virtual void Set(Model* model, const Vector3 position, const Quaternion rotation, const Vector3 velocity, const Quaternion spin);
 private:
     StaticModel* staticModel_;
     SharedPtr<Material> phaseMaterial_;
     Vector3 velocity_;
+    Quaternion spin_;
     bool stateChanger_;
 };
 

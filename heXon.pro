@@ -75,7 +75,9 @@ SOURCES += \
     mason.cpp \
     brick.cpp \
     soundeffect.cpp \
-    settings.cpp
+    settings.cpp \
+    mirage.cpp \
+    animatedbillboardset.cpp
 
 HEADERS += \
     apple.h \
@@ -124,7 +126,9 @@ HEADERS += \
     mason.h \
     brick.h \
     soundeffect.h \
-    settings.h
+    settings.h \
+    mirage.h \
+    animatedbillboardset.h
 
 OTHER_FILES += \
     Docs/Todo.md \

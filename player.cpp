@@ -90,11 +90,15 @@ void Player::EnterLobby()
     multiplier_ = 1;
 
     for (Pilot* pilot : MC->GetComponentsInScene<Pilot>()) {
-        if (playerId_ == pilot->GetPlayerId()){
+        if (playerId_ == pilot->GetPlayerId()) {
             GetSubsystem<InputMaster>()->SetPlayerControl(playerId_, pilot);
-            if (!alive_){
+
+            if (!alive_) {
                 pilot->Revive();
-            } else pilot->EnterLobbyFromShip();
+
+            } else {
+                pilot->EnterLobbyFromShip();
+            }
         }
     }
 }

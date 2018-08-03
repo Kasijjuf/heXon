@@ -77,8 +77,11 @@ void Pilot::OnNodeSet(Node *node)
 
 void Pilot::ApplyMovement(float timeStep)
 {
+    bool run{ actions_[0] };
     Vector3 force{ move_.Length() < 0.05f ? Vector3::ZERO : move_ * thrust_ * timeStep };
-    if ( rigidBody_->GetLinearVelocity().Length() < maxSpeed_
+    force *= 1.0f + 0.23f * run;
+
+    if ( rigidBody_->GetLinearVelocity().Length() < (maxSpeed_ * (1.0f + 0.42f * run))
      || (rigidBody_->GetLinearVelocity().Normalized() + force.Normalized()).Length() < M_SQRT2 )
     {
         rigidBody_->ApplyForce(force);
@@ -91,8 +94,6 @@ void Pilot::FixedUpdate(float timeStep)
 
 void Pilot::Update(float timeStep)
 {
-    Controllable::Update(timeStep);
-
     if (node_->GetName() == "HighestPilot")
         return;
 
@@ -103,6 +104,8 @@ void Pilot::Update(float timeStep)
 
         return;
     }
+
+    Controllable::Update(timeStep);
 
     //Update rotation according to direction of the player's movement.
     Vector3 velocity{ rigidBody_->GetLinearVelocity() };
@@ -360,11 +363,10 @@ void Pilot::EnterLobbyThroughDoor()
     path_.Push(Vector3(node_->GetPosition().x_, node_->GetPosition().y_, 4.5f));
 
     node_->SetRotation(Quaternion(180.0f, Vector3::UP));
-    rigidBody_->ApplyImpulse(Vector3::BACK * 5.0f);
+    rigidBody_->ApplyImpulse(Vector3::BACK * 4.2f);
 
 
     MC->GetComponentsInScene<Door>()[0]->hasBeenOpen_ = false;
-
 }
 void Pilot::EnterLobbyFromShip()
 {

@@ -58,7 +58,7 @@ void Bubble::Set(const Vector3 position)
 
 void Bubble::Update(float timeStep)
 {
-    if (node_->GetPosition().y_ > 23.0f)
+    if (node_->GetPosition().y_ > 42.0f)
         Disable();
 
     node_->Translate(Vector3::UP * timeStep * (6.66f + MC->SinceLastReset() * 0.0023f), TS_WORLD);

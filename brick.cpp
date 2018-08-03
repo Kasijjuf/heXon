@@ -22,6 +22,7 @@
 #include "chaomine.h"
 #include "spire.h"
 #include "seeker.h"
+#include "phaser.h"
 #include "mason.h"
 #include "ship.h"
 #include "spawnmaster.h"
@@ -34,7 +35,9 @@ void Brick::RegisterObject(Context* context)
 }
 
 Brick::Brick(Context* context) : SceneObject(context),
-    damage_{2.3f}
+    damage_{3.4f},
+    spikeMaterial_{},
+    particleEmitter_{}
 //    traveled_{}
 {
 
@@ -54,12 +57,18 @@ void Brick::OnNodeSet(Node* node)
     rigidBody_->SetLinearFactor(Vector3::ONE - Vector3::UP);
 
     CollisionShape* trigger{ node_->CreateComponent<CollisionShape>() };
-    trigger->SetSphere(0.666f);
+    trigger->SetBox(Vector3(0.666f, 3.4f, 4.2f), Vector3::BACK * 2.3f);
+
+    Node* spikeNode{ node_->CreateChild("Spike")};
+    StaticModel* spikeModel{ spikeNode->CreateComponent<StaticModel>() };
+    spikeModel->SetModel(MC->GetModel("Spike"));
+    spikeMaterial_ = MC->GetMaterial("Spike")->Clone();
+    spikeModel->SetMaterial(spikeMaterial_);
 
     Node* particleNode{ node_->CreateChild("Particles") };
-    particleNode->SetPosition(Vector3::UP * 1.5f);
+    particleNode->SetPosition(Vector3::UP * 0.42f);
     particleEmitter_ = particleNode->CreateComponent<ParticleEmitter>();
-    particleEmitter_->SetEffect(CACHE->GetResource<ParticleEffect>("Particles/Brick.xml"));
+    particleEmitter_->SetEffect(CACHE->GetResource<ParticleEffect>("Particles/Brick.xml")->Clone());
 
     Light* light{ node_->CreateComponent<Light>() };
     light->SetRange(2.3f);
@@ -80,6 +89,9 @@ void Brick::Set(Vector3 position, Vector3 direction)
     particleEmitter_->SetEmitting(true);
 
     node_->LookAt(position + direction);
+    particleEmitter_->GetEffect()->SetMinDirection(direction + Vector3::UP);
+    particleEmitter_->GetEffect()->SetMaxDirection(direction + Vector3::UP);
+
     rigidBody_->ApplyImpulse(direction * 123.0f);
 
     SubscribeToEvent(node_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Brick, HandleTriggerStart));
@@ -120,8 +132,10 @@ void Brick::HandleTriggerStart(StringHash, VariantMap&)
 
 void Brick::Disable()
 {
-    GetSubsystem<SpawnMaster>()->Create<HitFX>()
-            ->Set(node_->GetPosition(), 0, false);
+//    GetSubsystem<SpawnMaster>()->Create<HitFX>()
+//            ->Set(node_->GetPosition(), 0, false);
+    Phaser* phaser{ GetSubsystem<SpawnMaster>()->Create<Phaser>() };
+    phaser->Set(MC->GetModel("Spike"), GetPosition(), rigidBody_->GetLinearVelocity() * 0.23f, false, false);
 
     SceneObject::Disable();
 
@@ -131,6 +145,7 @@ void Brick::Disable()
 
 void Brick::Update(float timeStep)
 {
+    spikeMaterial_->SetShaderParameter("MatEmissiveColor", Color(Random(0.23f, 1.0f), 0.666f, Random(0.666f, 1.0f)));
 //    traveled_ += rigidBody_->GetLinearVelocity().Length() * timeStep;
 
 //    if (traveled_ > 35.0f)

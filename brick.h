@@ -39,6 +39,7 @@ public:
 private:
     RigidBody* rigidBody_;
     ParticleEmitter* particleEmitter_;
+    SharedPtr<Material> spikeMaterial_;
     float damage_;
 //    float traveled_;
 };

@@ -26,6 +26,9 @@
 
 #define INPUTMASTER GetSubsystem<InputMaster>()
 
+#define NUM_ACTIONS 5
+typedef std::bitset<NUM_ACTIONS> ControllableActions;
+
 class Controllable : public SceneObject
 {
     friend class InputMaster;
@@ -39,7 +42,7 @@ public:
     void SetAim(Vector3 aim);
     virtual void HandleSetControlled() {};
     virtual void ClearControl();
-    bool HasPath() const { return path_.Size() != 0; }
+    bool HasPath() const { return path_.Size() > 0; }
 
     virtual void EnterLobby(StringHash eventType, VariantMap& eventData) {}
     virtual void EnterPlay(StringHash eventType, VariantMap& eventData) {}
@@ -56,7 +59,7 @@ protected:
     float maxPitch_;
     float minPitch_;
 
-    std::bitset<4> actions_;
+    ControllableActions actions_;
     HashMap<int, float> actionSince_;
     float untilThought_;
 
@@ -66,12 +69,12 @@ protected:
     AnimationController* animCtrl_;
 
     void ResetInput() { move_ = aim_ = Vector3::ZERO; actions_.reset(); }
-    void SetActions(std::bitset<4> actions);
+    void SetActions(ControllableActions actions);
     void ClampPitch(Quaternion& rot);
 
     void AlignWithMovement(float timeStep);
 
-    virtual void HandleAction(int actionId) { (void)actionId; }
+    virtual void HandleAction(int actionId);
 };
 
 #endif // CONTROLLABLE_H

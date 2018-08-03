@@ -18,6 +18,8 @@
 
 #include "heart.h"
 
+#include "mirage.h"
+
 void Heart::RegisterObject(Context *context)
 {
     context->RegisterFactory<Heart>();
@@ -47,6 +49,8 @@ void Heart::OnNodeSet(Node *node)
     colorFrames.Push(ColorFrame(Color(0.7f, 0.23f, 0.23f, 0.75f), 0.7f));
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 1.2f));
     particleEmitter_->GetEffect()->SetColorFrames(colorFrames);
+
+    graphicsNode_->CreateComponent<Mirage>()->SetColor(Color(0.7f, 0.23f, 0.1f, 1.0f));
 }
 
 void Heart::Update(float timeStep)

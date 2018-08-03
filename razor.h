@@ -38,6 +38,7 @@ public:
 protected:
     float topSpeed_;
     float aimSpeed_;
+    float spinRate_;
 
     Node* topNode_;
     Node* bottomNode_;
@@ -46,6 +47,7 @@ protected:
     Vector2 textureOffset;
     Vector2 textureOffsetDelta;
 
+    void Blink(Vector3 newPosition) override;
 };
 
 #endif // RAZOR_H

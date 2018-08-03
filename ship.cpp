@@ -27,6 +27,7 @@
 #include "bullet.h"
 #include "muzzle.h"
 #include "phaser.h"
+#include "mirage.h"
 #include "chaoball.h"
 #include "chaomine.h"
 #include "chaoflash.h"
@@ -95,8 +96,8 @@ void Ship::OnNodeSet(Node *node)
     gui3d_ = guiNode->CreateComponent<GUI3D>();
     gui3d_->Initialize(colorSet_);
 
-    model_->Remove();
-    model_ = node_->CreateChild("Model")->CreateComponent<AnimatedModel>();
+    graphicsNode_ = node_->CreateChild("Graphics");
+    model_ = graphicsNode_->CreateComponent<AnimatedModel>();
     model_->SetModel(MC->GetModel("KlåMk10"));
 
     shineEmitter_ = node_->CreateComponent<ParticleEmitter>();
@@ -126,8 +127,9 @@ void Ship::OnNodeSet(Node *node)
 
     collisionShape_->SetSphere(2.0f);
     node_->CreateComponent<Navigable>();
+//    SubscribeToEvent(E_POSTRENDERUPDATE, URHO3D_HANDLER(Ship, BlinkCheck));
 
-    SubscribeToEvent(E_POSTRENDERUPDATE, URHO3D_HANDLER(Ship, BlinkCheck));
+    graphicsNode_->CreateComponent<Mirage>()->SetColor(MC->colorSets_[colorSet_].colors_.first_ * 1.23f);
 }
 void Ship::Set(const Vector3 position, const Quaternion rotation)
 {
@@ -286,8 +288,8 @@ void Ship::Update(float timeStep)
     Controllable::Update(timeStep);
 
     //Update shield
-    Quaternion randomRotation{ Quaternion(0.0f, TIME->GetElapsedTime() * 2000.0f, 0.0f) };
-    shieldNode_->SetRotation(shieldNode_->GetRotation().Slerp(randomRotation, Random(1.0f)));
+    Quaternion shieldRotation{ Quaternion(0.0f, TIME->GetElapsedTime() * 2000.0f, 0.0f) };
+    shieldNode_->SetRotation(shieldNode_->GetRotation().Slerp(shieldRotation, Random(1.0f)));
     Color shieldColor{ shieldMaterial_->GetShaderParameter("MatDiffColor").GetColor() };
     Color newColor { shieldColor.r_ * Random(0.5f, 0.8f),
                      shieldColor.g_ * Random(0.6f, 0.9f),
@@ -338,7 +340,8 @@ void Ship::Update(float timeStep)
     //Attract coin
     for (Coin* c : MC->GetComponentsInScene<Coin>(true)) {
 
-        c->GetNode()->GetComponent<RigidBody>()->ApplyForce((GetPosition() - c->GetPosition()).Normalized() * Pow(0.5f, LucKey::Distance(c->GetPosition(), GetPosition())) * 23500.0f * timeStep);
+        if (c->IsEnabled())
+            c->GetNode()->GetComponent<RigidBody>()->ApplyForce((GetPosition() - c->GetPosition()).Normalized() * Pow(0.5f, LucKey::Distance(c->GetPosition(), GetPosition())) * 23500.0f * timeStep);
     }
 
 }
@@ -530,6 +533,13 @@ void Ship::Eject()
                                                        GetPosition(),
                                                        rigidBody_->GetLinearVelocity() + node_->GetDirection() * 10e-5);
     Disable();
+}
+void Ship::Blink(Vector3 newPosition)
+{
+    Phaser* phaser{ SPAWN->Create<Phaser>() };
+    phaser->Set(model_->GetModel(), GetPosition(), rigidBody_->GetLinearVelocity(), false, false);
+
+    SceneObject::Blink(newPosition);
 }
 
 void Ship::Think()

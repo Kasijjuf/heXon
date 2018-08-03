@@ -18,6 +18,10 @@
 
 #include "razor.h"
 
+#include "mirage.h"
+#include "phaser.h"
+#include "spawnmaster.h"
+
 void Razor::RegisterObject(Context *context)
 {
     context->RegisterFactory<Razor>();
@@ -26,7 +30,8 @@ void Razor::RegisterObject(Context *context)
 Razor::Razor(Context* context):
     Enemy(context),
     topSpeed_{10.0f},
-    aimSpeed_{0.25f * topSpeed_}
+    aimSpeed_{0.25f * topSpeed_},
+    spinRate_{}
 {
 
 }
@@ -54,6 +59,8 @@ void Razor::OnNodeSet(Node* node)
     bottomModel_->SetMaterial(1, centerModel_->GetMaterial());
 
     rigidBody_->SetLinearRestThreshold(0.0023f);
+
+    node_->CreateComponent<Mirage>()->SetColor(color_);
 }
 
 void Razor::Update(float timeStep)
@@ -64,9 +71,9 @@ void Razor::Update(float timeStep)
     Enemy::Update(timeStep);
 
     //Spin
-    float spinRate{ timeStep * (75.0f * aimSpeed_ - 25.0 * rigidBody_->GetLinearVelocity().Length()) };
-    topNode_->Rotate(Quaternion(0.0f, spinRate, 0.0f));
-    bottomNode_->Rotate(Quaternion(0.0f, spinRate, 0.0f));
+    spinRate_ = timeStep * (75.0f * aimSpeed_ - 25.0 * rigidBody_->GetLinearVelocity().Length());
+    topNode_->Rotate(Quaternion(0.0f, spinRate_, 0.0f));
+    bottomNode_->Rotate(Quaternion(0.0f, spinRate_, 0.0f));
     //Pulse
     topModel_->GetMaterial(0)->SetShaderParameter("MatEmissiveColor", GetGlowColor());
 }
@@ -104,4 +111,14 @@ void Razor::Set(Vector3 position)
 {
     aimSpeed_ = 0.25f * topSpeed_;
     Enemy::Set(position);
+}
+void Razor::Blink(Vector3 newPosition)
+{
+    for (StaticModel* sm: {topModel_, bottomModel_}) {
+
+        Phaser* phaser{ SPAWN->Create<Phaser>() };
+        phaser->Set(sm->GetModel(), GetPosition(), node_->GetRotation(), rigidBody_->GetLinearVelocity(), Quaternion(spinRate_, Vector3::UP));
+    }
+
+    SceneObject::Blink(newPosition);
 }

@@ -48,10 +48,13 @@ public:
 protected:
     bool blink_;
     bool big_;
+
     SharedPtr<Node> soundNode_;
     SharedPtr<Node> graphicsNode_;
     Vector<SoundSource*> sampleSources_;
     Vector<SoundSource3D*> sampleSources3D_;
+
+    BillboardSet* mirrors_;
 
     void Emerge(const float timeStep);
 

@@ -26,6 +26,8 @@
 
 class Pilot;
 
+#define HIGHEST_POS Vector3(0.0f, 2.3f, -3.4f)
+
 class Highest : public LogicComponent
 {
     URHO3D_OBJECT(Highest, LogicComponent);
@@ -33,6 +35,7 @@ public:
     Highest(Context* context);
     static void RegisterObject(Context* context);
     void OnNodeSet(Node* node) override;
+    void Update(float timeStep);
     void SetPilot(Pilot *pilot, unsigned score);
 
     void EnterLobby(StringHash eventType, VariantMap &eventData);

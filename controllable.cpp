@@ -35,7 +35,7 @@ Controllable::Controllable(Context* context) : SceneObject(context),
     collisionShape_{},
     animCtrl_{}
 {
-    for (int a{0}; a < 4; ++a)
+    for (int a{0}; a < NUM_ACTIONS; ++a)
         actionSince_[a] = 0.0f;
 }
 void Controllable::OnNodeSet(Node *node)
@@ -92,22 +92,24 @@ void Controllable::SetAim(Vector3 aim)
     aim_ = aim.Normalized();
 }
 
-void Controllable::SetActions(std::bitset<4> actions)
+void Controllable::SetActions(ControllableActions actions)
 {
     if (actions == actions_)
         return;
     else
-        for (int i{0}; i < static_cast<int>(actions.size()); ++i){
+        for (unsigned i{0}; i < actions.size(); ++i){
 
             if (actions[i] != actions_[i]){
                 actions_[i] = actions[i];
 
                 if (actions[i])
                     HandleAction(i);
-                else
-                    actionSince_[i] = 0.0f;
             }
         }
+}
+void Controllable::HandleAction(int actionId)
+{
+    actionSince_[actionId] = 0.0f;
 }
 
 void Controllable::AlignWithMovement(float timeStep)
@@ -146,12 +148,15 @@ void Controllable::Think()
         return;
 
     else {
-        if (LucKey::Distance(node_->GetPosition(), path_[0])
-                < (0.1f + 0.23f * (path_.Size() > 1)))
-        {
+        float toNextNode{ LucKey::Distance(node_->GetPosition(), path_[0]) };
+
+        if (toNextNode < (0.1f + 0.23f * (path_.Size() > 1))) {
+
             path_.Erase(0);
+
         } else
-            SetMove((path_[0] - node_->GetPosition()).Normalized());
+
+            SetMove((path_[0] - node_->GetPosition()).Normalized() * Clamp(toNextNode * 2.3f, 0.1f, 1.0f));
     }
 }
 

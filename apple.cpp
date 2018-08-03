@@ -18,6 +18,8 @@
 
 #include "apple.h"
 
+#include "mirage.h"
+
 void Apple::RegisterObject(Context *context)
 {
     context->RegisterFactory<Apple>();
@@ -45,6 +47,8 @@ void Apple::OnNodeSet(Node *node)
     colorFrames.Push(ColorFrame(Color(0.5f, 0.5f, 0.23f, 0.55f), 0.4f));
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 0.8f));
     particleEmitter_->GetEffect()->SetColorFrames(colorFrames);
+
+    graphicsNode_->CreateComponent<Mirage>()->SetColor(Color(0.6f, 0.5f, 0.23f, 1.0f));
 }
 
 void Apple::Update(float timeStep)

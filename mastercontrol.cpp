@@ -20,6 +20,7 @@
 
 #include <fstream>
 #include "TailGenerator.h"
+#include "mirage.h"
 
 #include "hexocam.h"
 #include "effectmaster.h"
@@ -139,6 +140,8 @@ void MasterControl::Start()
     CreateColorSets();
 
     TailGenerator::RegisterObject(context_);
+    AnimatedBillboardSet::RegisterObject(context_);
+    Mirage::RegisterObject(context_);
 
     heXoCam::RegisterObject(context_);
     Lobby::RegisterObject(context_);
@@ -239,7 +242,7 @@ void MasterControl::CreateUI()
     GetSubsystem<UI>()->SetCursor(world.cursor.uiCursor);
 
     //Set starting position of the cursor at the rendering window center
-    world.cursor.uiCursor->SetPosition(GRAPHICS->GetWidth()/2, GRAPHICS->GetHeight()/2);
+    world.cursor.uiCursor->SetPosition(GRAPHICS->GetWidth() / 2, GRAPHICS->GetHeight() / 2);
 }
 
 Sound* MasterControl::GetMusic(String name) const

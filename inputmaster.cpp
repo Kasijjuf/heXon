@@ -1,4 +1,4 @@
-/* heXon
+﻿/* heXon
 // Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
@@ -53,17 +53,24 @@ InputMaster::InputMaster(Context* context):
     keyBindingsPlayer_[1][KEY_KP_3]   = PlayerInputAction::FIRE_SE;
     keyBindingsPlayer_[1][KEY_KP_1]   = PlayerInputAction::FIRE_SW;
     keyBindingsPlayer_[1][KEY_KP_7]   = PlayerInputAction::FIRE_NW;
-    keyBindingsPlayer_[1][KEY_LSHIFT] = PlayerInputAction::RUN;
+    keyBindingsPlayer_[1][KEY_LSHIFT] = PlayerInputAction::RAM;
 
-    buttonBindingsPlayer_[1][SB_DPAD_UP]    = PlayerInputAction::MOVE_UP;
-    buttonBindingsPlayer_[1][SB_DPAD_DOWN]  = PlayerInputAction::MOVE_DOWN;
-    buttonBindingsPlayer_[1][SB_DPAD_LEFT]  = PlayerInputAction::MOVE_LEFT;
-    buttonBindingsPlayer_[1][SB_DPAD_RIGHT] = PlayerInputAction::MOVE_RIGHT;
+    for (unsigned p : {1, 2, 3, 4}) {
+        buttonBindingsPlayer_[p][SB_DPAD_UP]    = PlayerInputAction::MOVE_UP;
+        buttonBindingsPlayer_[p][SB_DPAD_DOWN]  = PlayerInputAction::MOVE_DOWN;
+        buttonBindingsPlayer_[p][SB_DPAD_LEFT]  = PlayerInputAction::MOVE_LEFT;
+        buttonBindingsPlayer_[p][SB_DPAD_RIGHT] = PlayerInputAction::MOVE_RIGHT;
 
-    buttonBindingsPlayer_[2][SB_DPAD_UP]    = PlayerInputAction::MOVE_UP;
-    buttonBindingsPlayer_[2][SB_DPAD_DOWN]  = PlayerInputAction::MOVE_DOWN;
-    buttonBindingsPlayer_[2][SB_DPAD_LEFT]  = PlayerInputAction::MOVE_LEFT;
-    buttonBindingsPlayer_[2][SB_DPAD_RIGHT] = PlayerInputAction::MOVE_RIGHT;
+        buttonBindingsPlayer_[p][SB_CROSS]      = PlayerInputAction::RAM;
+        buttonBindingsPlayer_[p][SB_CIRCLE]     = PlayerInputAction::REPEL;
+        buttonBindingsPlayer_[p][SB_TRIANGLE]   = PlayerInputAction::DIVE;
+        buttonBindingsPlayer_[p][SB_SQUARE]     = PlayerInputAction::DEPTHCHARGE;
+
+        axisBindingsPlayer_[p][0]               = PlayerInputAxis::MOVE_X;
+        axisBindingsPlayer_[p][1]               = PlayerInputAxis::MOVE_Y;
+        axisBindingsPlayer_[p][3]               = PlayerInputAxis::FIRE_X;
+        axisBindingsPlayer_[p][4]               = PlayerInputAxis::FIRE_Y;
+    }
 
     SubscribeToEvent(E_KEYDOWN, URHO3D_HANDLER(InputMaster, HandleKeyDown));
     SubscribeToEvent(E_KEYUP, URHO3D_HANDLER(InputMaster, HandleKeyUp));
@@ -193,8 +200,8 @@ void InputMaster::HandleActions(const InputActions& actions)
                 controlled->SetMove(GetMoveFromActions(playerInputActions) + stickMove);
                 controlled->SetAim(GetAimFromActions(playerInputActions) + stickAim);
 
-                std::bitset<4>restActions{};
-                restActions[0] = playerInputActions->Contains(PlayerInputAction::RUN);
+                ControllableActions restActions{};
+                restActions[0] = playerInputActions->Contains(PlayerInputAction::RAM);
 
                 controlled->SetActions(restActions);
             }
@@ -245,8 +252,6 @@ void InputMaster::HandleJoystickButtonDown(Urho3D::StringHash eventType, Urho3D:
     int joystickId{ eventData[JoystickButtonDown::P_JOYSTICKID].GetInt() };
     SixaxisButton button{ static_cast<SixaxisButton>(eventData[JoystickButtonDown::P_BUTTON].GetInt()) };
 
-    Log::Write(LOG_INFO, String{eventData[JoystickButtonDown::P_BUTTON].GetInt()});
-
     if (!pressedJoystickButtons_[joystickId].Contains(button))
         pressedJoystickButtons_[joystickId].Push(button);
 
@@ -285,18 +290,27 @@ void InputMaster::HandleJoystickAxisMove(Urho3D::StringHash eventType, Urho3D::V
     int axis{ eventData[JoystickAxisMove::P_AXIS].GetInt() };
     float position{ eventData[JoystickAxisMove::P_POSITION].GetFloat() };
 
-    if (axis == 0) {
-         leftStickPosition_[joystickId].x_ =  position;
+    if (Abs(position) > 0.5f)
+        Log::Write(LOG_INFO, String{axis} + " " + String{position});
 
-    } else if (axis == 1) {
-         leftStickPosition_[joystickId].y_ = -position;
 
-    } else if (axis == 2) {
-        rightStickPosition_[joystickId].x_ =  position;
+    const HashMap<int, PlayerInputAxis>& axisBindings{ axisBindingsPlayer_[joystickId + 1] };
+    PlayerInputAxis controlAxis{};
+    if (axisBindings.TryGetValue(axis, controlAxis)) {
 
-    } else if (axis == 3) {
-        rightStickPosition_[joystickId].y_ = -position;
+        if (controlAxis == PlayerInputAxis::MOVE_X) {
+            leftStickPosition_[joystickId].x_ =  position;
 
+        } else if (controlAxis == PlayerInputAxis::MOVE_Y) {
+            leftStickPosition_[joystickId].y_ = -position;
+
+        } else if (controlAxis == PlayerInputAxis::FIRE_X) {
+            rightStickPosition_[joystickId].x_ =  position;
+
+        } else if (controlAxis == PlayerInputAxis::FIRE_Y) {
+            rightStickPosition_[joystickId].y_ = -position;
+
+        }
     }
 }
 

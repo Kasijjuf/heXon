@@ -32,6 +32,7 @@ Phaser::Phaser(Context* context) : Effect(context),
     staticModel_{},
     phaseMaterial_{ MC->GetMaterial("Phase")->Clone() },
     velocity_{},
+    spin_{},
     stateChanger_{}
 {
 }
@@ -45,27 +46,55 @@ void Phaser::OnNodeSet(Node *node)
     staticModel_ = node_->CreateComponent<StaticModel>();
 }
 
-void Phaser::Set(Model* model, const Vector3 position, const Vector3 velocity, const bool stateChanger)
+void Phaser::Set(Model* model, const Vector3 position, const Vector3 velocity, const bool stateChanger, bool audible)
 {
     stateChanger_ = stateChanger;
 
     Effect::Set(position);
 
     velocity_ = velocity;
+    spin_ = Quaternion::IDENTITY;
+
     node_->LookAt(position + velocity);
 
     staticModel_->SetModel(model);
     staticModel_->SetMaterial(phaseMaterial_);
 
-    PlaySample(MC->GetSample("Flash"), 0.23f);
+    if (audible) {
+        PlaySample(MC->GetSample("Flash"), 0.23f);
+    }
 }
+void Phaser::Set(Model* model, const Vector3 position, const Quaternion rotation, const Vector3 velocity, const Quaternion spin)
+{
+    stateChanger_ = false;
 
+    Effect::Set(position);
+    node_->SetRotation(rotation);
+
+    velocity_ = velocity;
+    spin_ = spin;
+
+    staticModel_->SetModel(model);
+    staticModel_->SetMaterial(phaseMaterial_);
+}
 void Phaser::Update(float timeStep)
 {
     Effect::Update(timeStep);
 
     node_->Translate(velocity_ * timeStep, TS_WORLD);
-    phaseMaterial_->SetShaderParameter("Dissolve", Clamp(age_ * 2.3f, 0.0f, 1.0f));
+    node_->Rotate(spin_);
+
+    float dissolveValue { Clamp(age_ * (2.3f + (spin_ == Quaternion::IDENTITY) * 2.3f), 0.0f, 1.0f) };
+    phaseMaterial_->SetShaderParameter("Dissolve", dissolveValue);
+
+    if (!stateChanger_) {
+
+        if (dissolveValue >= 1.0f)
+            Disable();
+
+        velocity_   = velocity_.Lerp(Vector3::ZERO, timeStep + age_ * 0.23f);
+        spin_       = spin_.Slerp(Quaternion::IDENTITY, timeStep + age_ * 0.23f);
+    }
 
     if (age_ > 2.0f) {
 

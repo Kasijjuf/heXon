@@ -68,7 +68,7 @@ void Tile::Update(float timeStep)
         node_->SetRotation(Quaternion(Random(3) * 120.0f + 60.0f * flipped_, Vector3::UP));
 
     //Calculate periodic tile movement
-    wave_ = 8.0f * pow(LucKey::Sine(Abs(centerDistExp_ - elapsedTime * 5.2625f)), 4.0f);
+    wave_ = 7.0f * pow(LucKey::Sine(Abs(centerDistExp_ - elapsedTime * 5.2625f)), 4.0f);
 
     for (Pair<Vector3, float> hexAffector : node_->GetParentComponent<Arena>()->GetEffectVector()) {
 
@@ -89,10 +89,10 @@ void Tile::Update(float timeStep)
     Vector3 newPos{ lastPos.x_, referencePosition_.y_ - Min(offsetY, 4.0f), lastPos.z_ };
     node_->SetPosition(newPos);
 
-    bool lobby{ MC->GetGameState() == GS_LOBBY };
-    float brightness{ Clamp((0.23f * offsetY) + 0.25f, 0.0f, 1.0f) + 0.42f * static_cast<float>(lobby) };
-    Color color{ brightness + offsetY * lobby,
-                 brightness + offsetY * 0.00042f * (MC->Sine(23.0f, -23.0f - 1000.0f * lobby, 23.0f + 1000.0f * lobby, 23.0f) * wave_),
-                 brightness - Random(0.23f) * lobby, brightness + (0.023f * wave_) };
+//    bool lobby{ MC->GetGameState() == GS_LOBBY };
+//    float brightness{ Clamp((0.23f * offsetY) + 0.25f, 0.0f, 1.0f) + 0.42f * static_cast<float>(lobby) };
+//    Color color{ brightness + offsetY * lobby,
+//                 brightness + offsetY * 0.00042f * (MC->Sine(23.0f, -23.0f - 1000.0f * lobby, 23.0f + 1000.0f * lobby, 23.0f) * wave_),
+//                 brightness - Random(0.23f) * lobby, brightness + (0.023f * wave_) };
 //    model_->GetMaterial(0)->SetShaderParameter("MatDiffColor", color);
 }

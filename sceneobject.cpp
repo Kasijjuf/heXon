@@ -25,6 +25,7 @@
 #include "brick.h"
 #include "seeker.h"
 #include "flash.h"
+#include "mirage.h"
 #include "hitfx.h"
 
 SceneObject::SceneObject(Context* context):
@@ -63,7 +64,6 @@ void SceneObject::Set(const Vector3 position)
 
         node_->GetComponent<Light>()->SetEnabled(GetSubsystem<Settings>()->GetManyLights());
     }
-
 }
 void SceneObject::Set(const Vector3 position, const Quaternion rotation){
     node_->SetRotation(rotation);
@@ -72,6 +72,8 @@ void SceneObject::Set(const Vector3 position, const Quaternion rotation){
 
 void SceneObject::Disable()
 {
+//    if (node_->HasComponent<Mirage>())
+//        node_->GetComponent<Mirage>()
     node_->SetEnabledRecursive(false);
 
     if (blink_)
@@ -159,7 +161,9 @@ void SceneObject::BlinkCheck(StringHash eventType, VariantMap &eventData)
         }
         float boundsCheck{ flatPosition.Length() * LucKey::Cosine(M_DEGTORAD * flatPosition.Angle(hexantNormal)) };
         if (boundsCheck > radius){
-            if (node_->HasComponent<Bullet>()|| node_->HasComponent<Seeker>() || node_->HasComponent<Brick>()){
+            if (node_->HasComponent<Bullet>()
+             || node_->HasComponent<Seeker>()
+             || node_->HasComponent<Brick>()){
 
                 HitFX* hitFx{ GetSubsystem<SpawnMaster>()->Create<HitFX>() };
                 hitFx->Set(GetPosition(), 0, false);

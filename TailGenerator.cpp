@@ -1,7 +1,12 @@
 #include "TailGenerator.h"
 
 TailGenerator::TailGenerator(Context* context) :
-                Drawable(context, DRAWABLE_GEOMETRY)
+                Drawable(context, DRAWABLE_GEOMETRY),
+                bufferDirty_{},
+                bufferSizeDirty_{},
+                vertexBuffer_{},
+                indexBuffer_{},
+                forceUpdateVertexBuffer_{false}
 {
     matchNode_ = false;
 
@@ -23,7 +28,6 @@ TailGenerator::TailGenerator(Context* context) :
     batches_[0].worldTransform_ = &transforms_[0];
     batches_[0].numWorldTransforms_ = 2;
 
-    forceUpdateVertexBuffer_ = false;
     previousPosition_ = Vector3::ZERO;
 
     tailNum_ = 10;

@@ -14,7 +14,7 @@
 	<dampingforce value="5" />
 	<activetime value="0" />
 	<inactivetime value="0" />
-	<emissionrate min="42" max="123" />
+	<emissionrate min="64" max="96" />
 	<particlesize min="0.4 0.5" max="0.6 0.75" />
 	<timetolive min="0.1" max="0.75" />
 	<velocity min="0.2" max="1" />

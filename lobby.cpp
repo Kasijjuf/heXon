@@ -45,7 +45,7 @@ void Lobby::OnNodeSet(Node *node)
     chamberModel->SetMaterial(3, MC->GetMaterial("Drain"));
     chamberModel->SetCastShadows(true);
 
-    //Create colider
+    //Create collider
     node_->CreateComponent<RigidBody>();
     node_->CreateComponent<CollisionShape>()->SetTriangleMesh(MC->GetModel("Chamber_COLLISION"));
     node_->CreateComponent<CollisionShape>()->SetBox(Vector3(5.5f, 1.0f, 1.0f));
