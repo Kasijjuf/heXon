@@ -37,8 +37,9 @@ void Brick::RegisterObject(Context* context)
 Brick::Brick(Context* context) : SceneObject(context),
     damage_{3.4f},
     spikeMaterial_{},
-    particleEmitter_{}
-//    traveled_{}
+    particleEmitter_{},
+    trigger_{},
+    traveled_{}
 {
 
 }
@@ -56,8 +57,8 @@ void Brick::OnNodeSet(Node* node)
     rigidBody_->SetTrigger(true);
     rigidBody_->SetLinearFactor(Vector3::ONE - Vector3::UP);
 
-    CollisionShape* trigger{ node_->CreateComponent<CollisionShape>() };
-    trigger->SetBox(Vector3(0.666f, 3.4f, 4.2f), Vector3::BACK * 2.3f);
+    trigger_ = node_->CreateComponent<CollisionShape>();
+    trigger_->SetBox(Vector3(0.666f, 3.4f, 0.23f));
 
     Node* spikeNode{ node_->CreateChild("Spike")};
     StaticModel* spikeModel{ spikeNode->CreateComponent<StaticModel>() };
@@ -80,7 +81,7 @@ void Brick::Set(Vector3 position, Vector3 direction)
 {
     SceneObject::Set(position);
 
-//    traveled_ = 0.0f;
+    traveled_ = 0.0f;
 
     rigidBody_->ResetForces();
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
@@ -96,7 +97,11 @@ void Brick::Set(Vector3 position, Vector3 direction)
 
     SubscribeToEvent(node_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Brick, HandleTriggerStart));
 }
-
+void Brick::FixedPostUpdate(float timeStep)
+{
+    float growth{ Clamp(traveled_, 0.1f, 1.0f) };
+    trigger_->SetBox(Vector3(0.666f, 3.4f, 4.2f * growth), Vector3::BACK * 2.3f * growth);
+}
 void Brick::HandleTriggerStart(StringHash, VariantMap&)
 {
 
@@ -124,8 +129,11 @@ void Brick::HandleTriggerStart(StringHash, VariantMap&)
 
         } else if (Spire* spire = collider->GetNode()->GetComponent<Spire>()) {
 
-            spire->Shoot(false)->SetLinearVelocity(rigidBody_->GetLinearVelocity() * 0.23f);
-            Disable();
+            if (node_->GetDirection().ProjectOntoAxis((spire->GetPosition() - node_->GetPosition()).Normalized()) > 0.0f) {
+
+                spire->Shoot(false)->SetLinearVelocity(rigidBody_->GetLinearVelocity() * 0.23f);
+                Disable();
+            }
         }
     }
 }
@@ -146,7 +154,7 @@ void Brick::Disable()
 void Brick::Update(float timeStep)
 {
     spikeMaterial_->SetShaderParameter("MatEmissiveColor", Color(Random(0.23f, 1.0f), 0.666f, Random(0.666f, 1.0f)));
-//    traveled_ += rigidBody_->GetLinearVelocity().Length() * timeStep;
+    traveled_ += rigidBody_->GetLinearVelocity().Length() * timeStep;
 
 //    if (traveled_ > 35.0f)
 //        Disable();

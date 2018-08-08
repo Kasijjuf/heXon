@@ -36,12 +36,14 @@ public:
     void Disable() override;
     void HandleTriggerStart(StringHash, VariantMap&);
     void Update(float timeStep) override;
+    void FixedPostUpdate(float timeStep);
 private:
     RigidBody* rigidBody_;
     ParticleEmitter* particleEmitter_;
     SharedPtr<Material> spikeMaterial_;
+    CollisionShape* trigger_;
     float damage_;
-//    float traveled_;
+    float traveled_;
 };
 
 #endif // BRICK_H

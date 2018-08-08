@@ -200,10 +200,9 @@ void MasterControl::Start()
 //        GRAPHICS->BeginDumpShaders("Resources/Shaders/LatestShaders.xml");
     }
 
-    Node* announcerNode{ new Node(context_) };
-    announcerNode->CreateComponent<SoundSource>()->Play(GetSample("Welcome"));
 
     CreateScene();
+    PlaySample(GetSample("Welcome"), 0.9f);
 
     menuMusic_ = GetMusic("Modanung - BulletProof MagiRex");
     gameMusic_ = GetMusic("Alien Chaos - Disorder");
@@ -223,7 +222,7 @@ void MasterControl::Stop()
 {
     GetSubsystem<Settings>()->Save();
 
-    engine_->DumpResources(true);
+//    engine_->DumpResources(true);
 //    GRAPHICS->EndDumpShaders();
 }
 
@@ -263,7 +262,18 @@ Sound* MasterControl::GetSample(String name)
 
     return sample;
 }
+void MasterControl::PlaySample(Sound* sample, const float gain)
+{
+    for (SoundSource* s : innerEar_)
 
+        if (!s->IsPlaying()) {
+
+            s->SetGain(gain);
+            s->Play(sample);
+            return;
+        }
+
+}
 void MasterControl::CreateColorSets()
 {
     for (int c : { 0, 1, 2, 3, 4 }) {
@@ -389,6 +399,13 @@ void MasterControl::CreateScene()
 //    physicsWorld_->SetGravity(Vector3::ZERO);
     scene_->CreateComponent<DebugRenderer>();
 
+    for (int i{0}; i < 23; ++i) {
+
+        SoundSource* sampleSource{ scene_->CreateComponent<SoundSource>() };
+        sampleSource->SetSoundType(SOUND_EFFECT);
+        innerEar_.Push(sampleSource);
+    }
+
     //Create a Zone component for fog control
     Node* zoneNode{ scene_->CreateChild("Zone") };
     Zone* zone{ zoneNode->CreateComponent<Zone>() };
@@ -447,7 +464,7 @@ void MasterControl::CreateScene()
     chaoBall_ = chaoBallNode->CreateComponent<ChaoBall>();
 
     NavigationMesh* navMesh{ scene_->CreateComponent<NavigationMesh>() };
-    navMesh->SetAgentRadius(0.23f);
+    navMesh->SetAgentRadius(0.34f);
     navMesh->SetPadding(Vector3::UP);
     navMesh->SetAgentMaxClimb(0.23f);
     navMesh->SetCellSize(0.05f);
@@ -671,6 +688,35 @@ float MasterControl::SinePhase(float freq, float shift)
     return M_PI * 2.0f * (freq * scene_->GetElapsedTime() + shift);
 }
 
+bool MasterControl::InsideHexagon(Vector3 position, float radius) const
+{
+    Vector3 flatPosition{ position * Vector3(1.0f, 0.0f, 1.0f) };
+    Vector3 hexant{ GetHexant(flatPosition) };
+
+    float boundsCheck{ flatPosition.Length() * LucKey::Cosine(M_DEGTORAD * flatPosition.Angle(hexant)) };
+    if (boundsCheck > radius)
+
+        return false;
+    else
+        return true;
+}
+Vector3 MasterControl::GetHexant(Vector3 position) const
+{
+    position.y_ = 0.0f;
+    int sides{ 6 };
+
+    Vector3 hexant{ Vector3::FORWARD };
+
+    for (int h{0}; h < sides; ++h) {
+
+        Vector3 otherHexantNormal{ Quaternion(h * (360.0f / sides), Vector3::UP) * Vector3::FORWARD };
+        hexant = position.Angle(otherHexantNormal) < position.Angle(hexant) ? otherHexantNormal : hexant;
+    }
+
+    return hexant;
+}
+
+
 Vector<SharedPtr<Player> > MasterControl::GetPlayers()
 {
     return players_;
@@ -701,10 +747,17 @@ Player* MasterControl::GetNearestPlayer(Vector3 pos)
     for (Player* p : players_) {
         if (p->IsAlive()) {
 
-            if (!nearest
-            || (Distance(GetSubsystem<InputMaster>()->GetControllableByPlayer(p->GetPlayerId())->GetPosition(), pos) <
-                Distance(GetSubsystem<InputMaster>()->GetControllableByPlayer(nearest->GetPlayerId())->GetPosition(), pos)))
-            {
+            if (!nearest) {
+                nearest = p;
+                continue;
+            }
+
+            Controllable* nearestControlled{ GetSubsystem<InputMaster>()->GetControllableByPlayer(nearest->GetPlayerId()) };
+            Controllable* controlled{ GetSubsystem<InputMaster>()->GetControllableByPlayer(p->GetPlayerId()) };
+
+            if (nearestControlled->GetPosition().DistanceToPoint(pos)
+                     > controlled->GetPosition().DistanceToPoint(pos)) {
+
                 nearest = p;
             }
         }

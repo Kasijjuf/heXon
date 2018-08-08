@@ -40,29 +40,26 @@ void PS()
     #ifdef VERTEXCOLOR
         diffColor *= vColor;
     #endif
-if (vWorldPos.y < 0) {
 
-        diffColor *= 0.8*vec4(  0.42,
-                            0.34 - vWorldPos.y * 0.42,
-                            0.42 - vWorldPos.y * 0.23,
-                            0.75 + vWorldPos.y * vWorldPos.y * 0.42);
+        float factor = -abs(vWorldPos.y);
+
+        diffColor *= 0.8 * vec4(0.42,
+                            0.34 - factor * 0.42,
+                            0.42 - factor * 0.23,
+                            0.75 + factor * factor * 0.42);
 
         diffColor *= diffColor;
-        if (vWorldPos.y > -0.13) {
-            diffColor.x = vWorldPos.y * vWorldPos.y * 2.3;
-            diffColor.y = 0.13 - vWorldPos.y * 2.3;
-        }
-        if (vWorldPos.y < -0.42) {
-            diffColor.x += 0.023 * (0.42 - vWorldPos.y);
-            diffColor.y -= 0.034 * (0.42 - vWorldPos.y);
-            diffColor.z -= 0.042 * (0.42 - vWorldPos.y);
+
+        if (factor < -0.42) {
+            diffColor.r += 0.023 * (0.42 - factor);
+            diffColor.g -= 0.034 * (0.42 - factor);
+            diffColor.b -= 0.042 * (0.42 - factor);
         }
 
-        if (diffColor.w > 0.666) {
-            diffColor.w = 0.666;
+        if (diffColor.a > 0.666) {
+            diffColor.a = 0.666;
         }
 
-} else diffColor.w *= 0.666;
     // Get fog factor
     #ifdef HEIGHTFOG
         float fogFactor = GetHeightFogFactor(vWorldPos.w, vWorldPos.y);

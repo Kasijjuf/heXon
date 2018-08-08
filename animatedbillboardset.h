@@ -35,6 +35,8 @@ private:
     Vector<TextureFrame> textureFrames_;
     HashMap<unsigned, unsigned> texIndices_;
     HashMap<unsigned, float> animationTimers_;
+
+    bool synced_;
 };
 
 #endif // ANIMATEDBILLBOARDSET_H

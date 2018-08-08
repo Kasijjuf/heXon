@@ -44,11 +44,6 @@ void SceneObject::OnNodeSet(Node *node)
         sampleSource3D->SetSoundType(SOUND_EFFECT);
         sampleSources3D_.Push(sampleSource3D);
     }
-    for (int i{0}; i < 3; ++i){
-        SoundSource* sampleSource{ node_->CreateComponent<SoundSource>() };
-        sampleSource->SetSoundType(SOUND_EFFECT);
-        sampleSources_.Push(sampleSource);
-    }
 }
 
 void SceneObject::Set(const Vector3 position)
@@ -58,7 +53,7 @@ void SceneObject::Set(const Vector3 position)
     node_->SetPosition(position);
 
     if (blink_)
-        SubscribeToEvent(E_BEGINFRAME, URHO3D_HANDLER(SceneObject, BlinkCheck));
+        SubscribeToEvent(E_ENDFRAME, URHO3D_HANDLER(SceneObject, BlinkCheck));
 
     if (node_->HasComponent<Light>()) {
 
@@ -77,7 +72,7 @@ void SceneObject::Disable()
     node_->SetEnabledRecursive(false);
 
     if (blink_)
-        UnsubscribeFromEvent(E_BEGINFRAME);
+        UnsubscribeFromEvent(E_ENDFRAME);
 
     UnsubscribeFromEvent(E_NODECOLLISIONSTART);
 }
@@ -94,12 +89,13 @@ void SceneObject::PlaySample(Sound* sample, const float gain, bool localized)
             }
     } else {
 
-        for (SoundSource* s : sampleSources_)
-            if (!s->IsPlaying()){
-                s->SetGain(gain);
-                s->Play(sample);
-                return;
-            }
+        MC->PlaySample(sample, gain);
+//        for (SoundSource* s : sampleSources_)
+//            if (!s->IsPlaying()){
+//                s->SetGain(gain);
+//                s->Play(sample);
+//                return;
+//            }
     }
 }
 void SceneObject::StopAllSound()
@@ -107,15 +103,15 @@ void SceneObject::StopAllSound()
     for (SoundSource3D* s : sampleSources3D_)
         s->Stop();
 
-    for (SoundSource* s : sampleSources_)
-        s->Stop();
+//    for (SoundSource* s : sampleSources_)
+//        s->Stop();
 }
 bool SceneObject::IsPlayingSound()
 {
     for (SoundSource3D* s : sampleSources3D_)
         if (s->IsPlaying()) return true;
-    for (SoundSource* s : sampleSources_)
-        if (s->IsPlaying()) return true;
+//    for (SoundSource* s : sampleSources_)
+//        if (s->IsPlaying()) return true;
     return false;
 }
 
@@ -130,15 +126,15 @@ void SceneObject::Blink(Vector3 newPosition)
     float distanceToNearestPlayer{};
 
     if (nearestPlayerA && nearestPlayerB) {
-        distanceToNearestPlayer = Min(LucKey::Distance(nearestPlayerA->GetPosition(), oldPosition),
-                                      LucKey::Distance(nearestPlayerB->GetPosition(), newPosition));
+        distanceToNearestPlayer = Min(nearestPlayerA->GetPosition().DistanceToPoint(oldPosition),
+                                      nearestPlayerB->GetPosition().DistanceToPoint(newPosition));
     } else {
         distanceToNearestPlayer = 23.0f;
     }
 
-    float gain{ Max(0.07f, 0.13f - distanceToNearestPlayer * 0.0023f) };
+    float gain{ 0.042f };//Max(0.07f, 0.13f - distanceToNearestPlayer * 0.0023f) };
 
-    SPAWN->Create<Flash>()->Set(oldPosition, gain, big_);
+    SPAWN->Create<Flash>()->Set(oldPosition, 0.0f, big_);
     SPAWN->Create<Flash>()->Set(newPosition, gain, big_);
 }
 
@@ -148,31 +144,23 @@ void SceneObject::BlinkCheck(StringHash eventType, VariantMap &eventData)
     if (MC->IsPaused())
         return;
 
-    Vector3 flatPosition{ node_->GetPosition() * Vector3(1.0f, 0.0f, 1.0f) };
-    float radius{ 20.0f };
+    Vector3 position{ node_->GetPosition() };
+    float radius{ ARENA_RADIUS };
 
-    if (flatPosition.Length() > radius){
-        Vector3 hexantNormal{ Vector3::FORWARD };
-        int sides{ 6 };
-        for (int h{0}; h < sides; ++h){
-            Vector3 otherHexantNormal{Quaternion(h * (360.0f / sides), Vector3::UP) * Vector3::FORWARD};
-            hexantNormal = flatPosition.Angle(otherHexantNormal) < flatPosition.Angle(hexantNormal)
-                    ? otherHexantNormal : hexantNormal;
-        }
-        float boundsCheck{ flatPosition.Length() * LucKey::Cosine(M_DEGTORAD * flatPosition.Angle(hexantNormal)) };
-        if (boundsCheck > radius){
-            if (node_->HasComponent<Bullet>()
-             || node_->HasComponent<Seeker>()
-             || node_->HasComponent<Brick>()){
+    if (!MC->InsideHexagon(position, radius)) {
 
-                HitFX* hitFx{ GetSubsystem<SpawnMaster>()->Create<HitFX>() };
-                hitFx->Set(GetPosition(), 0, false);
-                Disable();
 
-            } else if (blink_){
-                Vector3 newPosition{ node_->GetPosition() - (1.995f * radius) * hexantNormal };
-                Blink(newPosition);
-            }
+        if (node_->HasComponent<Bullet>()
+         || node_->HasComponent<Seeker>()
+         || node_->HasComponent<Brick>()){
+
+            HitFX* hitFx{ GetSubsystem<SpawnMaster>()->Create<HitFX>() };
+            hitFx->Set(position, 0, false);
+            Disable();
+
+        } else if (blink_){
+            Vector3 newPosition{ position - 1.999f * radius * MC->GetHexant(position) };
+            Blink(newPosition);
         }
     }
 }

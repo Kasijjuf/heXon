@@ -87,7 +87,7 @@ void Controllable::SetMove(Vector3 move)
 
 void Controllable::SetAim(Vector3 aim)
 {
-    aim = LucKey::Scale(aim, Vector3::ONE - Vector3::UP);
+    aim = aim * (Vector3::ONE - Vector3::UP);
 
     aim_ = aim.Normalized();
 }
@@ -148,9 +148,9 @@ void Controllable::Think()
         return;
 
     else {
-        float toNextNode{ LucKey::Distance(node_->GetPosition(), path_[0]) };
+        float toNextNode{ node_->GetPosition().DistanceToPoint(path_[0]) };
 
-        if (toNextNode < (0.1f + 0.23f * (path_.Size() > 1))) {
+        if (toNextNode < (0.1f + 0.34f * (path_.Size() > 1))) {
 
             path_.Erase(0);
 

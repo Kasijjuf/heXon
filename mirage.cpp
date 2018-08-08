@@ -19,16 +19,17 @@
 
 #include "mirage.h"
 
-
+#include "arena.h"
 
 void Mirage::RegisterObject(Context* context)
 {
     context->RegisterFactory<Mirage>();
 }
 
-Mirage::Mirage(Context* context) : LogicComponent(context),
+Mirage::Mirage(Context* context) : AnimatedBillboardSet(context),
     billboardSet_{},
     color_{0.42f, 0.42f, 0.42f, 0.42f},
+    size_{1.0f},
     fade_{1.0f}
 {
 }
@@ -36,53 +37,50 @@ Mirage::Mirage(Context* context) : LogicComponent(context),
 void Mirage::OnNodeSet(Node* node)
 { if(!node) return;
 
-    billboardSet_ = node_->GetScene()->CreateChild("Mirage")->CreateComponent<AnimatedBillboardSet>();
+    SetNumBillboards(2);
+    SetMaterial(CACHE->GetResource<Material>("Materials/Mirage.xml"));
+    SetSorted(true);
+    SetRelative(true);
 
-    billboardSet_->SetNumBillboards(6);
-    billboardSet_->SetMaterial(CACHE->GetResource<Material>("Materials/Mirage.xml"));
-    billboardSet_->SetSorted(true);
-
-    for (Billboard& bb : billboardSet_->GetBillboards()) {
+    for (Billboard& bb : GetBillboards()) {
 
         bb.size_ = Vector2::ONE;
         bb.position_ = Vector3::ZERO;
-        bb.color_ = color_;
-        bb.enabled_ = false;
+        bb.color_ = Color::TRANSPARENT_BLACK;
+        bb.enabled_ = true;
 
     }
 
-    billboardSet_->LoadFrames(CACHE->GetResource<XMLFile>("Textures/Mirage.xml"));
-    billboardSet_->Commit();
+    LoadFrames(CACHE->GetResource<XMLFile>("Textures/Mirage.xml"));
+    Commit();
 
-    SubscribeToEvent(node_->GetScene(), E_NODEENABLEDCHANGED, URHO3D_HANDLER(Mirage, HandleNodeEnabledChanged));
-}
-void Mirage::HandleNodeEnabledChanged(StringHash eventType, VariantMap& eventData)
-{
-    if (static_cast<Node*>(eventData[NodeEnabledChanged::P_NODE].GetPtr()) == node_)
-            billboardSet_->SetEnabled(node_->IsEnabled());
 }
 
-
-void Mirage::PostUpdate(float timeStep)
+void Mirage::UpdateGeometry(const FrameInfo& frame)
 {
-    if (!billboardSet_->IsEnabled())
-        return;
+    Vector3 normalizedPosition{ node_->GetWorldPosition().Normalized() };
 
-    for (unsigned b{0}; b < billboardSet_->GetNumBillboards(); ++b) {
+    Pair<Vector3, Vector3> hexants(-MC->GetHexant(Quaternion(-30.0f, Vector3::UP) * normalizedPosition),
+                                   -MC->GetHexant(Quaternion( 30.0f, Vector3::UP) * normalizedPosition)
+                                  );
 
-        Billboard& bb{ billboardSet_->GetBillboards()[b] };
+    for (unsigned b{0}; b < GetNumBillboards(); ++b) {
 
-        float radius{ 20.0f };
-        Vector3 offset{ Quaternion(60.0f * b, Vector3::UP) * Vector3::FORWARD * 2.0f * radius };
-        float intensity{ Clamp((1.666f + radius - bb.position_.ProjectOntoAxis(offset)) * 0.6f, 0.0f, 1.0f) };
-//        bb.size_ = Vector2(Random(0.42f, 0.55f), 0.5f);
-        bb.position_ = node_->GetWorldPosition() + offset;
-        bb.color_ = intensity * color_;
-        bb.enabled_ = intensity > 0.01f;
+        Billboard& bb{ GetBillboards()[b] };
 
+        float radius{ ARENA_RADIUS };
+        Vector3 offset{ (b == 0 ? hexants.first_ : hexants.second_) * 2.0f * radius };
+        bb.position_ = (Vector3::ONE / node_->GetWorldScale()) * (node_->GetWorldRotation().Inverse() * (offset + (node_->GetWorldPosition() + offset) * 0.005f));
+        float intensity{ Clamp(1.0f - ((node_->GetWorldPosition() + offset).ProjectOntoAxis(offset.Normalized()) - radius) * 0.3f, 0.0f, 1.0f) };
+        bb.color_ = intensity * intensity * color_;
+
+        float squish{ intensity * Clamp(node_->GetWorldPosition().z_ / radius, 0.0f, 1.0f) };
+        bb.size_ = size_ * Vector2::ONE * (1.5f - 0.5f * intensity) - 0.23f * Vector2::UP * squish * squish * squish * squish;
     }
-    billboardSet_->Commit();
+
+    bool enabled{ node_->IsEnabled() };
+    if (IsEnabled() != enabled)
+        SetEnabled(enabled);
+
+    AnimatedBillboardSet::UpdateGeometry(frame);
 }
-
-
-

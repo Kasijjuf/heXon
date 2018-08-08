@@ -157,14 +157,6 @@ void Ship::SetColors()
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 1.2f));
     particleEffect->SetColorFrames(colorFrames);
     shineEmitter_->SetEffect(particleEffect);
-
-    for (ParticleEmitter* be : bubbleEmitters_) {
-        Vector<ColorFrame> colorFrames{};
-        colorFrames.Push(ColorFrame(MC->colorSets_[colorSet_].colors_.first_ * 23.0f, 0.0f));
-        colorFrames.Push(ColorFrame(MC->colorSets_[colorSet_].colors_.first_, 0.2f));
-        colorFrames.Push(ColorFrame(Color(1.0f, 1.0f, 1.0f, 0.0f), 0.3f));
-        be->GetEffect()->SetColorFrames(colorFrames);
-    }
 }
 
 void Ship::HandleSetControlled()
@@ -217,13 +209,6 @@ void Ship::SetTailsEnabled(bool enable)
 
         t->SetEnabled(enable);
     }
-    for (ParticleEmitter* be : bubbleEmitters_) {
-
-        if (!enable)
-            be->RemoveAllParticles();
-
-        be->SetEmitting(enable);
-    }
 }
 
 void Ship::RemoveTails()
@@ -255,11 +240,6 @@ void Ship::CreateTails()
         tailGen->SetColorForHead(MC->colorSets_[colorSet_].colors_.first_);
         tailGen->SetColorForTip(MC->colorSets_[colorSet_].colors_.first_ * 0.0f);
         tailGens_.Push(tailGen);
-
-        ParticleEmitter* bubbleEmitter{ tailNode->CreateComponent<ParticleEmitter>() };
-        bubbleEmitter->SetEffect(CACHE->GetTempResource<ParticleEffect>("Particles/TailBubbles.xml"));
-
-        bubbleEmitters_.Push(bubbleEmitter);
     }
 }
 
@@ -316,17 +296,6 @@ void Ship::Update(float timeStep)
         tailGen->SetTailLength(velocityToScale * (centerTail ? 0.42f : 0.23f));
         tailGen->SetWidthScale(velocityToScale * (centerTail ? 0.42f : 0.23f));
     }
-    for (ParticleEmitter* be : bubbleEmitters_) {
-
-        ParticleEffect* bubbleEffect{ be->GetEffect() };
-
-        bubbleEffect->SetMinDirection(-node_->GetDirection());
-        bubbleEffect->SetMaxDirection(-node_->GetDirection());
-        bubbleEffect->SetMinVelocity(velocityToScale);
-        bubbleEffect->SetMaxVelocity(velocityToScale * 2.3f);
-        bubbleEffect->SetMinEmissionRate(23.0f * Max(0.0f, velocityToScale));
-        bubbleEffect->SetMaxEmissionRate(42.0f * Max(0.0f, velocityToScale));
-    }
 
     //Shooting
     sinceLastShot_ += timeStep;
@@ -341,7 +310,7 @@ void Ship::Update(float timeStep)
     for (Coin* c : MC->GetComponentsInScene<Coin>(true)) {
 
         if (c->IsEnabled())
-            c->GetNode()->GetComponent<RigidBody>()->ApplyForce((GetPosition() - c->GetPosition()).Normalized() * Pow(0.5f, LucKey::Distance(c->GetPosition(), GetPosition())) * 23500.0f * timeStep);
+            c->GetNode()->GetComponent<RigidBody>()->ApplyForce((GetPosition() - c->GetPosition()).Normalized() * Pow(0.5f, c->GetPosition().DistanceToPoint(GetPosition())) * 23500.0f * timeStep);
     }
 
 }
@@ -582,25 +551,22 @@ void Ship::Think()
     //Calculate shortest route
     Vector3 newPickupPos{ pickupPos };
     for (int i{0}; i < 6; ++i){
-        Vector3 projectedPickupPos{pickupPos + (Quaternion(i * 60.0f, Vector3::UP) * Vector3::FORWARD * 46.0f)};
-        if (LucKey::Distance(GetPosition(), projectedPickupPos - rigidBody_->GetLinearVelocity() * 0.42f) < LucKey::Distance(GetPosition(), pickupPos))
+        Vector3 projectedPickupPos = pickupPos + (Quaternion(i * 60.0f, Vector3::UP) * Vector3::FORWARD * ARENA_RADIUS * 2.0f);
+        if (GetPosition().DistanceToPoint(projectedPickupPos - rigidBody_->GetLinearVelocity() * 0.42f) < GetPosition().DistanceToPoint(pickupPos))
             newPickupPos = projectedPickupPos;
     }
     pickupPos = newPickupPos;
     //Calculate move vector
-    if (pickupPos.y_ < -10.0f || LucKey::Distance(
-                GetPosition(), LucKey::Scale(pickupPos, Vector3(1.0f, 0.0f, 1.0f))) < playerFactor) {
+    if (pickupPos.y_ < -10.0f || GetPosition().DistanceToPoint(pickupPos * Vector3(1.0f, 0.0f, 1.0f)) < playerFactor) {
 
         pickupPos = GetPosition() + node_->GetDirection() * playerFactor;
     }
 
-    move = 0.5f * (move +
-                    LucKey::Scale(pickupPos - node_->GetPosition()
-                                  - 0.05f * playerFactor * rigidBody_->GetLinearVelocity()
-                                  - 0.1f * playerFactor * node_->GetDirection()
-                                  , Vector3(1.0f, 0.0f, 1.0f)).Normalized());
+    move = 0.5f * (move + (pickupPos - node_->GetPosition() - 0.05f * playerFactor * rigidBody_->GetLinearVelocity()
+                           - 0.1f * playerFactor * node_->GetDirection())
+                * Vector3(1.0f, 0.0f, 1.0f)).Normalized();
 
-    if (LucKey::Distance(pickupPos, GetPosition()) > playerFactor) {
+    if (pickupPos.DistanceToPoint(GetPosition()) > playerFactor) {
 
         move += smell * 5.0f;
     }
@@ -610,7 +576,8 @@ void Ship::Think()
                  0.0f,
                  MC->Sine(playerFactor, -0.05f, 0.05f, -playerFactor));
 
-    SetMove(move);
+    SetMove(move.Normalized() * Sqrt(move.Length()));
+
     //Pick firing target
     bool fire{ false };
     Pair<float, Vector3> target{};
@@ -618,7 +585,7 @@ void Ship::Think()
     for (Razor* r : MC->GetComponentsInScene<Razor>()) {
 
         if (r->IsEnabled() && r->GetPosition().y_ > (-playerFactor * 0.1f)){
-            float distance{ LucKey::Distance(this->GetPosition(), r->GetPosition()) };
+            float distance{ this->GetPosition().DistanceToPoint(r->GetPosition()) };
             float panic{ r->GetPanic() };
             float weight{ (5.0f * panic) - (distance / playerFactor) + 42.0f };
             if (weight > target.first_){
@@ -633,7 +600,7 @@ void Ship::Think()
 
         if (s->IsEnabled() && s->GetPosition().y_ > (-playerFactor * 0.23f) && GetPlayer()->GetFlightScore() != 0) {
 
-            float distance{ LucKey::Distance(this->GetPosition(), s->GetPosition()) };
+            float distance{ this->GetPosition().DistanceToPoint(s->GetPosition()) };
             float panic{ s->GetPanic() };
             float weight{ (23.0f * panic) - (distance / playerFactor) + 32.0f };
 
@@ -650,7 +617,7 @@ void Ship::Think()
 
         if (m->IsEnabled() && m->GetPosition().y_ > (-playerFactor * 0.42f) && GetPlayer()->GetFlightScore() != 0) {
 
-            float distance{ LucKey::Distance(this->GetPosition(), m->GetPosition()) };
+            float distance{ this->GetPosition().DistanceToPoint(m->GetPosition()) };
             float panic{ m->GetPanic() };
             float weight{ (42.0f * panic) - (distance / playerFactor) + 42.0f };
 
@@ -672,7 +639,7 @@ void Ship::Think()
         if (bulletAmount_ == 2 || bulletAmount_ == 3) {
 
             SetAim((Quaternion((GetPlayer()->GetPlayerId() == 2 ? -1.0f : 1.0f)
-                               * (Min(0.666f * LucKey::Distance(this->GetPosition(),target.second_), 5.0f) + MC->Sine(aimFactor * aimFactor, -aimFactor, aimFactor))
+                               * (Min(0.666f * this->GetPosition().DistanceToPoint(target.second_), 5.0f) + MC->Sine(aimFactor * aimFactor, -aimFactor, aimFactor))
                                , Vector3::UP) * aim_).Normalized());
 
         } else {
@@ -691,7 +658,7 @@ void Ship::Think()
 Vector3 Ship::Sniff(float playerFactor, Vector3& move, bool taste)
 {
     Vector3 smell{};
-    int whiskers{ 23 };
+    int whiskers{ 8 };
     int detected{ 0 };
 
     //Smell across borders
@@ -725,11 +692,11 @@ Vector3 Ship::Sniff(float playerFactor, Vector3& move, bool taste)
                     if (r.body_->GetNode()->GetComponent<RigidBody>()->GetLinearVelocity().Length() < 5.0f)
                         smell += 9000.0f * whiskerDirection / (distSquared * distSquared * Random(5.0f));
                 } else if (node->HasComponent<Razor>()) {
-                    smell -= ((w == 0) * 2300.0f + 320.0f) * (whiskerDirection / (distSquared));
+                    smell -= ((w == 0) * 2300.0f + 1000.0f) * (whiskerDirection / (distSquared));
                 } else if (node->HasComponent<Spire>()) {
-                    smell -= ((w == 0) * 4200.0f + 3200.0f) * (whiskerDirection / (distSquared * distSquared));
+                    smell -= ((w == 0) * 4200.0f + 6000.0f) * (whiskerDirection / (distSquared * distSquared));
                 } else if (node->HasComponent<Mason>()) {
-                    smell -= ((w == 0) * 3400.0f + 2300.0f) * (whiskerDirection / (distSquared * distSquared));
+                    smell -= ((w == 0) * 3400.0f + 8000.0f) * (whiskerDirection / (distSquared * distSquared));
                 } else if (node->HasComponent<Seeker>() && !taste) {
                     smell -= 1000.0f * (whiskerDirection / r.distance_) * (3.0f - 2.0f * static_cast<float>(health_ > 10.0f));
                     ++detected;

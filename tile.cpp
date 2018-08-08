@@ -26,8 +26,7 @@ void Tile::RegisterObject(Context *context)
 Tile::Tile(Context* context):
     LogicComponent(context),
     lastOffsetY_{ 0.666f },
-    flipped_{ static_cast<bool>(Random(2)) },
-    untilFreeCheck_{Random(0.23f)}
+    flipped_{ static_cast<bool>(Random(2)) }
 {
 }
 
@@ -41,24 +40,13 @@ void Tile::OnNodeSet(Node *node)
     model_->SetCastShadows(false);
 
     referencePosition_ = node_->GetPosition();
-    centerDistExp_ = static_cast<float>(exp2(static_cast<double>(0.75f * LucKey::Distance(Vector3::ZERO, referencePosition_))));
+    centerDistExp_ = static_cast<float>(exp2(static_cast<double>(0.75f * referencePosition_.Length())));
 
     SetUpdateEventMask(USE_UPDATE);
 }
 
 void Tile::Update(float timeStep)
 {
-    untilFreeCheck_ -= timeStep;
-    if (untilFreeCheck_ < 0.0f){
-        PODVector<PhysicsRaycastResult> hitResults;
-        Ray tileRay(node_->GetWorldPosition() - Vector3::UP, Vector3::UP);
-        if (MC->PhysicsRayCast(hitResults, tileRay, 5.0f)) {
-            free_ = false;
-        } else {
-            free_ = true;
-        }
-        untilFreeCheck_ = 0.23f - Random(0.05f);
-    }
 
     float elapsedTime{ MC->scene_->GetElapsedTime() };
     float offsetY{ 0.0f };
@@ -72,7 +60,7 @@ void Tile::Update(float timeStep)
 
     for (Pair<Vector3, float> hexAffector : node_->GetParentComponent<Arena>()->GetEffectVector()) {
 
-        float offsetYPart{ hexAffector.second_ - (0.1f * LucKey::Distance(referencePosition_, hexAffector.first_)) };
+        float offsetYPart{ hexAffector.second_ - (0.1f * referencePosition_.DistanceToPoint(hexAffector.first_)) };
         if (offsetYPart > 0.0f) {
             offsetYPart = Pow(offsetYPart, 4.0f);
             offsetY += offsetYPart;
@@ -80,6 +68,7 @@ void Tile::Update(float timeStep)
     }
     offsetY = sqrt(offsetY * 0.666f);
 
+    wave_ *= 1.0f + 1.23f * !MC->InsideHexagon(node_->GetPosition(), 19.0f);
     offsetY += 0.023f * wave_;
 
     offsetY = (offsetY + lastOffsetY_) * 0.5f;

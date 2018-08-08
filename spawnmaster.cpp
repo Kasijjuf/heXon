@@ -112,24 +112,101 @@ void SpawnMaster::Restart()
 
     sinceLastChaoPickup_ = 0.0f;
     chaoInterval_ = CHAOINTERVAL;
+
     Activate();
 }
 
-//void SpawnMaster::SpawnPattern()
-//{
-
-//}
-
-Vector3 SpawnMaster::SpawnPoint(bool forMason)
+void SpawnMaster::SpawnDeathFlower(Vector3 position, int size, unsigned spires)
 {
-    Tile* randomTile{ MC->arena_->GetRandomTile(forMason) };
-    if (randomTile) {
-        Vector3 tilePosition{ randomTile->node_->GetPosition() };
-        return Vector3(tilePosition.x_, -23.0f, tilePosition.z_);
+    int radius{ 2 + 2 * size };
+    float farOut{ ARENA_RADIUS - radius };
+
+    if (position.Length() > farOut)
+        position = position.Normalized() * farOut;
+
+    Vector3 spawnPosition{ NearestGridPoint(position) + Vector3::DOWN * 13.0f };
+    Create<Mason>()->Set(spawnPosition);
+
+    if (spires == 1)
+        spires = 2;
+    if (spires == 4)
+        spires = 3;
+    if (spires == 5 || spires > 6)
+        spires = 6;
+
+    const Vector3 initialOffset{ Quaternion(60.0f * Random(3), Vector3::UP) * Vector3::RIGHT };
+    for (unsigned s{0}; s < spires; ++s) {
+
+        Create<Spire>()->Set(spawnPosition + Vector3::DOWN * 10.0f * (s + 1)
+                           + Quaternion(60.0f * s * (6 / spires), Vector3::UP) * initialOffset * radius);
     }
-    else return Vector3(Random(-5.0f, 5.0f), -42.0f, Random(-5.0f, 5.0f));
+}
+Vector3 SpawnMaster::NearestGridPoint(Vector3 position)
+{
+
+    float tileWidth{ 2.0f };
+    float rowSpacing{ 1.8f };
+    Vector2 scalar{ 0.5f * tileWidth, rowSpacing };
+
+    Vector2 flatPos{ position.x_, position.z_ };
+    IntVector2 unified{ VectorFloorToInt(flatPos / scalar) };
+    bool flip{ (Abs(unified.x_) % 2) == (Abs(unified.y_) % 2)};
+
+    Vector2 normal{ scalar.Normalized() };
+    Vector2 local{ flatPos - scalar * Vector2(unified) };
+
+    if (flip)
+        local.x_ = scalar.x_ - local.x_;
+
+    if (local.DotProduct(normal) > (0.5f * scalar.Length())) {
+
+        ++unified.y_;
+        if (!flip)
+            ++unified.x_;
+
+    } else if (flip) {
+
+        ++unified.x_;
+    }
+
+
+    flatPos = scalar * Vector2(unified);
+
+    return Vector3{flatPos.x_, 0.0f, flatPos.y_ + 0.5f * rowSpacing};
+}
+void SpawnMaster::SpawnPattern()
+{
+    SpawnDeathFlower(Vector3::ZERO, Random(3));
 }
 
+Vector3 SpawnMaster::SpawnPoint(int fromEdge)
+{
+    fromEdge *= 2;
+
+//    Tile* randomTile{ MC->arena_->GetRandomTile(forMason) };
+//    if (randomTile) {
+//        Vector3 tilePosition{ randomTile->node_->GetPosition() };
+//        return Vector3(tilePosition.x_, -23.0f, tilePosition.z_);
+//    }
+//    else
+
+    int attempts{ 23 };
+    PODVector<PhysicsRaycastResult> hitResults{};
+    Vector3 originOffset{ Vector3::UP * 5.0f };
+    Ray tileRay{ RandomGridPoint(fromEdge) + originOffset, Vector3::DOWN };
+
+    while (MC->PhysicsRayCast(hitResults, tileRay, 34.0f) && attempts > 0) {
+
+        tileRay.origin_ = RandomGridPoint(fromEdge) + originOffset;
+        --attempts;
+    }
+
+    return Vector3::DOWN * 23.0f + tileRay.origin_ - originOffset;
+}
+Vector3 SpawnMaster::RandomGridPoint(int fromEdge)
+{
+    return NearestGridPoint(LucKey::PolarPoint(Random(ARENA_RADIUS - fromEdge), Random(360.0f)));
+}
 void SpawnMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
 { (void)eventType;
 
@@ -155,7 +232,7 @@ void SpawnMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
     if (sinceSpireSpawn_ > spireInterval_ && CountActive<Spire>() < MaxSpires()) {
 
         Spire* spire{ Create<Spire>() };
-        spire->Set(SpawnPoint());
+        spire->Set(SpawnPoint(2));
 
         sinceSpireSpawn_ = 0.0f;
         spireInterval_ = (23.0f - CountActive<Ship>() * 2)
@@ -165,7 +242,7 @@ void SpawnMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
     if (sinceMasonSpawn_ > masonInterval_ && CountActive<Mason>() < MaxMasons()) {
 
         Mason* mason{ Create<Mason>() };
-        mason->Set(SpawnPoint(true));
+        mason->Set(SpawnPoint(3));
 
         sinceMasonSpawn_ = 0.0f;
         masonInterval_ = (123.0f - CountActive<Ship>() * 3)

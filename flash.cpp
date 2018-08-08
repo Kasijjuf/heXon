@@ -64,7 +64,10 @@ void Flash::Set(const Vector3 position, float gain, bool big)
 
     Effect::Set(position);
 
-    PlaySample(MC->GetSample("Flash"), gain);
+    if (gain > 0.0f) {
+
+        PlaySample(MC->GetSample("Flash"), gain);
+    }
 }
 
 void Flash::Disable()

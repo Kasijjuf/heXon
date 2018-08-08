@@ -21,6 +21,7 @@
 #include "ship.h"
 #include "coin.h"
 #include "chaomine.h"
+#include "mirage.h"
 
 #include "enemy.h"
 

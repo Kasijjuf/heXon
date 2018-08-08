@@ -75,7 +75,6 @@ private:
 
     Muzzle* muzzle_;
     ParticleEmitter* shineEmitter_;
-    Vector<ParticleEmitter*> bubbleEmitters_;
     Vector<TailGenerator*> tailGens_;
     Node* shieldNode_;
     StaticModel* shieldModel_;

@@ -37,7 +37,7 @@ void Heart::OnNodeSet(Node *node)
 
     node_->SetName("Heart");
     pickupType_ = PT_HEART;
-    initialPosition_ = Vector3::BACK*10.0f;
+    initialPosition_ = Vector3::BACK * 10.8f;
     node_->SetPosition(initialPosition_);
     model_->SetModel(MC->GetModel("Heart"));
     model_->SetMaterial(MC->GetMaterial("RedEnvmap"));
@@ -50,7 +50,7 @@ void Heart::OnNodeSet(Node *node)
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 1.2f));
     particleEmitter_->GetEffect()->SetColorFrames(colorFrames);
 
-    graphicsNode_->CreateComponent<Mirage>()->SetColor(Color(0.7f, 0.23f, 0.1f, 1.0f));
+    graphicsNode_->CreateComponent<Mirage>()->SetColor(Color(0.7f, 0.23f, 0.1f, 0.75f));
 }
 
 void Heart::Update(float timeStep)
@@ -58,7 +58,7 @@ void Heart::Update(float timeStep)
     Pickup::Update(timeStep);
 
     //Spin
-    node_->Rotate(Quaternion(0.0f, 100.0f * timeStep, 0.0f));
+    graphicsNode_->Rotate(Quaternion(0.0f, 100.0f * timeStep, 0.0f));
     //Float like a float
     float floatFactor = 0.5f - Min(0.5f, 0.5f * Abs(node_->GetPosition().y_));
     graphicsNode_->SetPosition(Vector3::UP * MC->Sine(0.23f, -floatFactor, floatFactor));

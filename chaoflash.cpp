@@ -115,7 +115,7 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
     chaoMaterial_->SetShaderParameter("MatDiffColor", Color(0.1f, 0.5f, 0.2f, 0.5f));
 
     if (MC->PhysicsSphereCast(hitResults, node_->GetPosition(), radius, M_MAX_UNSIGNED)){
-        for (RigidBody* hitResult : hitResults){
+        for (RigidBody* hitResult : hitResults) {
             Node* hitNode{ hitResult->GetNode() };
             if (hitNode->GetName() == "PickupTrigger") {
                 hitNode = hitNode->GetParent();
@@ -138,7 +138,7 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
             //Destroy Seekers, Bricks and Coins
             } else if (Seeker* seeker = hitNode->GetComponent<Seeker>()){
 
-                owner->AddScore(Random(2, 3));
+                owner->AddScore(2 + Random(3));
                 seeker->Disable();
             } else if (Brick* brick = hitNode->GetComponent<Brick>()){
 
@@ -157,11 +157,14 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
 
                     ChaoMine* chaoMine{ GetSubsystem<SpawnMaster>()->Create<ChaoMine>() };
                     chaoMine->Set(e->GetPosition(), colorSet);
-                    MC->GetPlayerByColorSet(colorSet)->AddScore(Random(2, 3) * e->GetWorth());
+                    MC->GetPlayerByColorSet(colorSet)->AddScore(2 + Random(3) * e->GetWorth());
                     e->Disable();
                 }
             }
         }
+
+        if (hitResults.Size() <= 2)
+            SPAWN->SpawnDeathFlower(GetPosition(), 1, Random(6));
     }
 
     //Hand out upgrades

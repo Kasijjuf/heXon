@@ -26,7 +26,8 @@ void AnimatedBillboardSet::RegisterObject(Context* context)
 AnimatedBillboardSet::AnimatedBillboardSet(Context* context) : BillboardSet(context),
     textureFrames_{},
     texIndices_{},
-    animationTimers_{}
+    animationTimers_{},
+    synced_{ true }
 {
 }
 
@@ -52,7 +53,7 @@ void AnimatedBillboardSet::LoadFrames(XMLFile* file)
 
     for (unsigned b{0}; b < GetNumBillboards(); ++b) {
 
-        texIndices_[b] = Random(int(textureFrames_.Size()));
+        texIndices_[b] = 0;
         animationTimers_[b] = textureFrames_.At(texIndices_[b]).time_;
 
         GetBillboard(b)->uv_ = textureFrames_[texIndices_[b]].uv_;
@@ -62,30 +63,48 @@ void AnimatedBillboardSet::LoadFrames(XMLFile* file)
 
 void AnimatedBillboardSet::UpdateGeometry(const FrameInfo &frame)
 {
-    BillboardSet::UpdateGeometry(frame);
+    bool sceneUpdate{true};
+    if (node_->GetScene())
+        sceneUpdate = node_->GetScene()->IsUpdateEnabled();
 
-    if (!textureFrames_.Size() || !node_->GetScene()->IsUpdateEnabled())
+    if (!textureFrames_.Size() || !sceneUpdate)
         return;
 
+    bool frameStepped{ false };
     for (unsigned b{0}; b < GetNumBillboards(); ++b) {
 
-        if (!GetBillboard(b)->enabled_)
+        if (!GetBillboard(b)->enabled_ && (!synced_ || b != 0))
             continue;
 
         // Texture animation
-        unsigned& texIndex = texIndices_[b];
-        float& time = animationTimers_[b];
-        time += frame.timeStep_;
+        unsigned& texIndex{ texIndices_[synced_ ? 0 : b] };
+        float& time{ animationTimers_[synced_ ? 0 : b] };
+        if (!synced_ || b == 0) {
+
+            time += frame.timeStep_;
+        }
+
 
         if (time >= textureFrames_[texIndex].time_)
         {
-            ++texIndex;
-            if (texIndex >= textureFrames_.Size()) {
-                texIndex = 0;
-                time = 0.0f;
+            if (!synced_ || b == 0) {
+
+                ++texIndex;
+                if (texIndex >= textureFrames_.Size()) {
+                    texIndex = 0;
+                    time = 0.0f;
+                }
+                frameStepped = true;
             }
-            GetBillboard(b)->uv_ = textureFrames_[texIndex].uv_;
+        } else if (!synced_) {
+
+            frameStepped = false;
         }
+
+        if (frameStepped)
+            GetBillboard(b)->uv_ = textureFrames_[texIndex].uv_;
     }
     Commit();
+
+    BillboardSet::UpdateGeometry(frame);
 }

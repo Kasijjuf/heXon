@@ -33,7 +33,8 @@ class Slot;
 enum TileElement {TE_CENTER = 0, TE_NORTH, TE_EAST, TE_SOUTH, TE_WEST, TE_NORTHWEST, TE_NORTHEAST, TE_SOUTHEAST, TE_SOUTHWEST, TE_LENGTH};
 enum TileType {B_SPACE, B_EMPTY, B_ENGINE};
 
-
+#define ARENA_SIZE 23
+#define ARENA_RADIUS Cosine(M_DEGTORAD * 30.0f) * (ARENA_SIZE + 1.0f)
 
 class Arena : public LogicComponent
 {

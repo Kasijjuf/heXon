@@ -290,10 +290,6 @@ void InputMaster::HandleJoystickAxisMove(Urho3D::StringHash eventType, Urho3D::V
     int axis{ eventData[JoystickAxisMove::P_AXIS].GetInt() };
     float position{ eventData[JoystickAxisMove::P_POSITION].GetFloat() };
 
-    if (Abs(position) > 0.5f)
-        Log::Write(LOG_INFO, String{axis} + " " + String{position});
-
-
     const HashMap<int, PlayerInputAxis>& axisBindings{ axisBindingsPlayer_[joystickId + 1] };
     PlayerInputAxis controlAxis{};
     if (axisBindings.TryGetValue(axis, controlAxis)) {

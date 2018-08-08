@@ -34,7 +34,10 @@ public:
     SpawnMaster(Context* context);
 
     void Clear();
-    Vector3 SpawnPoint(bool forMason = false);
+    Vector3 SpawnPoint(int fromEdge = 0);
+    Vector3 NearestGridPoint(Vector3 position);
+    Vector3 RandomGridPoint(int fromEdge = 0);
+
     void ChaoPickup() { sinceLastChaoPickup_ = 0.0f; chaoInterval_ = CHAOINTERVAL; }
 
     template <class T> T* Create(bool recycle = true)
@@ -77,6 +80,9 @@ public:
 
     void Prespawn();
     
+    void SpawnPattern();
+    void SpawnDeathFlower(Vector3 position, int size, unsigned spires = 6);
+
 private:
     void HandleUpdate(StringHash eventType, VariantMap &eventData);
 

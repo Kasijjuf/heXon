@@ -154,6 +154,8 @@ public:
 
     float Sine(const float freq, const float min, const float max, const float shift = 0.0f);
     float Cosine(const float freq, const float min, const float max, const float shift = 0.0f);
+    bool InsideHexagon(Vector3 position, float radius) const;
+    Vector3 GetHexant(Vector3 position) const;
 
     template <class T> Vector<T*> GetComponentsInScene(bool onlyEnabled = false)
     {
@@ -169,15 +171,71 @@ public:
 
         Vector<T*> matchingComponents{};
         for (Node* n : matchingNodes)
-            matchingComponents.Push(n->GetComponent<T>());
+            matchingComponents.Push(n->GetDerivedComponent<T>());
 
         return matchingComponents;
     }
+
+    template <class T> T* GetNearest(Vector3 location)
+    {
+        T* nearest{ nullptr };
+
+        PODVector<T*> components{};
+        scene_->GetComponents<T>(components, true);
+
+        for (T* c : components) {
+
+            if (!nearest) {
+
+                nearest = c;
+                continue;
+            }
+
+            float nearestDistance{ static_cast<Component*>(nearest)->GetNode()->GetWorldPosition().DistanceToPoint(location) };
+            float distance{              static_cast<Component*>(c)->GetNode()->GetWorldPosition().DistanceToPoint(location) };
+
+            if (nearestDistance > distance) {
+
+                nearest = c;
+            }
+        }
+        return nearest;
+    }
+
+    template <class T> T* GetNearestPlanar(Vector3 location)
+    {
+        location = location.ProjectOntoPlane(Vector3::ZERO, Vector3::UP);
+
+        T* nearest{ nullptr };
+
+        PODVector<T*> components{};
+        scene_->GetComponents<T>(components, true);
+
+        for (T* c : components) {
+
+            if (!nearest) {
+
+                nearest = c;
+                continue;
+            }
+
+            float nearestDistance{ static_cast<Component*>(nearest)->GetNode()->GetWorldPosition().ProjectOntoPlane(Vector3::ZERO, Vector3::UP).DistanceToPoint(location) };
+            float distance{              static_cast<Component*>(c)->GetNode()->GetWorldPosition().ProjectOntoPlane(Vector3::ZERO, Vector3::UP).DistanceToPoint(location) };
+
+            if (nearestDistance > distance) {
+
+                nearest = c;
+            }
+        }
+        return nearest;
+    }
+
     Ship* GetShipByColorSet(int colorSet_);
     Door* GetDoor();
 
 
     void HandlePostRenderUpdate(StringHash eventType, VariantMap &eventData);
+    void PlaySample(Sound* sample, const float gain);
 private:
     static MasterControl* instance_;
     String resourceFolder_;
@@ -192,6 +250,8 @@ private:
 
     SharedPtr<Sound> menuMusic_;
     SharedPtr<Sound> gameMusic_;
+
+    Vector<SoundSource*> innerEar_;
 
     Light* lobbySpotLight_;
 

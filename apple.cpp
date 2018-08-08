@@ -37,7 +37,7 @@ void Apple::OnNodeSet(Node *node)
 
     node_->SetName("Apple");
     pickupType_ = PT_APPLE;
-    initialPosition_ = Vector3::FORWARD*10.0f;
+    initialPosition_ = Vector3::FORWARD * 10.8f;
     node_->SetPosition(initialPosition_);
     model_->SetModel(MC->GetModel("Apple"));
     model_->SetMaterial(MC->GetMaterial("GoldEnvmap"));
@@ -48,7 +48,7 @@ void Apple::OnNodeSet(Node *node)
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 0.8f));
     particleEmitter_->GetEffect()->SetColorFrames(colorFrames);
 
-    graphicsNode_->CreateComponent<Mirage>()->SetColor(Color(0.6f, 0.5f, 0.23f, 1.0f));
+    graphicsNode_->CreateComponent<Mirage>()->SetColor(Color(0.6f, 0.5f, 0.23f, 0.9f));
 }
 
 void Apple::Update(float timeStep)
@@ -56,7 +56,7 @@ void Apple::Update(float timeStep)
     Pickup::Update(timeStep);
 
     //Spin
-    node_->Rotate(Quaternion(0.0f, 100.0f * timeStep, 0.0f));
+    graphicsNode_->Rotate(Quaternion(0.0f, 100.0f * timeStep, 0.0f));
     //Float like a float
     float floatFactor = 0.5f - Min(0.5f, 0.5f * Abs(node_->GetPosition().y_));
     graphicsNode_->SetPosition(Vector3::UP * MC->Sine(0.23f, -floatFactor, floatFactor, 0.23f));

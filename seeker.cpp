@@ -60,7 +60,7 @@ void Seeker::OnNodeSet(Node *node)
     rigidBody_->SetLinearFactor(Vector3::ONE - Vector3::UP);
 
     CollisionShape* trigger{ node_->CreateComponent<CollisionShape>() };
-    trigger->SetSphere(0.666f);
+    trigger->SetSphere(0.42f);
 
     ParticleEmitter* particleEmitter{ node_->CreateComponent<ParticleEmitter>() };
     particleEmitter->SetEffect(CACHE->GetResource<ParticleEffect>("Particles/Seeker.xml"));

@@ -60,7 +60,9 @@ void Razor::OnNodeSet(Node* node)
 
     rigidBody_->SetLinearRestThreshold(0.0023f);
 
-    node_->CreateComponent<Mirage>()->SetColor(color_);
+    Mirage* mirage{ node_->CreateComponent<Mirage>() };
+    mirage->SetColor(color_ * 0.9f);
+    mirage->SetSize(0.9f);
 }
 
 void Razor::Update(float timeStep)

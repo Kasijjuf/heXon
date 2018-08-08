@@ -85,7 +85,7 @@ void heXoCam::Update(float timeStep)
 {
     node_->SetPosition(node_->GetPosition().Lerp(closeUp_ ?
                                      Vector3(0.0f, 13.0f, -6.55f):
-                                     Vector3(0.0f, 43.0f, -23.5f),
+                                     Vector3(0.0f, 43.0f, -24.0f),
                                                     Clamp(5.0f * timeStep, 0.0f, 1.0f)));
 }
 

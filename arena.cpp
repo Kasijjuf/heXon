@@ -46,15 +46,17 @@ void Arena::OnNodeSet(Node *node)
 
     //Create hexagonal field
     //Lays a field of hexagons at the origin
-    int bigHexSize{ 23 };
-    for (int i{0}; i < bigHexSize; i++) {
-        for (int j{0}; j < bigHexSize; j++) {
-            if (    i < (bigHexSize - bigHexSize / 4) + j / 2 &&                            //Exclude bottom right
-                    i > (bigHexSize / 4) - (j + 1) / 2 &&                                   //Exclude bottom left
-                    i + 1 < (bigHexSize - bigHexSize / 4) + ((bigHexSize - j + 1)) / 2 &&   //Exclude top right
-                    i - 1 > (bigHexSize / 4) - ((bigHexSize - j + 2) / 2)) {                //Exclude top left
+    int bigHexSize{ ARENA_SIZE };
+    for (int i{0}; i < bigHexSize; ++i) {
+        for (int j{0}; j < bigHexSize; ++j) {
+            if (i < (bigHexSize - bigHexSize / 4) + j / 2 &&                            //Exclude bottom right
+                i > (bigHexSize / 4) - (j + 1) / 2 &&                                   //Exclude bottom left
+                i + 1 < (bigHexSize - bigHexSize / 4) + ((bigHexSize - j + 1)) / 2 &&   //Exclude top right
+                i - 1 > (bigHexSize / 4) - ((bigHexSize - j + 2) / 2)) {                //Exclude top left
 
-                Vector3 tilePos{ (-bigHexSize / 2.0f + i) * 2.0f + j % 2, -0.1f, (-bigHexSize / 2.0f + j + 0.5f) * 1.8f };
+                Vector3 tilePos{ (-bigHexSize / 2.0f + i) * 2.0f + j % 2,
+                                 -0.1f,
+                                 (-bigHexSize / 2.0f + j) * 1.8f};
 
                 Node* tileNode{ node_->CreateChild("Tile", LOCAL) };
                 tileNode->SetPosition(tilePos);
@@ -118,9 +120,6 @@ void Arena::UpdateEffectVector(StringHash, VariantMap&)
                 pair.second_ *= 1.23f;
 
             pair.second_ = sqrt(pair.second_);
-
-            if (node->HasTag("Pickup"))
-                pair.second_ *= -2.3f;
 
             effectVector_.Push(pair);
         }
@@ -195,9 +194,9 @@ Tile* Arena::GetRandomTile(bool forMason)
                 }
             }
 
-            if (tryTile->IsFree()) {
+//            if (tryTile->IsFree()) {
                 tile = tryTile;
-            }
+//            }
         }
         return tile;
     }

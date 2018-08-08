@@ -279,7 +279,7 @@ Color GUI3D::HealthToColor(float health)
 {
     Color color(0.23f, 1.0f, 0.05f, 1.0f);
     health = Clamp(health, 0.0f, 10.0f);
-    float maxBright( health < 5.0f ? MC->Sine(0.2f + 0.3f * (5.0f - health), 0.2f * health, 1.0f)
+    float maxBright( health < 5.0f ? MC->Sine(0.75f + 0.24f * (4.0f - health), 0.25f * health, 0.666f)
                                    : 0.42f);
 
     color.r_ = Clamp((3.0f - (health - 3.0f)) / 2.3f, 0.0f, maxBright);

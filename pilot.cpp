@@ -363,7 +363,7 @@ void Pilot::EnterLobbyThroughDoor()
     path_.Push(Vector3(node_->GetPosition().x_, node_->GetPosition().y_, 4.5f));
 
     node_->SetRotation(Quaternion(180.0f, Vector3::UP));
-    rigidBody_->ApplyImpulse(Vector3::BACK * 4.2f);
+    rigidBody_->ApplyImpulse(Vector3::BACK * 3.4f);
 
 
     MC->GetComponentsInScene<Door>()[0]->hasBeenOpen_ = false;
@@ -376,7 +376,7 @@ void Pilot::EnterLobbyFromShip()
 
         if (s->GetColorSet() == Player::takenColorSets_[playerId_]) {
 
-            Set(LucKey::Scale(s->GetPosition(), Vector3(1.7f, 0.0f, 1.7f)),
+            Set(s->GetPosition() * Vector3(1.7f, 0.0f, 1.7f),
                 s->GetNode()->GetRotation());
             rigidBody_->ApplyImpulse(node_->GetDirection());
         }

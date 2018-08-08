@@ -24,20 +24,22 @@
 #include <luckey.h>
 #include <animatedbillboardset.h>
 
-class Mirage : public LogicComponent
+class Mirage : public AnimatedBillboardSet
 {
-    URHO3D_OBJECT(Mirage, LogicComponent);
+    URHO3D_OBJECT(Mirage, AnimatedBillboardSet);
 public:
     Mirage(Context* context);
     static void RegisterObject(Context* context);
     virtual void OnNodeSet(Node* node);
-    virtual void PostUpdate(float timeStep);
 
-    void SetColor(Color color) { color_ = color; }
-    void HandleNodeEnabledChanged(StringHash eventType, VariantMap& eventData);
+    void SetColor(const Color color) { color_ = color; }
+    void SetSize(const float size) { size_ = size; }
+
+    void UpdateGeometry(const FrameInfo& frame);
 private:
     AnimatedBillboardSet* billboardSet_;
     Color color_;
+    float size_;
     float fade_;
 };
 
