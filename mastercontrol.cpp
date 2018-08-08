@@ -231,6 +231,7 @@ void MasterControl::SubscribeToEvents()
     //Subscribe scene update event.
     SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(MasterControl, HandleUpdate));
     SubscribeToEvent(E_POSTRENDERUPDATE, URHO3D_HANDLER(MasterControl, HandlePostRenderUpdate));
+    SubscribeToEvent(E_BEGINFRAME, URHO3D_HANDLER(MasterControl, HandleBeginFrame));
 }
 
 void MasterControl::CreateUI()
@@ -259,11 +260,26 @@ Sound* MasterControl::GetSample(String name)
 
     Sound* sample{ CACHE->GetResource<Sound>("Samples/" + name + ".ogg") };
     samples_[nameHash] = sample;
+    playedSamples_.Insert(nameHash);
 
     return sample;
 }
+bool MasterControl::SamplePlayed(unsigned nameHash) const
+{
+    if (playedSamples_.Contains(nameHash)) {
+
+        return true;
+
+    } else {
+
+        return false;
+    }
+}
 void MasterControl::PlaySample(Sound* sample, const float gain)
 {
+    if (SamplePlayed(sample->GetNameHash().Value()))
+        return;
+
     for (SoundSource* s : innerEar_)
 
         if (!s->IsPlaying()) {
@@ -273,6 +289,10 @@ void MasterControl::PlaySample(Sound* sample, const float gain)
             return;
         }
 
+}
+void MasterControl::HandleBeginFrame(StringHash eventType, VariantMap& eventData)
+{
+    playedSamples_.Clear();
 }
 void MasterControl::CreateColorSets()
 {
@@ -388,6 +408,16 @@ void MasterControl::RemovePlayer(Player* player)
     }
 }
 
+void MasterControl::FillInnerEar()
+{
+    for (int i{0}; i < 42; ++i) {
+
+        SoundSource* sampleSource{ scene_->CreateComponent<SoundSource>() };
+        sampleSource->SetSoundType(SOUND_EFFECT);
+        innerEar_.Push(sampleSource);
+    }
+}
+
 void MasterControl::CreateScene()
 {
     scene_ = new Scene(context_);
@@ -399,12 +429,7 @@ void MasterControl::CreateScene()
 //    physicsWorld_->SetGravity(Vector3::ZERO);
     scene_->CreateComponent<DebugRenderer>();
 
-    for (int i{0}; i < 23; ++i) {
-
-        SoundSource* sampleSource{ scene_->CreateComponent<SoundSource>() };
-        sampleSource->SetSoundType(SOUND_EFFECT);
-        innerEar_.Push(sampleSource);
-    }
+    FillInnerEar();
 
     //Create a Zone component for fog control
     Node* zoneNode{ scene_->CreateChild("Zone") };

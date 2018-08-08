@@ -145,7 +145,7 @@ void Mason::Update(float timeStep)
 
 void Mason::Shoot()
 {
-    PlaySample(MC->GetSample("Brick_s"), 0.42f, false);
+    PlaySample(MC->GetSample("Brick_s"), 0.13f, false);
 
     GetSubsystem<SpawnMaster>()->Create<Brick>()->Set(GetPosition(), topNode_->GetDirection());
     GetSubsystem<SpawnMaster>()->Create<Brick>()->Set(GetPosition(), -topNode_->GetDirection());
@@ -153,7 +153,7 @@ void Mason::Shoot()
     sinceShot_ = 0.0f;
     ++shots_;
 
-    PlaySample(MC->GetSample("Brick"), 0.88f);
+    PlaySample(MC->GetSample("Brick"), 0.34f);
 }
 
 int Mason::MaxShots()

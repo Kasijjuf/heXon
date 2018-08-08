@@ -105,6 +105,7 @@ public:
     HashMap< int, ColorSet > colorSets_;
 
     HashMap< unsigned, SharedPtr<Sound> > samples_;
+    HashSet< unsigned > playedSamples_;
 
     Apple* apple_;
     Heart* heart_;
@@ -123,6 +124,8 @@ public:
     Texture* GetTexture(String name) const { return CACHE->GetResource<Texture>("Textures/" + name + ".png"); }
     Sound* GetMusic(String name) const;
     Sound* GetSample(String name);
+    bool SamplePlayed(unsigned nameHash) const;
+    void PlaySample(Sound* sample, const float gain);
 
     void AddPlayer();
     void RemoveAutoPilot();
@@ -234,8 +237,8 @@ public:
     Door* GetDoor();
 
 
-    void HandlePostRenderUpdate(StringHash eventType, VariantMap &eventData);
-    void PlaySample(Sound* sample, const float gain);
+    void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData);
+    void HandleBeginFrame(StringHash eventType, VariantMap& eventData);
 private:
     static MasterControl* instance_;
     String resourceFolder_;
@@ -274,6 +277,7 @@ private:
     float secondsPerFrame_;
     float sinceFrameRateReport_;
     float SinePhase(float freq, float shift);
+    void FillInnerEar();
 };
 
 #endif // MASTERCONTROL_H

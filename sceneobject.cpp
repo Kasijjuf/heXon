@@ -38,12 +38,7 @@ SceneObject::SceneObject(Context* context):
 void SceneObject::OnNodeSet(Node *node)
 { if (!node) return;
 
-    for (int i{0}; i < 2; ++i){
-        SoundSource3D* sampleSource3D{ node_->CreateComponent<SoundSource3D>() };
-        sampleSource3D->SetDistanceAttenuation(42.0f, 256.0f, 2.0f);
-        sampleSource3D->SetSoundType(SOUND_EFFECT);
-        sampleSources3D_.Push(sampleSource3D);
-    }
+    AddSampleSource();
 }
 
 void SceneObject::Set(const Vector3 position)
@@ -60,7 +55,8 @@ void SceneObject::Set(const Vector3 position)
         node_->GetComponent<Light>()->SetEnabled(GetSubsystem<Settings>()->GetManyLights());
     }
 }
-void SceneObject::Set(const Vector3 position, const Quaternion rotation){
+void SceneObject::Set(const Vector3 position, const Quaternion rotation)
+{
     node_->SetRotation(rotation);
     Set(position);
 }
@@ -77,8 +73,18 @@ void SceneObject::Disable()
     UnsubscribeFromEvent(E_NODECOLLISIONSTART);
 }
 
+void SceneObject::AddSampleSource()
+{
+    SoundSource3D* sampleSource3D{ node_->CreateComponent<SoundSource3D>() };
+    sampleSource3D->SetDistanceAttenuation(42.0f, 256.0f, 2.0f);
+    sampleSource3D->SetSoundType(SOUND_EFFECT);
+    sampleSources3D_.Push(sampleSource3D);
+}
 void SceneObject::PlaySample(Sound* sample, const float gain, bool localized)
 {
+    if (MC->SamplePlayed(sample->GetNameHash().Value()))
+        return;
+
     if (localized) {
 
         for (SoundSource3D* s : sampleSources3D_)
@@ -87,6 +93,10 @@ void SceneObject::PlaySample(Sound* sample, const float gain, bool localized)
                 s->Play(sample);
                 return;
             }
+
+        AddSampleSource();
+        PlaySample(sample, gain, localized);
+
     } else {
 
         MC->PlaySample(sample, gain);

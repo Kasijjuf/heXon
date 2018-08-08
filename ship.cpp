@@ -317,17 +317,21 @@ void Ship::Update(float timeStep)
 
 void Ship::Shoot(Vector3 aim)
 {
-    for (int i{0}; i < bulletAmount_; ++i) {
+    Player* player{ GetPlayer() };
+
+    int maxBullets{ Min(Max(1, player->GetScore()), bulletAmount_) };
+
+    for (int i{0}; i < maxBullets; ++i) {
 
         float angle{ 0.0f };
         switch (i) {
-        case 0: angle = (bulletAmount_ == 2 || bulletAmount_ == 3) ? -5.0f
+        case 0: angle = (maxBullets == 2 || maxBullets == 3) ? -5.0f
                                                                    :  0.0f;
             break;
-        case 1: angle = bulletAmount_ < 4 ? 5.0f
+        case 1: angle = maxBullets < 4 ? 5.0f
                                           : 7.5f;
             break;
-        case 2: angle = bulletAmount_ < 5 ? 180.0f
+        case 2: angle = maxBullets < 5 ? 180.0f
                                           : 175.0f;
             break;
         case 3: angle = -7.5f;
@@ -340,7 +344,15 @@ void Ship::Shoot(Vector3 aim)
         FireBullet(direction);
     }
 
-    sinceLastShot_ = 0.0f;
+    if (player->GetScore() == 0) {
+
+        sinceLastShot_ = -1.0f;
+
+    } else {
+
+        player->SetScore(player->GetScore() - maxBullets);
+        sinceLastShot_ = 0.0f;
+    }
     //Create a single muzzle flash
     if (bulletAmount_ > 0) {
 
@@ -348,8 +360,8 @@ void Ship::Shoot(Vector3 aim)
 
         SoundEffect* shotSound{ SPAWN->Create<SoundEffect>() };
         shotSound->Set(node_->GetWorldPosition());
-        shotSound->PlaySample(MC->GetSample("Shot"), 0.17f);
-        PlaySample(MC->GetSample("Shot_s"), 0.17f, false);
+        shotSound->PlaySample(MC->GetSample("Shot"), 0.1f);
+        PlaySample(MC->GetSample("Shot_s"), 0.14f, false);
     }
 }
 void Ship::FireBullet(Vector3 direction)
@@ -362,6 +374,7 @@ void Ship::FireBullet(Vector3 direction)
 
     GetSubsystem<SpawnMaster>()->Create<Bullet>()
             ->Set(position, colorSet_, direction, force, damage);
+
 }
 void Ship::MoveMuzzle()
 {
@@ -414,7 +427,7 @@ void Ship::PlayPickupSample(int pickupCount)
 
     SoundEffect* pickupSound{ SPAWN->Create<SoundEffect>() };
     pickupSound->Set(node_->GetWorldPosition());
-    pickupSound->PlaySample(MC->GetSample("Pickup" + String(Clamp(pickupCount, 1, 4))), 0.42f);
+    pickupSound->PlaySample(MC->GetSample("Pickup" + String(Clamp(pickupCount, 1, 4))), 0.23f);
 }
 
 void Ship::PowerupWeapons()
@@ -424,7 +437,7 @@ void Ship::PowerupWeapons()
         ++weaponLevel_;
         bulletAmount_ = 1 + ((weaponLevel_ + 5) / 6);
         shotInterval_ = initialShotInterval_ - 0.0042f * weaponLevel_;
-        PlaySample(MC->GetSample("Powerup"), 0.42f, false);
+        PlaySample(MC->GetSample("Powerup"), 0.23f, false);
 
     } else {
         ///BOOM?
@@ -433,7 +446,7 @@ void Ship::PowerupWeapons()
 void Ship::PowerupShield()
 {
     SetHealth(15.0f);
-    PlaySample(MC->GetSample("Powerup"), 0.42f, false);
+    PlaySample(MC->GetSample("Powerup"), 0.23f, false);
 }
 void Ship::PickupChaoBall()
 {

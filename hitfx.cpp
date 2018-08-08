@@ -44,5 +44,5 @@ void HitFX::Set(const Vector3 position, int colorSet, const bool sound)
     Effect::Set(position);
 
     if (sound)
-        PlaySample(MC->GetSample("Hit"), 0.23f);
+        PlaySample(MC->GetSample("Hit"), 0.1f);
 }

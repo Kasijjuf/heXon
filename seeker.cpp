@@ -151,7 +151,7 @@ void Seeker::Set(Vector3 position, bool sound)
 //        PlaySample(MC->GetSample("Seeker"), 0.666f);
         SoundEffect* seekerSound{ SPAWN->Create<SoundEffect>() };
         seekerSound->Set(node_->GetWorldPosition());
-        seekerSound->PlaySample(MC->GetSample("Seeker"), 0.8f);
+        seekerSound->PlaySample(MC->GetSample("Seeker"), 0.23f);
     }
 
     SubscribeToEvent(node_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Seeker, HandleTriggerStart));

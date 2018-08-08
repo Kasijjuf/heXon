@@ -108,7 +108,7 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
 
     SoundEffect* chaosSound{ SPAWN->Create<SoundEffect>() };
     chaosSound->Set(node_->GetWorldPosition());
-    chaosSound->PlaySample(MC->GetSample("Chaos"), 0.9f);
+    chaosSound->PlaySample(MC->GetSample("Chaos"), 0.666f);
 
     PODVector<RigidBody* > hitResults{};
     float radius{7.666f};

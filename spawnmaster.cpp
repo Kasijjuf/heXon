@@ -114,12 +114,13 @@ void SpawnMaster::Restart()
     chaoInterval_ = CHAOINTERVAL;
 
     Activate();
+//    SpawnPattern();
 }
 
 void SpawnMaster::SpawnDeathFlower(Vector3 position, int size, unsigned spires)
 {
     int radius{ 2 + 2 * size };
-    float farOut{ ARENA_RADIUS - radius };
+    float farOut{ ARENA_RADIUS - radius * 2.0f };
 
     if (position.Length() > farOut)
         position = position.Normalized() * farOut;

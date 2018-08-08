@@ -62,6 +62,7 @@ protected:
 
     void BlinkCheck(StringHash eventType, VariantMap &eventData);
     virtual void Blink(Vector3 newPosition);
+    void AddSampleSource();
 };
 
 #endif // SCENEOBJECT_H
