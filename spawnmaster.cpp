@@ -189,7 +189,7 @@ Vector3 SpawnMaster::SpawnPoint(int fromEdge)
     PhysicsRaycastResult hitResult{};
     Ray tileRay{ origin(), Vector3::DOWN };
 
-    int attempts{ 23 };
+    int attempts{ 5 };
     bool staticObject{ false };
 
     while (MC->PhysicsRayCastSingle(hitResult, tileRay, 34.0f) && (attempts > 0 || staticObject)) {
