@@ -51,6 +51,7 @@ private:
     AnimatedModel* healthIndicator_;
     SoundSource* deathSource_;
 
+    float aspectRatio_;
     Node* subNode_;
     Node* scoreNode_;
     HashMap< int, Node* > scoreDigits_;
@@ -64,6 +65,7 @@ private:
     HashMap< int, Node* > heartCounter_;
     Color HealthToColor(float health);
     void CountScore();
+    Vector3 GetOffset();
 };
 
 #endif // GUI3D_H

@@ -27,12 +27,28 @@
 
 
 GUI3D::GUI3D(Context* context) : LogicComponent(context),
-    score_{0},
-    toCount_{0},
-    health_{0.0f},
-    appleCount_{0},
-    heartCount_{0},
-    healthIndicator_{}
+    colorSet_{},
+    score_{},
+    toCount_{},
+
+    health_{},
+    appleCount_{},
+    heartCount_{},
+
+    healthIndicator_{},
+    deathSource_{},
+
+    subNode_{},
+    scoreNode_{},
+    scoreDigits_{},
+    healthBarNode_{},
+    healthBarModel_{},
+    shieldBarNode_{},
+    shieldBarModel_{},
+    appleCounterRoot_{},
+    appleCounter_{},
+    heartCounterRoot_{},
+    heartCounter_{}
 {
 }
 

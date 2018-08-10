@@ -100,6 +100,7 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
 {
     Player* owner{ MC->GetPlayerByColorSet(colorSet) };
     Vector<Ship*> ships{};
+    unsigned points{ 0 };
     bool caughtApple{ false };
     bool caughtHeart{ false };
 
@@ -114,9 +115,12 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
     float radius{7.666f};
     chaoMaterial_->SetShaderParameter("MatDiffColor", Color(0.1f, 0.5f, 0.2f, 0.5f));
 
-    if (MC->PhysicsSphereCast(hitResults, node_->GetPosition(), radius, M_MAX_UNSIGNED)){
+    if (MC->PhysicsSphereCast(hitResults, node_->GetPosition(), radius, M_MAX_UNSIGNED)) {
+
         for (RigidBody* hitResult : hitResults) {
+
             Node* hitNode{ hitResult->GetNode() };
+
             if (hitNode->GetName() == "PickupTrigger") {
                 hitNode = hitNode->GetParent();
             }
@@ -138,11 +142,11 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
             //Destroy Seekers, Bricks and Coins
             } else if (Seeker* seeker = hitNode->GetComponent<Seeker>()){
 
-                owner->AddScore(2 + Random(3));
+                points += 2 + Random(3);
                 seeker->Disable();
             } else if (Brick* brick = hitNode->GetComponent<Brick>()){
 
-                owner->AddScore(Random(5, 23));
+                points += Random(5, 23);
                 brick->Disable();
 
             } else if (Coin* coin = hitNode->GetComponent<Coin>()){
@@ -157,13 +161,15 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
 
                     ChaoMine* chaoMine{ GetSubsystem<SpawnMaster>()->Create<ChaoMine>() };
                     chaoMine->Set(e->GetPosition(), colorSet);
-                    MC->GetPlayerByColorSet(colorSet)->AddScore(2 + Random(3) * e->GetWorth());
+                    points += 2 + Random(3) * e->GetWorth();
                     e->Disable();
                 }
             }
         }
 
-        if (hitResults.Size() <= 2)
+        owner->AddScore(points);
+
+        if (points == 0 && !caughtApple && !caughtHeart)
             SPAWN->SpawnDeathFlower(GetPosition(), 1, Random(6));
     }
 

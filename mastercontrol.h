@@ -149,6 +149,7 @@ public:
     float GetSinceStateChange() const noexcept { return sinceStateChange_; }
 
     bool PhysicsRayCast(PODVector<PhysicsRaycastResult> &hitResults, Urho3D::Ray ray, const float distance, const unsigned collisionMask = M_MAX_UNSIGNED);
+    bool PhysicsRayCastSingle(PhysicsRaycastResult& hitResult, const Ray ray, const float distance, const unsigned collisionMask = M_MAX_UNSIGNED);
     bool PhysicsSphereCast(PODVector<RigidBody*> &hitResults, Vector3 center, const float radius, const unsigned collisionMask = M_MAX_UNSIGNED);
 
     void Eject();

@@ -266,14 +266,7 @@ Sound* MasterControl::GetSample(String name)
 }
 bool MasterControl::SamplePlayed(unsigned nameHash) const
 {
-    if (playedSamples_.Contains(nameHash)) {
-
-        return true;
-
-    } else {
-
-        return false;
-    }
+    return playedSamples_.Contains(nameHash);
 }
 void MasterControl::PlaySample(Sound* sample, const float gain)
 {
@@ -284,6 +277,7 @@ void MasterControl::PlaySample(Sound* sample, const float gain)
 
         if (!s->IsPlaying()) {
 
+            s->SetFrequency(44080);
             s->SetGain(gain);
             s->Play(sample);
             return;
@@ -672,7 +666,7 @@ bool MasterControl::CursorRayCast(const float maxDistance, PODVector<RayQueryRes
         return false;
 }
 
-bool MasterControl::PhysicsRayCast(PODVector<PhysicsRaycastResult> &hitResults, const Ray ray,
+bool MasterControl::PhysicsRayCast(PODVector<PhysicsRaycastResult>& hitResults, const Ray ray,
                                    const float distance, const unsigned collisionMask)
 {
     if (distance > 1.0e-9)
@@ -680,7 +674,14 @@ bool MasterControl::PhysicsRayCast(PODVector<PhysicsRaycastResult> &hitResults, 
 
     return (hitResults.Size() > 0);
 }
+bool MasterControl::PhysicsRayCastSingle(PhysicsRaycastResult& hitResult, const Ray ray,
+                                   const float distance, const unsigned collisionMask)
+{
+    if (distance > 1.0e-9)
+        physicsWorld_->RaycastSingle(hitResult, ray, distance, collisionMask);
 
+    return hitResult.body_;
+}
 bool MasterControl::PhysicsSphereCast(PODVector<RigidBody*> &hitResults, const Vector3 center,
                                       const float radius, const unsigned collisionMask)
 {

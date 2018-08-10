@@ -147,11 +147,11 @@ void Seeker::Set(Vector3 position, bool sound)
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
     AddTails();
 
-    if (sound){
+    if (sound) {
 //        PlaySample(MC->GetSample("Seeker"), 0.666f);
         SoundEffect* seekerSound{ SPAWN->Create<SoundEffect>() };
         seekerSound->Set(node_->GetWorldPosition());
-        seekerSound->PlaySample(MC->GetSample("Seeker"), 0.23f);
+        seekerSound->PlaySample(MC->GetSample("Seeker"), 0.666f);
     }
 
     SubscribeToEvent(node_, E_NODECOLLISIONSTART, URHO3D_HANDLER(Seeker, HandleTriggerStart));

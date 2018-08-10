@@ -110,7 +110,8 @@ void Player::EnterPlay(StringHash eventType, VariantMap &eventData)
 
 void Player::AddScore(int points)
 {
-    if (!alive_) return;
+    if (!alive_ || points == 0)
+        return;
 
     points *= static_cast<int>(pow(2.0, static_cast<double>(multiplier_-1)));
     SetScore(GetScore() + points);

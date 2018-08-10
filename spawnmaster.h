@@ -35,8 +35,8 @@ public:
 
     void Clear();
     Vector3 SpawnPoint(int fromEdge = 0);
-    Vector3 NearestGridPoint(Vector3 position);
-    Vector3 RandomGridPoint(int fromEdge = 0);
+    static Vector3 NearestGridPoint(Vector3 position);
+    static Vector3 RandomGridPoint(int fromEdge = 0);
 
     void ChaoPickup() { sinceLastChaoPickup_ = 0.0f; chaoInterval_ = CHAOINTERVAL; }
 

@@ -346,7 +346,7 @@ void Ship::Shoot(Vector3 aim)
 
     if (player->GetScore() == 0) {
 
-        sinceLastShot_ = -1.0f;
+        sinceLastShot_ = -0.666f;
 
     } else {
 

@@ -183,26 +183,24 @@ void SpawnMaster::SpawnPattern()
 Vector3 SpawnMaster::SpawnPoint(int fromEdge)
 {
     fromEdge *= 2;
+    Vector3 originOffset{ Vector3::UP * 5.0f };
+    auto origin { [fromEdge, originOffset](){ return RandomGridPoint(fromEdge) + originOffset; } };
 
-//    Tile* randomTile{ MC->arena_->GetRandomTile(forMason) };
-//    if (randomTile) {
-//        Vector3 tilePosition{ randomTile->node_->GetPosition() };
-//        return Vector3(tilePosition.x_, -23.0f, tilePosition.z_);
-//    }
-//    else
+    PhysicsRaycastResult hitResult{};
+    Ray tileRay{ origin(), Vector3::DOWN };
 
     int attempts{ 23 };
-    PODVector<PhysicsRaycastResult> hitResults{};
-    Vector3 originOffset{ Vector3::UP * 5.0f };
-    Ray tileRay{ RandomGridPoint(fromEdge) + originOffset, Vector3::DOWN };
+    bool staticObject{ false };
 
-    while (MC->PhysicsRayCast(hitResults, tileRay, 34.0f) && attempts > 0) {
+    while (MC->PhysicsRayCastSingle(hitResult, tileRay, 34.0f) && (attempts > 0 || staticObject)) {
 
-        tileRay.origin_ = RandomGridPoint(fromEdge) + originOffset;
+        staticObject = hitResult.body_->GetLinearFactor().Length() < 1.0e-9;
         --attempts;
+
+        tileRay.origin_ = origin();
     }
 
-    return Vector3::DOWN * 23.0f + tileRay.origin_ - originOffset;
+    return Vector3::DOWN * 23.0f + tileRay.origin_;
 }
 Vector3 SpawnMaster::RandomGridPoint(int fromEdge)
 {
