@@ -1,5 +1,5 @@
 ﻿/* heXon
-// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2018 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@ InputMaster::InputMaster(Context* context):
     keyBindingsPlayer_[1][KEY_LSHIFT] = PlayerInputAction::RAM;
 
     for (unsigned p : {1, 2, 3, 4}) {
+
         buttonBindingsPlayer_[p][SB_DPAD_UP]    = PlayerInputAction::MOVE_UP;
         buttonBindingsPlayer_[p][SB_DPAD_DOWN]  = PlayerInputAction::MOVE_DOWN;
         buttonBindingsPlayer_[p][SB_DPAD_LEFT]  = PlayerInputAction::MOVE_LEFT;

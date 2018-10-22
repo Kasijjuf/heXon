@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2018 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -142,7 +142,6 @@ void Enemy::SetHealth(const float health)
     panic_ = (initialHealth_ - health_) / initialHealth_;
     if (panic_ < 0.0f)
         panic_ = 0.0f;
-    particleEffect_->SetMinEmissionRate(7.0f + 23.0f * panic_);
 
     CheckHealth();
 }
@@ -227,6 +226,10 @@ void Enemy::FixedUpdate(float timeStep)
     } else {
         rigidBody_->SetLinearDamping(0.1f);
     }
+
+    float emissionRate{ 2.3f + rigidBody_->GetLinearVelocity().Length() };
+    particleEffect_->SetMinEmissionRate(emissionRate);
+    particleEffect_->SetMaxEmissionRate(emissionRate * 1.23f);
 }
 
 void Enemy::HandleNodeCollision(StringHash eventType, VariantMap &eventData)

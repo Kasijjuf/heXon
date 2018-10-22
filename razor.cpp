@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2018 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -95,12 +95,7 @@ void Razor::FixedUpdate(float timeStep)
         rigidBody_->ApplyForce(timeStep * 100.0f * -rigidBody_->GetLinearVelocity() * overSpeed);
     }
 
-    //Update linear damping
-    if (!IsEmerged()) {
-        rigidBody_->SetLinearDamping(Clamp(-node_->GetPosition().y_ * 0.666f, 0.0f, 1.0f));
-    } else {
-        rigidBody_->SetLinearDamping(0.1f);
-    }
+    Enemy::FixedUpdate(timeStep);
 }
 
 void Razor::Hit(float damage, int ownerID)

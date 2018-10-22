@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2018 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -147,8 +147,8 @@ void Ship::Set(const Vector3 position, const Quaternion rotation)
 
 void Ship::SetColors()
 {
-    model_->SetMaterial(0, MC->colorSets_[colorSet_].glowMaterial_);
-    model_->SetMaterial(1, MC->colorSets_[colorSet_].hullMaterial_);
+    model_->SetMaterial(0, MC->colorSets_[colorSet_].hullMaterial_);
+    model_->SetMaterial(1, MC->colorSets_[colorSet_].glowMaterial_);
 
     SharedPtr<ParticleEffect> particleEffect{ CACHE->GetTempResource<ParticleEffect>("Particles/Shine.xml") };
     Vector<ColorFrame> colorFrames{};

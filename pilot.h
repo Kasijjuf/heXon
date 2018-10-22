@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2018 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 class Ship;
 
 enum PilotColor { PC_SKIN, PC_SHIRT, PC_PANTS, PC_SHOES, PC_HAIR, PC_ALL };
-enum Hair{HAIR_BALD, HAIR_SHORT, HAIR_MOHAWK, HAIR_SEAGULL, HAIR_MUSTAIN, HAIR_FROTOAD, HAIR_FLATTOP, HAIR_ALL, HAIR_SANTAHAT};
+enum Hair{HAIR_BALD, HAIR_SHORT, HAIR_MOHAWK, HAIR_SEAGULL, HAIR_MUSTAIN, HAIR_FROTOAD, HAIR_FLATTOP, HAIR_ALL, HAIR_SANTAHAT, HAIR_PUMPKIN};
 
 class Pilot : public Controllable
 {

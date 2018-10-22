@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2018 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -68,8 +68,8 @@ void Seeker::OnNodeSet(Node *node)
     AddTails();
 
     Light* light{ node_->CreateComponent<Light>() };
-    light->SetRange(4.2f);
-    light->SetBrightness(2.3f);
+    light->SetRange(5.0f);
+    light->SetBrightness(1.3f);
     light->SetColor(Color(1.0f, 1.0f, 1.0f));
 }
 

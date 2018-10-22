@@ -44,8 +44,8 @@ void Mirage::OnNodeSet(Node* node)
 
     for (Billboard& bb : GetBillboards()) {
 
-        bb.size_ = Vector2::ONE;
-        bb.position_ = Vector3::ZERO;
+//        bb.size_ = Vector2::ONE;
+//        bb.position_ = Vector3::ZERO;
         bb.color_ = Color::TRANSPARENT_BLACK;
         bb.enabled_ = true;
 
@@ -72,8 +72,11 @@ void Mirage::UpdateGeometry(const FrameInfo& frame)
         Vector3 offset{ (b == 0 ? hexants.first_ : hexants.second_) * 2.0f * radius };
         bb.position_ = (Vector3::ONE / node_->GetWorldScale()) * (node_->GetWorldRotation().Inverse() * (offset + (node_->GetWorldPosition() + offset) * 0.005f));
         float intensity{ Clamp(1.0f - ((node_->GetWorldPosition() + offset).ProjectOntoAxis(offset.Normalized()) - radius) * 0.3f, 0.0f, 1.0f) };
-        bb.color_ = intensity * intensity * color_;
 
+        if (hexants.first_ == hexants.second_ && b > 0)
+            intensity = 0.0f;
+
+        bb.color_ = intensity * intensity * color_;
         float squish{ intensity * Clamp(node_->GetWorldPosition().z_ / radius, 0.0f, 1.0f) };
         bb.size_ = size_ * Vector2::ONE * (1.5f - 0.5f * intensity) - 0.23f * Vector2::UP * squish * squish * squish * squish;
     }

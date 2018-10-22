@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2018 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@
 #include "razor.h"
 #include "spire.h"
 #include "mason.h"
+#include "baphomech.h"
 
 #include "effectinstance.h"
 #include "soundeffect.h"
@@ -170,6 +171,7 @@ void MasterControl::Start()
     Seeker::RegisterObject(context_);
     Mason::RegisterObject(context_);
     Brick::RegisterObject(context_);
+    Baphomech::RegisterObject(context_);
 
     EffectInstance::RegisterObject(context_);
     SoundEffect::RegisterObject(context_);
@@ -232,6 +234,7 @@ void MasterControl::SubscribeToEvents()
     SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(MasterControl, HandleUpdate));
     SubscribeToEvent(E_POSTRENDERUPDATE, URHO3D_HANDLER(MasterControl, HandlePostRenderUpdate));
     SubscribeToEvent(E_BEGINFRAME, URHO3D_HANDLER(MasterControl, HandleBeginFrame));
+    SubscribeToEvent(E_JOYSTICKCONNECTED, URHO3D_HANDLER(MasterControl, HandleJoystickConnected));
 }
 
 void MasterControl::CreateUI()
@@ -282,7 +285,6 @@ void MasterControl::PlaySample(Sound* sample, const float gain)
             s->Play(sample);
             return;
         }
-
 }
 void MasterControl::HandleBeginFrame(StringHash eventType, VariantMap& eventData)
 {
@@ -342,9 +344,14 @@ void MasterControl::CreateColorSets()
     }
 }
 
+void MasterControl::HandleJoystickConnected(StringHash eventType, VariantMap& eventData)
+{///Doesn't seem to work
+    if (INPUT->GetNumJoysticks() > NumPlayers())
+        AddPlayer();
+}
 void MasterControl::AddPlayer()
 {
-    if (players_.Size() >= 4)
+    if (NumPlayers() >= 4)
         return;
 
     int playerId{ 1 };
@@ -791,7 +798,7 @@ Player* MasterControl::GetNearestPlayer(Vector3 pos)
 
     return nearest;
 }
-bool MasterControl::AllPlayersAtZero(bool onlyHuman)
+bool MasterControl::AllPlayersScoreZero(bool onlyHuman)
 {
     for (Player* p : players_) {
 

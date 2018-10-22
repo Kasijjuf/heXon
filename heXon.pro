@@ -16,8 +16,6 @@ TEMPLATE = app
 CONFIG -= app_bundle
 CONFIG -= qt
 
-#LIBS += -ldl -lGL
-
 # From http://stackoverflow.com/questions/35772562/inlining-failed-in-call-to-always-inline-m128i-mm-cvtepu8-epi32-m128i-t
 #QMAKE_CXX_FLAGS += msse4.2 -mavx
 #QMAKE_CFLAGS+=-msse4.2
@@ -77,7 +75,8 @@ SOURCES += \
     soundeffect.cpp \
     settings.cpp \
     mirage.cpp \
-    animatedbillboardset.cpp
+    animatedbillboardset.cpp \
+    baphomech.cpp
 
 HEADERS += \
     apple.h \
@@ -128,7 +127,8 @@ HEADERS += \
     soundeffect.h \
     settings.h \
     mirage.h \
-    animatedbillboardset.h
+    animatedbillboardset.h \
+    baphomech.h
 
 OTHER_FILES += \
     Docs/Todo.md \

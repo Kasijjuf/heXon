@@ -43,10 +43,10 @@ void PS()
 
         float factor = -abs(vWorldPos.y);
 
-        diffColor *= 0.8 * vec4(0.42,
+        diffColor *= 0.9 * vec4(0.42,
                             0.34 - factor * 0.42,
                             0.42 - factor * 0.23,
-                            0.75 + factor * factor * 0.42);
+                            clamp(0.64 + factor * factor * 0.05, 0, 0.9));
 
         diffColor *= diffColor;
 
@@ -54,10 +54,6 @@ void PS()
             diffColor.r += 0.023 * (0.42 - factor);
             diffColor.g -= 0.034 * (0.42 - factor);
             diffColor.b -= 0.042 * (0.42 - factor);
-        }
-
-        if (diffColor.a > 0.666) {
-            diffColor.a = 0.666;
         }
 
     // Get fog factor

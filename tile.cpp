@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2018 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -68,7 +68,6 @@ void Tile::Update(float timeStep)
     }
     offsetY = sqrt(offsetY * 0.666f);
 
-    wave_ *= 1.0f + 1.23f * !MC->InsideHexagon(node_->GetPosition(), 19.0f);
     offsetY += 0.023f * wave_;
 
     offsetY = (offsetY + lastOffsetY_) * 0.5f;

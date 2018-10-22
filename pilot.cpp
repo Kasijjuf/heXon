@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2018 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -273,9 +273,12 @@ void Pilot::UpdateModel()
     case HAIR_SANTAHAT:
         hairModel_->SetModel(MC->GetModel("SantaHat"));
         break;
+    case HAIR_PUMPKIN:
+        hairModel_->SetModel(MC->GetModel("Pumpkin"));
+        break;
     }
     //Set hair color
-    if (hairStyle_ == HAIR_SANTAHAT) {
+    if (hairStyle_ == HAIR_SANTAHAT || hairStyle_ == HAIR_PUMPKIN) {
 
         hairModel_->SetMaterial(MC->GetMaterial("VCol"));
 
@@ -299,7 +302,15 @@ void Pilot::Randomize()
 {
     male_ = Random(2);
 
-    if (TIME->GetTimeStamp().Contains("Dec") && GetPlayer() && GetPlayer()->IsHuman())
+    bool isHuman{ GetPlayer() && GetPlayer()->IsHuman() };
+    String timeStamp{ TIME->GetTimeStamp() };
+Log::Write(LOG_INFO, timeStamp);
+    if (isHuman && (timeStamp.Contains("Oct 2")
+                 || timeStamp.Contains("Oct 3")))
+
+        hairStyle_ = HAIR_PUMPKIN;
+
+    else if (isHuman && timeStamp.Contains("Dec"))
 
         hairStyle_ = HAIR_SANTAHAT;
     else
@@ -477,14 +488,14 @@ void Pilot::Think()
     //Pick a destination
 
     //Enter play
-    if ( pickedShip_ && ((MC->AllPlayersAtZero(false) && MC->NoHumans())
+    if ( pickedShip_ && ((MC->AllPlayersScoreZero(false) && MC->NoHumans())
                      || (MC->AllReady(true) && !MC->NoHumans()))) {
 
         NAVMESH->FindPath(path_, node_->GetPosition(), pickedShip_->GetPosition() + pickedShip_->GetNode()->GetDirection() * 0.23f);
         path_.Push(pickedShip_->GetPosition());
 
     //Reset Score
-    } else if (GetPlayer()->GetScore() != 0 && (MC->NoHumans() || MC->AllPlayersAtZero(true))
+    } else if (GetPlayer()->GetScore() != 0 && (MC->NoHumans() || MC->AllPlayersScoreZero(true))
             && splatterPillarIdle) {
 
         NAVMESH->FindPath(path_, node_->GetPosition(), splatterPillar->GetPosition());

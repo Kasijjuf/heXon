@@ -45,6 +45,8 @@ void VS()
 {
     mat4 modelMatrix = iModelMatrix;
     vec3 worldPos = GetWorldPos(modelMatrix);
+
+
     gl_Position = GetClipPos(worldPos);
     vNormal = GetWorldNormal(modelMatrix);
     vWorldPos = vec4(worldPos, GetDepth(gl_Position));

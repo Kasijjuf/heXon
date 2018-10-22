@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2018 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -133,15 +133,17 @@ public:
     Player* GetPlayerByColorSet(int colorSet);
     Player* GetNearestPlayer(Vector3 pos);
     Vector< SharedPtr<Player> > GetPlayers();
+    unsigned NumPlayers() const { return players_.Size(); }
     void RemovePlayer(Player *player);
     bool AllReady(bool onlyHuman);
-    bool AllPlayersAtZero(bool onlyHuman);
+    bool AllPlayersScoreZero(bool onlyHuman);
+
 
     float SinceLastReset() const { return scene_->GetElapsedTime() - world.lastReset; }
     void SetGameState(GameState newState);
     GameState GetGameState(){ return currentState_; }
     GameState GetPreviousGameState(){ return previousState_; }
-    float GetAspectRatio() const noexcept { return aspectRatio_; }
+    float AspectRatio() const noexcept { return aspectRatio_; }
     bool IsPaused() { return paused_; }
     void SetPaused(bool paused);
     void Pause() { SetPaused(true);}
@@ -240,6 +242,7 @@ public:
 
     void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData);
     void HandleBeginFrame(StringHash eventType, VariantMap& eventData);
+    void HandleJoystickConnected(StringHash eventType, VariantMap& eventData);
 private:
     static MasterControl* instance_;
     String resourceFolder_;

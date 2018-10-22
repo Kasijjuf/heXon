@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2018 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #include "razor.h"
 #include "spire.h"
 #include "mason.h"
+#include "baphomech.h"
 #include "seeker.h"
 #include "brick.h"
 #include "flash.h"
@@ -115,6 +116,7 @@ void SpawnMaster::Restart()
 
     Activate();
 //    SpawnPattern();
+//    Create<Baphomech>()->Set(Vector3::ZERO);
 }
 
 void SpawnMaster::SpawnDeathFlower(Vector3 position, int size, unsigned spires)

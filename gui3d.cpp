@@ -1,5 +1,5 @@
 /* heXon
-// Copyright (C) 2017 LucKey Productions (luckeyproductions.nl)
+// Copyright (C) 2018 LucKey Productions (luckeyproductions.nl)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -101,6 +101,7 @@ void GUI3D::Initialize(int colorSet)
         scoreDigits_[d]->Translate(Vector3::RIGHT * (colorSet == 2 ? -0.5f : 0.5f) * (d - 4.5f));
         scoreDigits_[d]->Rotate(Quaternion(colorSet == 2 ? 0.0f : 180.0f, Vector3::UP), TS_WORLD);
         scoreDigits_[d]->Rotate(Quaternion((colorSet % 2) * 90.0f - 45.0f, Vector3::RIGHT), TS_LOCAL);
+        scoreDigits_[d]->SetScale(0.9f);
         StaticModel* digitModel{ scoreDigits_[d]->CreateComponent<StaticModel>() };
         digitModel->SetModel(MC->GetModel("0"));
         digitModel->SetMaterial(MC->colorSets_[colorSet_].glowMaterial_);
@@ -267,8 +268,8 @@ void GUI3D::EnterLobby(StringHash eventType, VariantMap &eventData)
     healthIndicator_->SetMorphWeight(1, 0.0f);
 
     node_->SetPosition(Vector3::UP);
-    node_->SetScale(MC->GetAspectRatio() > 1.6f ? 1.0f
-                                                : 0.85f);
+    node_->SetScale(MC->AspectRatio() > 1.6f ? 1.0f
+                                             : 0.85f);
     subNode_->SetScale(0.75f);
 
     toCount_ = 0;
@@ -286,8 +287,8 @@ void GUI3D::EnterPlay(StringHash eventType, VariantMap &eventData)
     node_->SetPosition(Vector3::DOWN * 1.23f);
     node_->SetScale(3.6f);
 
-    subNode_->SetScale(MC->GetAspectRatio() > 1.6f ? 1.0f
-                                                  : 0.75f);
+    subNode_->SetScale(MC->AspectRatio() > 1.6f ? 1.0f
+                                                : 0.75f);
 
 }
 
