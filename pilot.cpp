@@ -276,9 +276,12 @@ void Pilot::UpdateModel()
     case HAIR_PUMPKIN:
         hairModel_->SetModel(MC->GetModel("Pumpkin"));
         break;
+    case HAIR_AXE:
+        hairModel_->SetModel(MC->GetModel("Axe"));
+        break;
     }
     //Set hair color
-    if (hairStyle_ == HAIR_SANTAHAT || hairStyle_ == HAIR_PUMPKIN) {
+    if (hairStyle_ == HAIR_SANTAHAT || hairStyle_ == HAIR_PUMPKIN || hairStyle_ == HAIR_AXE) {
 
         hairModel_->SetMaterial(MC->GetMaterial("VCol"));
 
@@ -305,10 +308,10 @@ void Pilot::Randomize()
     bool isHuman{ GetPlayer() && GetPlayer()->IsHuman() };
     String timeStamp{ TIME->GetTimeStamp() };
 Log::Write(LOG_INFO, timeStamp);
-    if (isHuman && (timeStamp.Contains("Oct 2")
-                 || timeStamp.Contains("Oct 3")))
+    if (timeStamp.Contains("Oct 2")
+     || timeStamp.Contains("Oct 3"))
 
-        hairStyle_ = HAIR_PUMPKIN;
+        hairStyle_ = isHuman ? HAIR_PUMPKIN : HAIR_AXE;
 
     else if (isHuman && timeStamp.Contains("Dec"))
 
