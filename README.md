@@ -1,4 +1,4 @@
-[:four_leaf_clover:](http://www.luckeyproductions.nl/) ![heXon logo](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Docs/Guide/images/heXonBanner.png)
+[:four_leaf_clover:](http://www.luckeyproductions.nl/) ![heXon logo](Docs/Guide/images/heXonBanner.png)
 
 #### Contents
 
@@ -15,8 +15,8 @@ To score high you must fly well, avoiding the Notyous and destroying them with y
 All edges of the hexagonal arena are connected to its opposite like portals, making for a puzzlingly dangerous playing field that might take some experience to wrap your head around.
 
 ### Screenshots
-[![heXon screenshot](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Screenshots/Screenshot_Thu_Dec_22_05_25_44_2016.png)](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Screenshots/Screenshot_Thu_Dec_22_05_25_44_2016.png)
-[![heXon screenshot](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Screenshots/Screenshot_Sun_Jun__5_03_02_18_2016.png)](https://raw.githubusercontent.com/LucKeyProductions/heXon/master/Screenshots/Screenshot_Sun_Jun__5_03_02_18_2016.png)
+[![heXon screenshot](Screenshots/Screenshot_Thu_Dec_22_05_25_44_2016.png)](Screenshots/Screenshot_Thu_Dec_22_05_25_44_2016.png)
+[![heXon screenshot](Screenshots/Screenshot_Sun_Jun__5_03_02_18_2016.png)](Screenshots/Screenshot_Sun_Jun__5_03_02_18_2016.png)
 
 ## Installation
 ### Debian-based linux distros
