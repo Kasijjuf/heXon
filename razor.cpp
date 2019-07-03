@@ -33,7 +33,8 @@ Razor::Razor(Context* context):
     aimSpeed_{0.25f * topSpeed_},
     spinRate_{}
 {
-
+    sprite_ = true;
+    meleeDamage_ = 0.9f;
 }
 
 void Razor::OnNodeSet(Node* node)
@@ -41,22 +42,44 @@ void Razor::OnNodeSet(Node* node)
 
     Enemy::OnNodeSet(node);
 
-    meleeDamage_ = 0.9f;
+    if (!sprite_) {
 
-    SharedPtr<Material> black{ MC->GetMaterial("Razor")->Clone() };
+        SharedPtr<Material> black{ MC->GetMaterial("Razor")->Clone() };
+        topNode_ = node_->CreateChild("RazorTop");
+        topModel_ = topNode_->CreateComponent<StaticModel>();
+        topModel_->SetModel(MC->GetModel("RazorHalf"));
+        topModel_->SetMaterial(0, MC->GetMaterial("Razor"));
+        topModel_->SetMaterial(1, centerModel_->GetMaterial());
 
-    topNode_ = node_->CreateChild("RazorTop");
-    topModel_ = topNode_->CreateComponent<StaticModel>();
-    topModel_->SetModel(MC->GetModel("RazorHalf"));
-    topModel_->SetMaterial(0, MC->GetMaterial("Razor"));
-    topModel_->SetMaterial(1, centerModel_->GetMaterial());
+        bottomNode_ = node_->CreateChild("RazorBottom");
+        bottomNode_->SetRotation(Quaternion(180.0f, Vector3::RIGHT));
+        bottomModel_ = bottomNode_->CreateComponent<StaticModel>();
+        bottomModel_->SetModel(MC->GetModel("RazorHalf"));
+        bottomModel_->SetMaterial(0, black);
+        bottomModel_->SetMaterial(1, centerModel_->GetMaterial());
 
-    bottomNode_ = node_->CreateChild("RazorBottom");
-    bottomNode_->SetRotation(Quaternion(180.0f, Vector3::RIGHT));
-    bottomModel_ = bottomNode_->CreateComponent<StaticModel>();
-    bottomModel_->SetModel(MC->GetModel("RazorHalf"));
-    bottomModel_->SetMaterial(0, black);
-    bottomModel_->SetMaterial(1, centerModel_->GetMaterial());
+    } else {
+
+        AnimatedBillboardSet* sprite{ node_->CreateComponent<AnimatedBillboardSet>() };
+        SharedPtr<Material> mat{ CACHE->GetResource<Material>("Materials/RazorSprite.xml")->Clone() };
+        mat->SetShaderParameter("MatDiffColor", color_);
+        mat->SetShaderParameter("MatEmissiveColor", color_ * 0.42f);
+
+        sprite->SetNumBillboards(1);
+        sprite->SetMaterial(mat);
+        sprite->SetSorted(true);
+        sprite->SetRelative(true);
+        sprite->SetSpeed(10.0f);
+
+        for (Billboard& bb : sprite->GetBillboards()) {
+
+            bb.size_ = Vector2(1.17f, 1.17f);
+            bb.enabled_ = true;
+        }
+
+        sprite->LoadFrames(CACHE->GetResource<XMLFile>("Textures/Mirage.xml"));
+        sprite->Commit();
+    }
 
     rigidBody_->SetLinearRestThreshold(0.0023f);
 
@@ -74,10 +97,22 @@ void Razor::Update(float timeStep)
 
     //Spin
     spinRate_ = timeStep * (75.0f * aimSpeed_ - 25.0 * rigidBody_->GetLinearVelocity().Length());
-    topNode_->Rotate(Quaternion(0.0f, spinRate_, 0.0f));
-    bottomNode_->Rotate(Quaternion(0.0f, spinRate_, 0.0f));
-    //Pulse
-    topModel_->GetMaterial(0)->SetShaderParameter("MatEmissiveColor", GetGlowColor());
+
+    if (!sprite_) {
+
+        topNode_->Rotate(Quaternion(0.0f, spinRate_, 0.0f));
+        bottomNode_->Rotate(Quaternion(0.0f, spinRate_, 0.0f));
+        //Pulse
+        topModel_->GetMaterial(0)->SetShaderParameter("MatEmissiveColor", GetGlowColor());
+
+    } else {
+
+        AnimatedBillboardSet* sprite{ GetComponent<AnimatedBillboardSet>() };
+        sprite->GetMaterial()->SetShaderParameter("MatEmissiveColor", (color_ + GetGlowColor()) * 0.34f);
+        sprite->SetSpeed(spinRate_ * 3.4f);
+        sprite->GetBillboard(0)->size_ = Vector2(1.17f, 1.17f + 0.05f * Max(0.0f, node_->GetWorldPosition().z_ / -5.0f));
+        sprite->Commit();
+    }
 }
 
 void Razor::FixedUpdate(float timeStep)
@@ -111,10 +146,13 @@ void Razor::Set(Vector3 position)
 }
 void Razor::Blink(Vector3 newPosition)
 {
-    for (StaticModel* sm: {topModel_, bottomModel_}) {
+    if (!sprite_) {
 
-        Phaser* phaser{ SPAWN->Create<Phaser>() };
-        phaser->Set(sm->GetModel(), GetPosition(), node_->GetRotation(), rigidBody_->GetLinearVelocity(), Quaternion(spinRate_, Vector3::UP));
+        for (StaticModel* sm: {topModel_, bottomModel_}) {
+
+            Phaser* phaser{ SPAWN->Create<Phaser>() };
+            phaser->Set(sm->GetModel(), GetPosition(), node_->GetRotation(), rigidBody_->GetLinearVelocity(), Quaternion(spinRate_, Vector3::UP));
+        }
     }
 
     SceneObject::Blink(newPosition);

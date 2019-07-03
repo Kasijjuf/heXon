@@ -1,7 +1,7 @@
 <material>
 	<technique name="Techniques/DiffNormalSpecEmissive.xml"/>
 	<texture name="Textures/DrainDiffuse.png" unit="diffuse"/>
-	<texture name="Textures/DrainNormals.png" unit="normal"/>
+	<texture name="Textures/DrainNormal.png" unit="normal"/>
 	<texture name="Textures/DrainSpecular.png" unit="specular"/>
 	<texture name="Textures/DrainEmissive.png" unit="emissive"/>
 	<parameter name="MatSpecColor" value="1 1 1 42" />

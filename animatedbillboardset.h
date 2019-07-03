@@ -31,12 +31,15 @@ public:
     AnimatedBillboardSet(Context* context);
     void UpdateGeometry(const FrameInfo& frame) override;
     void LoadFrames(XMLFile* file);
+
+    void SetSpeed(const float speed) { speed_ = speed; }
 private:
     Vector<TextureFrame> textureFrames_;
     HashMap<unsigned, unsigned> texIndices_;
     HashMap<unsigned, float> animationTimers_;
 
     bool synced_;
+    float speed_;
 };
 
 #endif // ANIMATEDBILLBOARDSET_H

@@ -27,7 +27,8 @@ AnimatedBillboardSet::AnimatedBillboardSet(Context* context) : BillboardSet(cont
     textureFrames_{},
     texIndices_{},
     animationTimers_{},
-    synced_{ true }
+    synced_{ true },
+    speed_{ 1.0f }
 {
 }
 
@@ -63,7 +64,8 @@ void AnimatedBillboardSet::LoadFrames(XMLFile* file)
 
 void AnimatedBillboardSet::UpdateGeometry(const FrameInfo &frame)
 {
-    bool sceneUpdate{true};
+    bool sceneUpdate{ false };
+
     if (node_->GetScene())
         sceneUpdate = node_->GetScene()->IsUpdateEnabled();
 
@@ -81,24 +83,21 @@ void AnimatedBillboardSet::UpdateGeometry(const FrameInfo &frame)
         float& time{ animationTimers_[synced_ ? 0 : b] };
         if (!synced_ || b == 0) {
 
-            time += frame.timeStep_;
+            time += frame.timeStep_ * speed_;
         }
 
 
-        if (time >= textureFrames_[texIndex].time_)
+        while (time >= textureFrames_[texIndex].time_)
         {
             if (!synced_ || b == 0) {
 
                 ++texIndex;
                 if (texIndex >= textureFrames_.Size()) {
                     texIndex = 0;
-                    time = 0.0f;
+                    time -= textureFrames_[textureFrames_.Size() - 1].time_;
                 }
                 frameStepped = true;
             }
-        } else if (!synced_) {
-
-            frameStepped = false;
         }
 
         if (frameStepped)

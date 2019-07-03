@@ -547,6 +547,11 @@ void Ship::Think()
     Vector3 smell{ Sniff(playerFactor, move, false) * playerFactor };
 //    Vector3 taste{ Sniff(playerFactor, move, true) * playerFactor };
 
+    //goodSmell
+    //badSmell
+    //goodTaste
+    //badTaste
+
     if (health_ < (5.0f - appleCount_)
      || GetPlayer()->GetFlightScore() == 0
      || ((health_ + 0.5f * appleCount_) < 8.0f)
@@ -565,7 +570,7 @@ void Ship::Think()
     Vector3 newPickupPos{ pickupPos };
     for (int i{0}; i < 6; ++i){
         Vector3 projectedPickupPos = pickupPos + (Quaternion(i * 60.0f, Vector3::UP) * Vector3::FORWARD * ARENA_RADIUS * 2.0f);
-        if (GetPosition().DistanceToPoint(projectedPickupPos - rigidBody_->GetLinearVelocity() * 0.42f) < GetPosition().DistanceToPoint(pickupPos))
+        if (GetPosition().DistanceToPoint(projectedPickupPos - rigidBody_->GetLinearVelocity() * 0.42f) + (projectedPickupPos - GetPosition() + rigidBody_->GetLinearVelocity()).DotProduct(smell) < GetPosition().DistanceToPoint(pickupPos))
             newPickupPos = projectedPickupPos;
     }
     pickupPos = newPickupPos;
@@ -575,13 +580,15 @@ void Ship::Think()
         pickupPos = GetPosition() + node_->GetDirection() * playerFactor;
     }
 
-    move = 0.5f * (move + (pickupPos - node_->GetPosition() - 0.05f * playerFactor * rigidBody_->GetLinearVelocity()
-                           - 0.1f * playerFactor * node_->GetDirection())
+    move = (pickupPos - node_->GetPosition() - 0.05f * playerFactor * rigidBody_->GetLinearVelocity()
+                           - 0.1f * playerFactor * node_->GetDirection()
                 * Vector3(1.0f, 0.0f, 1.0f)).Normalized();
 
-    if (pickupPos.DistanceToPoint(GetPosition()) > playerFactor) {
+    if (pickupPos.DistanceToPoint(GetPosition()) > 1.0f / playerFactor) {
 
-        move += smell * 5.0f;
+        Vector3 taste{ Sniff(playerFactor, move, true) * playerFactor };
+        float tasteFactor{ taste.DotProduct(rigidBody_->GetLinearVelocity().Normalized()) * playerFactor };
+        move += smell * smell.DotProduct(taste) + taste * Pow(tasteFactor + Sign(tasteFactor) * playerFactor, 3.0f);
     }
 
     move += Vector3(
@@ -682,11 +689,10 @@ Vector3 Ship::Sniff(float playerFactor, Vector3& move, bool taste)
         for (int w{0}; w < whiskers; ++w) {
 
             PODVector<PhysicsRaycastResult> hitResults{};
-            Vector3 whiskerDirection{ Quaternion((360.0f / whiskers) * w, Vector3::UP)
-                                      * (2.0f * node_->GetDirection() + 3.0f * move_.Normalized())};
+            Vector3 whiskerDirection{ Quaternion((360.0f / whiskers) * w, Vector3::UP) * Vector3::FORWARD};
             Ray whiskerRay{ projectedPlayerPos + Vector3::DOWN * Random(0.666f), whiskerDirection };
 
-            if (MC->PhysicsRayCast(hitResults, whiskerRay, playerFactor + playerFactor * (w == 0), M_MAX_UNSIGNED)) {
+            if (MC->PhysicsRayCast(hitResults, whiskerRay, playerFactor * playerFactor + playerFactor * !taste, M_MAX_UNSIGNED)) {
 
                 ++detected;
                 PhysicsRaycastResult r{ hitResults[0] };
@@ -694,22 +700,22 @@ Vector3 Ship::Sniff(float playerFactor, Vector3& move, bool taste)
                 float distSquared{ (r.distance_ * r.distance_)
                                    * (0.005f * whiskerDirection.Angle(move_) + playerFactor * playerFactor) };
 
-                if (node->HasComponent<Apple>()) {
+                if (!taste && node->HasComponent<Apple>()) {
                     smell += 230.0f * (whiskerDirection / (distSquared)) * (appleCount_ - static_cast<float>(GetPlayer()->GetFlightScore() == 0));
-                } else if (node->HasComponent<Heart>()) {
+                } else if (!taste && node->HasComponent<Heart>()) {
                     smell += 235.0f * (whiskerDirection / (distSquared)) * (heartCount_ * 2.0f - appleCount_ * 10.0f + (10.0f - health_));
-                } else if ((node->HasComponent<ChaoBall>()) && !taste) {
+                } else if (taste && node->HasComponent<ChaoBall>()) {
                     if (r.body_->GetNode()->GetComponent<RigidBody>()->GetLinearVelocity().Length() < 5.0f)
                         smell += 666.0f * whiskerDirection / (distSquared * distSquared);
-                } else if ((node->HasComponent<ChaoMine>()) && !taste) {
+                } else if (taste && node->HasComponent<ChaoMine>()) {
                     if (r.body_->GetNode()->GetComponent<RigidBody>()->GetLinearVelocity().Length() < 5.0f)
                         smell += 9000.0f * whiskerDirection / (distSquared * distSquared * Random(5.0f));
                 } else if (node->HasComponent<Razor>()) {
                     smell -= ((w == 0) * 2300.0f + 1000.0f) * (whiskerDirection / (distSquared));
                 } else if (node->HasComponent<Spire>()) {
-                    smell -= ((w == 0) * 4200.0f + 6000.0f) * (whiskerDirection / (distSquared * distSquared));
+                    smell -= ((w == 0) * 4200.0f + 60000.0f) * (whiskerDirection / (distSquared * distSquared));
                 } else if (node->HasComponent<Mason>()) {
-                    smell -= ((w == 0) * 3400.0f + 8000.0f) * (whiskerDirection / (distSquared * distSquared));
+                    smell -= ((w == 0) * 3400.0f + 80000.0f) * (whiskerDirection / (distSquared * distSquared));
                 } else if (node->HasComponent<Seeker>() && !taste) {
                     smell -= 1000.0f * (whiskerDirection / r.distance_) * (3.0f - 2.0f * static_cast<float>(health_ > 10.0f));
                     ++detected;

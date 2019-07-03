@@ -35,7 +35,7 @@ Arena::Arena(Context* context):
     targetScale_{ Vector3::ONE * 0.05f },
     hexAffectors_{}
 {
-
+    SetUpdateEventMask(USE_UPDATE);
 }
 
 void Arena::OnNodeSet(Node *node)

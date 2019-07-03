@@ -56,6 +56,7 @@ public:
     Vector3 GetLinearVelocity() const { return rigidBody_->GetLinearVelocity(); }
 
 protected:
+    bool sprite_{false};
     float panicTime_;
     float health_;
     float initialHealth_;

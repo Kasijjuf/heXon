@@ -165,6 +165,7 @@ void MasterControl::Start()
     ChaoFlash::RegisterObject(context_);
     ChaoMine::RegisterObject(context_);
     ChaoZap::RegisterObject(context_);
+    Coin::RegisterObject(context_);
 
     Razor::RegisterObject(context_);
     Spire::RegisterObject(context_);
@@ -180,7 +181,6 @@ void MasterControl::Start()
     Flash::RegisterObject(context_);
     Explosion::RegisterObject(context_);
     Line::RegisterObject(context_);
-    Coin::RegisterObject(context_);
 
 //    context_->RegisterSubsystem(this);
     context_->RegisterSubsystem(new EffectMaster(context_));

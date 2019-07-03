@@ -51,7 +51,10 @@ void Enemy::OnNodeSet(Node *node)
 
     //Generate random color
     int randomizer{ Random(6) };
-    color_ = Color(0.5f + (randomizer * 0.075f), 0.9f - (randomizer * 0.075f), 0.5f + Max(randomizer - 3.0f, 3.0f)/6.0f, 1.0f);
+    color_ = Color(0.5f + (randomizer * 0.075f),
+                   0.9f - (randomizer * 0.075f),
+                   0.5f + Max(randomizer - 3.0f, 3.0f) / 6.0f,
+                   1.0f);
 
     centerNode_ = node_->CreateChild("SmokeTrail");
     smokeNode_ = centerNode_->CreateChild("Smoke");
@@ -66,11 +69,14 @@ void Enemy::OnNodeSet(Node *node)
     particleEffect_->SetColorFrames(colorFrames);
     particleEmitter_->SetEffect(particleEffect_);
 
-    centerModel_ = centerNode_->CreateComponent<StaticModel>();
-    centerModel_->SetModel(MC->GetModel("Core"));
-    centerModel_->SetMaterial(MC->GetMaterial("CoreGlow")->Clone());
-    centerModel_->GetMaterial(0)->SetShaderParameter("MatDiffColor", color_);
-    centerModel_->GetMaterial(0)->SetShaderParameter("MatEmissiveColor", color_);
+    if (!sprite_) {
+
+        centerModel_ = centerNode_->CreateComponent<StaticModel>();
+        centerModel_->SetModel(MC->GetModel("Core"));
+        centerModel_->SetMaterial(MC->GetMaterial("CoreGlow")->Clone());
+        centerModel_->GetMaterial(0)->SetShaderParameter("MatDiffColor", color_);
+        centerModel_->GetMaterial(0)->SetShaderParameter("MatEmissiveColor", color_);
+    }
 
     rigidBody_ = node_->CreateComponent<RigidBody>();
     rigidBody_->SetRestitution(0.666f);
@@ -212,10 +218,12 @@ void Enemy::Update(float timeStep)
 
     Emerge(timeStep);
 
-    //Animate core
-    centerModel_->GetMaterial()->SetShaderParameter("VOffset",
-                Vector4(0.0f, LucKey::Cycle(time * 3.0f, 0.0f, 1.0f), 0.0f, 0.0f));
-    centerNode_->Rotate(Quaternion((1.0f + panic_) * timeStep * 333.0f, Vector3::UP));
+    if (!sprite_) {
+        //Animate core
+        centerModel_->GetMaterial()->SetShaderParameter("VOffset",
+                                                        Vector4(0.0f, LucKey::Cycle(time * 3.0f, 0.0f, 1.0f), 0.0f, 0.0f));
+        centerNode_->Rotate(Quaternion((1.0f + panic_) * timeStep * 333.0f, Vector3::UP));
+    }
 }
 void Enemy::FixedUpdate(float timeStep)
 { (void)timeStep;

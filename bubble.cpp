@@ -63,9 +63,9 @@ void Bubble::Update(float timeStep)
 
     node_->Translate(Vector3::UP * timeStep * (6.66f + MC->SinceLastReset() * 0.0023f), TS_WORLD);
     node_->Rotate(Quaternion(timeStep * spinVelocity_, spinAxis_));
-    node_->SetWorldScale(Vector3(MC->Sine(2.0f - baseScale_, baseScale_*0.88f, baseScale_*1.23f, spinVelocity_),
-                                     MC->Sine(3.0f - baseScale_, baseScale_*0.88f, baseScale_*1.23f, spinVelocity_ + 2.0f),
-                                     MC->Sine(2.3f - baseScale_, baseScale_*0.88f, baseScale_*1.23f, spinVelocity_ + 3.0f)));
+    node_->SetWorldScale(Vector3(MC->Sine(2.0f - baseScale_, baseScale_ * 0.88f, baseScale_ * 1.23f, spinVelocity_),
+                                 MC->Sine(3.0f - baseScale_, baseScale_ * 0.88f, baseScale_ * 1.23f, spinVelocity_ + 2.0f),
+                                 MC->Sine(2.3f - baseScale_, baseScale_ * 0.88f, baseScale_ * 1.23f, spinVelocity_ + 3.0f)));
 }
 
 void Bubble::Disable()
