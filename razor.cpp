@@ -62,8 +62,6 @@ void Razor::OnNodeSet(Node* node)
 
         AnimatedBillboardSet* sprite{ node_->CreateComponent<AnimatedBillboardSet>() };
         SharedPtr<Material> mat{ CACHE->GetResource<Material>("Materials/RazorSprite.xml")->Clone() };
-        mat->SetShaderParameter("MatDiffColor", color_);
-        mat->SetShaderParameter("MatEmissiveColor", color_ * 0.42f);
 
         sprite->SetNumBillboards(1);
         sprite->SetMaterial(mat);
@@ -87,7 +85,11 @@ void Razor::OnNodeSet(Node* node)
     mirage->SetColor(color_ * 0.9f);
     mirage->SetSize(0.9f);
 }
-
+void Razor::Set(Vector3 position)
+{
+    aimSpeed_ = 0.25f * topSpeed_;
+    Enemy::Set(position);
+}
 void Razor::Update(float timeStep)
 {
     if (!node_->IsEnabled())
@@ -96,21 +98,23 @@ void Razor::Update(float timeStep)
     Enemy::Update(timeStep);
 
     //Spin
-    spinRate_ = timeStep * (75.0f * aimSpeed_ - 25.0 * rigidBody_->GetLinearVelocity().Length());
+    spinRate_ = 55.0f * aimSpeed_ - 17.0 * rigidBody_->GetLinearVelocity().Length();
 
     if (!sprite_) {
 
-        topNode_->Rotate(Quaternion(0.0f, spinRate_, 0.0f));
-        bottomNode_->Rotate(Quaternion(0.0f, spinRate_, 0.0f));
+        topNode_->Rotate(Quaternion(0.0f, timeStep * spinRate_, 0.0f));
+        bottomNode_->Rotate(Quaternion(0.0f, timeStep * spinRate_, 0.0f));
         //Pulse
         topModel_->GetMaterial(0)->SetShaderParameter("MatEmissiveColor", GetGlowColor());
 
     } else {
 
+        smokeNode_->SetScale(0.75f);
+
         AnimatedBillboardSet* sprite{ GetComponent<AnimatedBillboardSet>() };
-        sprite->GetMaterial()->SetShaderParameter("MatEmissiveColor", (color_ + GetGlowColor()) * 0.34f);
-        sprite->SetSpeed(spinRate_ * 3.4f);
-        sprite->GetBillboard(0)->size_ = Vector2(1.17f, 1.17f + 0.05f * Max(0.0f, node_->GetWorldPosition().z_ / -5.0f));
+        sprite->GetMaterial()->SetShaderParameter("MatEmissiveColor", (color_ + GetGlowColor()) * 0.42f);
+        sprite->SetSpeed(spinRate_ * 0.042f);
+        sprite->GetBillboard(0)->size_ = Vector2(1.23f, 1.23f + 0.023f * Max(0.0f, node_->GetWorldPosition().z_ / -5.0f));
         sprite->Commit();
     }
 }
@@ -137,12 +141,6 @@ void Razor::Hit(float damage, int ownerID)
 {
     Enemy::Hit(damage, ownerID);
     aimSpeed_ = (0.25f + 0.75f * panic_) * topSpeed_;
-}
-
-void Razor::Set(Vector3 position)
-{
-    aimSpeed_ = 0.25f * topSpeed_;
-    Enemy::Set(position);
 }
 void Razor::Blink(Vector3 newPosition)
 {

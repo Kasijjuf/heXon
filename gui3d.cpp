@@ -25,6 +25,12 @@
 
 #include "gui3d.h"
 
+void GUI3D::RegisterObject(Context* context)
+{
+    context->RegisterFactory<GUI3D>();
+
+    MC->GetSample("Death");
+}
 
 GUI3D::GUI3D(Context* context) : LogicComponent(context),
     colorSet_{},
@@ -48,17 +54,11 @@ GUI3D::GUI3D(Context* context) : LogicComponent(context),
     appleCounterRoot_{},
     appleCounter_{},
     heartCounterRoot_{},
-    heartCounter_{}
+    heartCounter_{},
+    barrels_{},
+    barrelCount_{1}
 {
 }
-
-void GUI3D::RegisterObject(Context* context)
-{
-    context->RegisterFactory<GUI3D>();
-
-    MC->GetSample("Death");
-}
-
 
 void GUI3D::OnNodeSet(Node* node)
 { if (!node) return;
@@ -87,14 +87,14 @@ void GUI3D::Initialize(int colorSet)
     case 4: angle =  120.0f; break;
     }
 
-    subNode_->Rotate(Quaternion(180.0f * (colorSet_ - 1 % 2), Vector3::FORWARD));
+//    subNode_->Rotate(Quaternion(180.0f * (colorSet_ - 1 % 2), Vector3::FORWARD));
     node_->Rotate(Quaternion(angle, Vector3::UP));
 
     scoreNode_ = subNode_->CreateChild("Score");
-    scoreNode_->Rotate(Quaternion(180.0f * (colorSet_ == 4), Vector3::RIGHT));
-    scoreNode_->Rotate(Quaternion(180.0f * (colorSet_ == 2), Vector3::FORWARD));
+    if (colorSet_ == 4)
+        scoreNode_->Rotate(Quaternion(180.0f, 0.0f, 180.0f));
 
-    for (int d{0}; d < 10; ++d) {
+    for (int d{ 0 }; d < 10; ++d) {
 
         scoreDigits_[d] = scoreNode_->CreateChild("Digit");
         scoreDigits_[d]->SetEnabled( d == 0 );
@@ -124,9 +124,9 @@ void GUI3D::Initialize(int colorSet)
     healthIndicator_->SetMorphWeight(1, 0.0f);
 
     appleCounterRoot_ = subNode_->CreateChild("AppleCounter");
-    appleCounterRoot_->Rotate(Quaternion(180.0f * ((colorSet_ - 1) % 2), Vector3::FORWARD));
+//    appleCounterRoot_->Rotate(Quaternion(180.0f * ((colorSet_ - 1) % 2), Vector3::FORWARD));
 
-    for (int a{0}; a < 4; ++a) {
+    for (int a{ 0 }; a < 4; ++a) {
 
         appleCounter_[a] = appleCounterRoot_->CreateChild();
         appleCounter_[a]->SetEnabled(false);
@@ -144,9 +144,9 @@ void GUI3D::Initialize(int colorSet)
     }
 
     heartCounterRoot_ = subNode_->CreateChild("HeartCounter");
-    heartCounterRoot_->Rotate(Quaternion(180.0f * ((colorSet_ - 1) % 2), Vector3::FORWARD));
+//    heartCounterRoot_->Rotate(Quaternion(180.0f * ((colorSet_ - 1) % 2), Vector3::FORWARD));
 
-    for (int h{0}; h < 4; ++h) {
+    for (int h{ 0 }; h < 4; ++h) {
 
         heartCounter_[h] = heartCounterRoot_->CreateChild();
         heartCounter_[h]->SetEnabled(false);
@@ -163,6 +163,56 @@ void GUI3D::Initialize(int colorSet)
         heart->SetMaterial(MC->GetMaterial("RedEnvmap"));
     }
 
+    Node* cannonNode_{ subNode_->CreateChild("Cannon") };
+    Log::Write(LOG_INFO, String(colorSet_));
+    cannonNode_->SetPosition(Vector3(2.9f * ((colorSet_ & 2) - 1), -0.13f, 1.55f));
+    float parentZ{ cannonNode_->GetParent()->GetWorldPosition().z_ };
+    cannonNode_->LookAt(Vector3::BACK * parentZ * 2.7f + Vector3::DOWN * 0.55f, Vector3::BACK * parentZ * 1.0f + Vector3::UP * 8.0f);
+//    cannonNode_->SetRotation(Quaternion(-90.0f, Vector3::UP));
+    StaticModel* cannonBase{ cannonNode_->CreateComponent<StaticModel>() };
+    cannonBase->SetModel(MC->GetModel("CannonBase"));
+    cannonBase->SetMaterial(0, MC->colorSets_[colorSet].hullMaterial_);
+    cannonBase->SetMaterial(1, MC->colorSets_[colorSet].glowMaterial_);
+
+    for (int c{0}; c < 5; ++c) {
+
+        Node* barrelNode{ cannonNode_->CreateChild("Barrel") };
+
+        float z{ -0.035202f };
+        float x{ 0.0f };
+        bool front{ c < 3 };
+        bool left{ c % 2};
+        if (c != 0) {
+
+            float rot{ front ? 17.0f : -17.0f };
+            x = front ? 0.136274 : 0.098474;
+            if (left) {
+                x = -x;
+                rot = - rot;
+            }
+            if (!front)
+                rot += 180.0f;
+            z = front ? -0.055623f : -0.049149f;
+
+            barrelNode->Rotate(Quaternion(rot, Vector3::UP));
+        }
+        barrelNode->SetPosition(Vector3(x, 0.0f, z));
+        AnimatedModel* barrel{ barrelNode->CreateComponent<AnimatedModel>() };
+        barrel->SetModel(MC->GetModel("CannonBarrel"));
+        barrel->SetMaterial(0, MC->colorSets_[colorSet_].hullMaterial_);
+        barrel->SetMaterial(1, MC->GetMaterial("Metal"));
+        barrel->SetMaterial(2, MC->GetMaterial("Black"));
+
+        barrels_.Push(barrel);
+
+        if (c == 0) {
+            for (unsigned m{0}; m < barrel->GetNumMorphs(); ++m) {
+
+                barrel->SetMorphWeight(m, 1.0f);
+            }
+        }
+    }
+
     MC->scene_->CreateChild("Panel")->CreateComponent<Panel>()->Initialize(colorSet_);
 
     deathSource_ = node_->CreateComponent<SoundSource>();
@@ -172,6 +222,8 @@ void GUI3D::Initialize(int colorSet)
 
 void GUI3D::Update(float timeStep)
 {
+//    SetBarrels(((static_cast<int>(TIME->GetElapsedTime()) / 2) % 5) + 1);
+
     CountScore();
 
     for (int i{0}; i < 4; ++i) {
@@ -186,6 +238,32 @@ void GUI3D::Update(float timeStep)
     healthIndicator_->GetMaterial(0)->SetShaderParameter("MatDiffColor", HealthToColor(health_));
     healthIndicator_->GetMaterial(0)->SetShaderParameter("MatEmissiveColor", HealthToColor(health_) * 0.42f);
     healthIndicator_->GetMaterial(0)->SetShaderParameter("MatSpecularColor", HealthToColor(health_) * 0.05f);
+
+    for (unsigned b{0}; b < barrels_.Size(); ++b) {
+
+        AnimatedModel* barrel{ barrels_[b] };
+        float weight{};
+        if (b == 0) {
+            if (!(barrelCount_ & 2))
+                weight = 1.0f;
+        } else if (b < 3) {
+            if (barrelCount_ > 1)
+                weight = 1.0f;
+        } else {
+
+            if (barrelCount_ > 2)
+                weight = 1.0f;
+        }
+        for (unsigned m{0}; m < barrel->GetNumMorphs(); ++m) {
+
+            if (weight == 1.0f) {
+                barrel->SetMorphWeight(m, Lerp(barrel->GetMorphWeight(m), m == 0 ? weight : Clamp(40.0f * (barrel->GetMorphWeight(m - 1) - 0.975f), 0.0f, 1.0f), Min(1.0f, timeStep * 23.0f)));
+            } else {
+                barrel->SetMorphWeight(m, Lerp(barrel->GetMorphWeight(m), (m == barrel->GetNumMorphs() - 1) ? weight : Clamp(40.0f * barrel->GetMorphWeight(m + 1), 0.0f, 1.0f), Min(1.0f, timeStep * 23.0f)));
+
+            }
+        }
+    }
 }
 
 void GUI3D::PlayDeathSound()
@@ -232,6 +310,10 @@ void GUI3D::SetScore(unsigned score)
         scoreDigits_[d]->SetEnabled( score_ >= static_cast<unsigned>(pow(10, d))
                                        || d == 0 );
     }
+}
+void GUI3D::SetBarrels(int num)
+{
+    barrelCount_ = num;
 }
 void GUI3D::CountScore()
 {

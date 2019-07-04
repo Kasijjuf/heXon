@@ -6,8 +6,8 @@
 	<parameter name="VOffset" value="0 1 0 0" />
 	<parameter name="MatDiffColor" value="0.23 0 0 1" />
 	<parameter name="MatEmissiveColor" value="0 0 0" />
-	<parameter name="MatEnvMapColor" value="1 1 1" />
-	<parameter name="MatSpecColor" value="1 0.6 0.4 12" />
+	<parameter name="MatEnvMapColor" value="1 .9 .9" />
+	<parameter name="MatSpecColor" value=".8 0.6 0.4 9" />
 	<cull value="ccw" />
 	<shadowcull value="ccw" />
 	<depthbias constant="0" slopescaled="0" />

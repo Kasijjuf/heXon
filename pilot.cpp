@@ -307,7 +307,7 @@ void Pilot::Randomize()
 
     bool isHuman{ GetPlayer() && GetPlayer()->IsHuman() };
     String timeStamp{ TIME->GetTimeStamp() };
-Log::Write(LOG_INFO, timeStamp);
+
     if (timeStamp.Contains("Oct 2")
      || timeStamp.Contains("Oct 3"))
 

@@ -2,6 +2,7 @@
 
 TailGenerator::TailGenerator(Context* context) :
                 Drawable(context, DRAWABLE_GEOMETRY),
+                j_{0},
                 bufferDirty_{},
                 bufferSizeDirty_{},
                 vertexBuffer_{},
@@ -92,8 +93,7 @@ void TailGenerator::UpdateTail()
 
     if (path > tailLength_)
     {
-        // новая точка пути
-        Tail newPoint;
+        Tail newPoint{};
         newPoint.position = worldPosition;
 
         Vector3 forwardmotion = matchNode_ ? GetNode()->GetWorldDirection() : (previousPosition_ - worldPosition).Normalized();
@@ -105,7 +105,7 @@ void TailGenerator::UpdateTail()
         //forceBuildMeshInWorkerThread_ = true;
         forceUpdateVertexBuffer_ = true;
         previousPosition_ = worldPosition;
-        fullPointPath.Push(newPoint);    // Весь путь, все точки за все время работы компонента.
+        fullPointPath.Push(newPoint);
         //knots.Push(wordPosition);        // Для сплайна опорные
 
         if (fullPointPath.Size() > tailNum_)
@@ -299,22 +299,26 @@ void TailGenerator::UpdateVertexBuffer(const FrameInfo& frame)
     // Forward part of tail (strip in xz plane)
     if (horizontal_)
     {
-        for (unsigned i = 0; i < activeTails.Size() || i < tailNum_; ++i)
+        for (unsigned i{ 0 }; i < activeTails.Size() || i < tailNum_; ++i)
         {
+            --j_;
+
             unsigned sub = i < activeTails.Size() ? i : activeTails.Size() - 1;
             Color c = tailTipColor.Lerp(tailHeadColor, mixFactor * i);
             v.color_ = c.ToUInt();
             v.uv_ = Vector2(1.0f, 0.0f);
-            v.position_ = t[sub].position + t[sub].worldRight * scale_;
+            v.position_ = t[sub].position + M_SQRT1_2 * Vector3::UP * scale_ * (j_ == 0);
             tailMesh.Push(v);
 
             //v.color_ = c.ToUInt();
             v.uv_ = Vector2(0.0f, 1.0f);
-            v.position_ = t[sub].position - t[sub].worldRight * scale_ / M_SQRT2 + Vector3::UP / M_SQRT2 * (i % 2 ? scale_ : -scale_);
+            v.position_ = t[sub].position - t[sub].worldRight * M_SQRT1_2 * j_ * scale_;
             tailMesh.Push(v);
+
+            j_ += j_ == -1 ? 3 : 0;
         }
 
-        if (mirrored_) {
+        if (mirrored_) { //Used by Seekers
 
             for (TailVertex& tv : tailMesh) {
 

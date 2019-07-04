@@ -49,25 +49,15 @@ void Enemy::OnNodeSet(Node *node)
 
     health_ = initialHealth_;
 
-    //Generate random color
-    int randomizer{ Random(6) };
-    color_ = Color(0.5f + (randomizer * 0.075f),
-                   0.9f - (randomizer * 0.075f),
-                   0.5f + Max(randomizer - 3.0f, 3.0f) / 6.0f,
-                   1.0f);
 
     centerNode_ = node_->CreateChild("SmokeTrail");
     smokeNode_ = centerNode_->CreateChild("Smoke");
     particleEmitter_ = smokeNode_->CreateComponent<ParticleEmitter>();
     particleEffect_ = CACHE->GetTempResource<ParticleEffect>("Particles/Enemy.xml");
-    Vector<ColorFrame> colorFrames{};
-    colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 0.0f));
-    colorFrames.Push(ColorFrame(Color(color_.r_ * 0.666f,
-                                      color_.g_ * 0.666f,
-                                      color_.b_ * 0.666f, 0.75f), 0.1f));
-    colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 1.0f));
-    particleEffect_->SetColorFrames(colorFrames);
     particleEmitter_->SetEffect(particleEffect_);
+
+    //Generate random color
+    Randomize();
 
     if (!sprite_) {
 
@@ -104,11 +94,28 @@ void Enemy::OnNodeSet(Node *node)
     soundSource_->SetGain(0.1f);
     soundSource_->SetSoundType(SOUND_EFFECT);
 }
+void Enemy::Randomize()
+{
+    int randomizer{ Random(6) };
+    color_ = Color(0.5f + (randomizer * 0.075f),
+                   0.9f - (randomizer * 0.075f),
+                   0.5f + Max(randomizer - 3.0f, 3.0f) / 6.0f,
+                   1.0f);
+
+    Vector<ColorFrame> colorFrames{};
+    colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 0.0f));
+    colorFrames.Push(ColorFrame(Color(color_.r_ * 0.666f,
+                                      color_.g_ * 0.666f,
+                                      color_.b_ * 0.666f, 0.75f), 0.1f));
+    colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 1.0f));
+    particleEffect_->SetColorFrames(colorFrames);
+}
 
 void Enemy::Set(const Vector3 position)
 {
     rigidBody_->SetLinearVelocity(Vector3::ZERO);
     rigidBody_->ResetForces();
+    Randomize();
 
     lastHitBy_ = 0;
     health_ = initialHealth_;
@@ -207,7 +214,7 @@ Color Enemy::GetGlowColor() const
 {
     float factor{ Sin(200.0f * (MC->scene_->GetElapsedTime() + panicTime_)) * (0.25f + panic_ * 0.25f) + (panic_ * 0.5f) };
     factor *= factor * 2.0f;
-    return color_ * Max(factor, 0.23f);
+    return color_ * Max(factor, 0.42f);
 }
 
 void Enemy::Update(float timeStep)
@@ -235,7 +242,7 @@ void Enemy::FixedUpdate(float timeStep)
         rigidBody_->SetLinearDamping(0.1f);
     }
 
-    float emissionRate{ 2.3f + rigidBody_->GetLinearVelocity().Length() };
+    float emissionRate{ 2.3f + rigidBody_->GetLinearVelocity().Length() * 1.5f };
     particleEffect_->SetMinEmissionRate(emissionRate);
     particleEffect_->SetMaxEmissionRate(emissionRate * 1.23f);
 }

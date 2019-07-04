@@ -17,6 +17,7 @@
 */
 
 #include "settings.h"
+#include "effectmaster.h"
 
 #include "hexocam.h"
 
@@ -86,7 +87,7 @@ void heXoCam::Update(float timeStep)
     node_->SetPosition(node_->GetPosition().Lerp(closeUp_ ?
                                      Vector3(0.0f, 13.0f, -6.55f):
                                      Vector3(0.0f, 43.0f, -24.0f),
-                                                    Clamp(5.0f * timeStep, 0.0f, 1.0f)));
+                                                 Clamp(5.0f * timeStep, 0.0f, 1.0f)));
 }
 
 void heXoCam::SetGreyScale(const bool enabled)
@@ -98,9 +99,12 @@ void heXoCam::EnterLobby(StringHash eventType, VariantMap &eventData)
 {
     closeUp_ = true;
     effectRenderPath_->SetShaderParameter("BloomHDRThreshold", 0.42f);
+//    GetSubsystem<EffectMaster>()->TranslateTo(node_, Vector3(0.0f, 43.0f, -24.0f), 2.3f);
 }
 void heXoCam::EnterPlay(StringHash eventType, VariantMap &eventData)
 {
     closeUp_ = false;
     effectRenderPath_->SetShaderParameter("BloomHDRThreshold", 0.28f);
+//    GetSubsystem<EffectMaster>()->TranslateTo(node_, Vector3(0.0f, 43.0f, -24.0f), 2.3f);
+
 }

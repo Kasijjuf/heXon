@@ -86,8 +86,8 @@ void Seeker::Update(float timeStep)
 
     for (TailGenerator* tg : {tailGens_.first_, tailGens_.second_} ) {
         if (tg) {
-            tg->SetTailLength(rigidBody_->GetLinearVelocity().Length() * 0.023 + 0.042f);
-            tg->SetWidthScale(MC->Sine(rigidBody_->GetLinearVelocity().Length(), 0.23f, 0.42f, Random(0.5f)));
+            tg->SetTailLength(rigidBody_->GetLinearVelocity().Length() * 0.027f + 0.055f);
+            tg->SetWidthScale(MC->Sine(rigidBody_->GetLinearVelocity().Length() * 2.3f, 0.42f, 0.666f, Random(0.05f)));
         }
     }
 }

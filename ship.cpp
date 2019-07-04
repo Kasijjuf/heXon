@@ -188,6 +188,7 @@ void Ship::EnterLobby(StringHash eventType, VariantMap &eventData)
     health_ = initialHealth_;
     weaponLevel_ = 0;
     bulletAmount_ = 1;
+    gui3d_->SetBarrels(bulletAmount_);
     shotInterval_ = initialShotInterval_;
     sinceLastShot_ = 0.0f;
 
@@ -438,6 +439,8 @@ void Ship::PowerupWeapons()
         bulletAmount_ = 1 + ((weaponLevel_ + 5) / 6);
         shotInterval_ = initialShotInterval_ - 0.0042f * weaponLevel_;
         PlaySample(MC->GetSample("Powerup"), 0.23f, false);
+
+        gui3d_->SetBarrels(bulletAmount_);
 
     } else {
         ///BOOM?

@@ -128,8 +128,8 @@ void MasterControl::Setup()
 
     if (settings->Load()) {
 
-        engineParameters_[EP_WINDOW_WIDTH] = settings->GetResolution().x_;
-        engineParameters_[EP_WINDOW_HEIGHT] = settings->GetResolution().y_;
+//        engineParameters_[EP_WINDOW_WIDTH] = settings->GetResolution().x_;
+//        engineParameters_[EP_WINDOW_HEIGHT] = settings->GetResolution().y_;
         engineParameters_[EP_FULL_SCREEN] = settings->GetFullscreen();
     }
 }
@@ -540,6 +540,8 @@ void MasterControl::LeaveGameState()
     } break;
     case GS_DEAD : {
         world.camera->SetGreyScale(false);
+        musicSource_->SetGain(musicSource_->GetGain() / 0.666f);
+
     } break;
     case GS_EDIT : break; //Disable EditMaster
     default: break;
@@ -661,8 +663,8 @@ void MasterControl::UpdateCursor(const float timeStep)
 bool MasterControl::CursorRayCast(const float maxDistance, PODVector<RayQueryResult> &hitResults)
 {
     IntVector2 mousePos{ world.cursor.uiCursor->GetPosition() };
-    Ray cameraRay{ world.camera->camera_->GetScreenRay((float)mousePos.x_/GRAPHICS->GetWidth(),
-                                                       (float)mousePos.y_/GRAPHICS->GetHeight())
+    Ray cameraRay{ world.camera->camera_->GetScreenRay((float)mousePos.x_ / GRAPHICS->GetWidth(),
+                                                       (float)mousePos.y_ / GRAPHICS->GetHeight())
                  };
     RayOctreeQuery query{ hitResults, cameraRay, RAY_TRIANGLE, maxDistance, DRAWABLE_GEOMETRY };
     scene_->GetComponent<Octree>()->Raycast(query);

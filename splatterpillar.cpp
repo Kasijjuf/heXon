@@ -78,7 +78,6 @@ void SplatterPillar::OnNodeSet(Node *node)
     dripEmitter_->SetEmitting(false);
 
     soundSource_ = node_->CreateComponent<SoundSource>();
-    soundSource_->SetGain(1.0f);
 
     RigidBody* triggerBody{ node_->CreateComponent<RigidBody>() };
     triggerBody->SetTrigger(true);

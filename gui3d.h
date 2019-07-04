@@ -39,6 +39,7 @@ public:
     void SetHeartsAndApples(int hearts, int apples);
     void SetScore(unsigned score);
     void PlayDeathSound();
+    void SetBarrels(int num);
 private:
     int colorSet_;
     unsigned score_;
@@ -47,6 +48,7 @@ private:
     float health_;
     int appleCount_;
     int heartCount_;
+    int barrelCount_;
 
     AnimatedModel* healthIndicator_;
     SoundSource* deathSource_;
@@ -63,6 +65,7 @@ private:
     HashMap< int, Node* > appleCounter_;
     Node* heartCounterRoot_;
     HashMap< int, Node* > heartCounter_;
+    Vector<AnimatedModel*> barrels_;
     Color HealthToColor(float health);
     void CountScore();
     Vector3 GetOffset();

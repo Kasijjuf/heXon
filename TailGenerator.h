@@ -109,6 +109,7 @@ protected:
     PODVector<Tail> fullPointPath;
 
 private:
+    int j_;
     /// Resize TailGenerator vertex and index buffers.
     void UpdateBufferSize();
     /// Rewrite TailGenerator vertex buffer.

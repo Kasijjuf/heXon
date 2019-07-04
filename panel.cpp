@@ -272,11 +272,13 @@ void Panel::EnterLobby(StringHash eventType, VariantMap &eventData)
 //    bigPanelNode_->SetEnabled(true);
 //    panelTriggerNode_->SetEnabled(true);
     node_->SetEnabledRecursive(true);
+    SetUpdateEventMask(USE_UPDATE);
 }
 void Panel::EnterPlay(StringHash eventType, VariantMap &eventData)
 { (void)eventType; (void)eventData;
 
     node_->SetEnabledRecursive(false);
+    SetUpdateEventMask(USE_NO_EVENT);
 }
 
 void Panel::ActivatePanel(StringHash eventType, VariantMap &eventData)

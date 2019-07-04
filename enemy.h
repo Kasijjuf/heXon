@@ -82,6 +82,8 @@ protected:
     void SetHealth(const float health);
     virtual void CheckHealth();
     Color GetGlowColor() const;
+    void Randomize();
+
 private:
     SharedPtr<SoundSource> soundSource_;
     void RestoreSmoke();

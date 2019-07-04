@@ -60,6 +60,8 @@ void Effect::Set(const Vector3 position)
     age_ = 0.0f;
     ParticleEffect* particleEffect{ particleEmitter_->GetEffect() };
     if (particleEffect) {
+
+        particleEmitter_->RemoveAllParticles();
         particleEmitter_->SetEmitting(true);
     }
 }

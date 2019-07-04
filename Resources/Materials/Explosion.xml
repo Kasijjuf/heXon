@@ -10,5 +10,5 @@
 	<parameter name="MatSpecColor" value="0 0 0 1" />
 	<cull value="ccw" />
 	<shadowcull value="ccw" />
-	<depthbias constant="0" slopescaled="0" />
+	<depthbias constant="-0.0023" slopescaled="0" />
 </material>

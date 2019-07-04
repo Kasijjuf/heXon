@@ -35,7 +35,6 @@ Lobby::Lobby(Context* context) : LogicComponent(context)
 void Lobby::OnNodeSet(Node *node)
 { if (!node) return;
 
-    node_->Rotate(Quaternion(0.0f, 0.0f, 0.0f));
     Node* chamberNode{ node_->CreateChild("Chamber", LOCAL) };
     StaticModel* chamberModel{ chamberNode->CreateComponent<StaticModel>() };
     chamberModel->SetModel(MC->GetModel("Chamber"));

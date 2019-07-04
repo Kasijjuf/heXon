@@ -81,6 +81,7 @@ void EffectMaster::TranslateTo(Node* node, Vector3 pos, float duration)
     ValueAnimation* posAnim{new ValueAnimation(context_)};
     posAnim->SetKeyFrame(0.0f, node->GetPosition());
     posAnim->SetKeyFrame(duration, pos);
+    posAnim->SetInterpolationMethod(IM_SPLINE);
     node->SetAttributeAnimation("Position", posAnim, WM_ONCE);
 }
 void EffectMaster::RotateTo(Node* node, Quaternion rot, float duration)

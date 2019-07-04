@@ -128,6 +128,7 @@ void Explosion::Set(const Vector3 position, const Color color, const float size,
     }
 
     if (bubbles) {
+
         EffectInstance* bubbles{ GetSubsystem<SpawnMaster>()->Create<EffectInstance>() };
         ParticleEffect* bubbleEffect{ CACHE->GetResource<ParticleEffect>("Particles/ExplosionBubbles.xml") };
         bubbleEffect->SetMaxVelocity(size * 13.0f);
