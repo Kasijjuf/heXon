@@ -90,6 +90,9 @@ void Pickup::FixedUpdate(float timeStep)
 void Pickup::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
 { (void)eventType;
 
+    if (!node_->IsEnabled())
+        return;
+
     PODVector<RigidBody*> collidingBodies;
     triggerBody_->GetCollidingBodies(collidingBodies);
     Node* otherNode = static_cast<Node*>(eventData[NodeCollisionStart::P_OTHERNODE].GetPtr());
@@ -100,7 +103,7 @@ void Pickup::HandleTriggerStart(StringHash eventType, VariantMap &eventData)
         ship->Pickup(pickupType_);
         GetSubsystem<SpawnMaster>()->Create<HitFX>()
                 ->Set(GetPosition(), ship->GetColorSet(), false);
-        switch (pickupType_){
+        switch (pickupType_) {
         case PT_CHAOBALL: GetSubsystem<SpawnMaster>()->ChaoPickup(); Deactivate(); break;
         case PT_APPLE: case PT_HEART: Respawn(); break;
         default: break;

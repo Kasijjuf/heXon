@@ -98,7 +98,7 @@ void Razor::Update(float timeStep)
     Enemy::Update(timeStep);
 
     //Spin
-    spinRate_ = 55.0f * aimSpeed_ - 17.0 * rigidBody_->GetLinearVelocity().Length();
+    spinRate_ = Max(5.0f, 55.0f * aimSpeed_ - 17.0 * rigidBody_->GetLinearVelocity().Length()) ;
 
     if (!sprite_) {
 

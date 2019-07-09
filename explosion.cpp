@@ -74,6 +74,8 @@ void Explosion::FixedUpdate(float timeStep)
     fixedAge_ += timeStep;
 
     rigidBody_->SetMass(Max(initialMass_ * ((0.1f - fixedAge_) / 0.1f), 0.01f));
+    if (rigidBody_->GetMass() < 0.023f)
+        return;
 
     if (node_->IsEnabled() && MC->scene_->IsUpdateEnabled()) {
 

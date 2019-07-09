@@ -591,7 +591,7 @@ void Ship::Think()
 
         Vector3 taste{ Sniff(playerFactor, move, true) * playerFactor };
         float tasteFactor{ taste.DotProduct(rigidBody_->GetLinearVelocity().Normalized()) * playerFactor };
-        move += 0.23f * (smell + smell.DotProduct(taste) * taste * Pow(tasteFactor + Sign(tasteFactor) * playerFactor, 3.0f)).Normalized();
+        move += 2.3f * (smell + smell.DotProduct(taste) * taste * Pow(tasteFactor + Sign(tasteFactor) * playerFactor, 3.0f));
     }
 
     move += Vector3(

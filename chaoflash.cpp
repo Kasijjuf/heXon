@@ -23,10 +23,10 @@
 #include "heart.h"
 #include "ship.h"
 #include "chaomine.h"
+#include "razor.h"
 #include "seeker.h"
 #include "spire.h"
 #include "brick.h"
-#include "mason.h"
 #include "coin.h"
 #include "coinpump.h"
 #include "soundeffect.h"
@@ -115,7 +115,7 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
     chaosSound->PlaySample(MC->GetSample("Chaos"), 0.666f);
 
     PODVector<RigidBody* > hitResults{};
-    float radius{7.666f};
+    float radius{ 7.0f };
     chaoMaterial_->SetShaderParameter("MatDiffColor", Color(0.1f, 0.5f, 0.2f, 0.5f));
 
     if (MC->PhysicsSphereCast(hitResults, node_->GetPosition(), radius, M_MAX_UNSIGNED)) {
@@ -146,12 +146,20 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
             } else if (Seeker* seeker = hitNode->GetComponent<Seeker>()){
 
                 ++points;
-                SPAWN->Create<Spire>()->Set(SPAWN->NearestGridPoint(seeker->GetPosition()));
+                Razor* razor{ SPAWN->Create<Razor>() };
+                razor->Set(seeker->GetPosition());
+                razor->GetNode()->GetComponent<RigidBody>()->ApplyImpulse(
+                            seeker->GetComponent<RigidBody>()->GetLinearVelocity() * 17.0f);
+                seeker->Disable();
 
             } else if (Brick* brick = hitNode->GetComponent<Brick>()){
 
-                ++points;
-                SPAWN->Create<Mason>()->Set(SPAWN->NearestGridPoint(brick->GetPosition()));
+                if (brick->GetPosition().DistanceToPoint(GetPosition()) < radius) {
+
+                    ++points;
+                    SPAWN->Create<Spire>()->Set(SPAWN->NearestGridPoint(brick->GetPosition()));
+                    brick->Disable();
+                }
 
             } else if (Coin* coin = hitNode->GetComponent<Coin>()){
 

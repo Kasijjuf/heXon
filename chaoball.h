@@ -40,8 +40,6 @@ public:
     static void RegisterObject(Context* context);
     void OnNodeSet(Node* node) override;
     void Update(float timeStep) override;
-    void Deactivate() override;
-
 };
 
 #endif // CHAOBALL_H

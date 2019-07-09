@@ -89,8 +89,3 @@ void ChaoBall::Update(float timeStep)
         rigidBody_->ApplyForce(-5.0f * averageShipPos - rigidBody_->GetLinearVelocity());
     }
 }
-
-void ChaoBall::Deactivate()
-{
-    Pickup::Deactivate();
-}

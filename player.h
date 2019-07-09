@@ -43,7 +43,6 @@ public:
     unsigned GetFlightScore() const { return flightScore_; }
     void Die();
     void Respawn();
-    void Revive() { alive_ = true; }
     void ResetScore();
 
     bool IsAlive() const noexcept { return alive_; }

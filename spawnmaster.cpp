@@ -119,7 +119,7 @@ void SpawnMaster::Restart()
     Activate();
 //    SpawnPattern();
     //    Create<Baphomech>()->Set(Vector3::ZERO);
-    Create<CoinPump>()->Set(Vector3::ZERO);
+//    Create<CoinPump>()->Set(Vector3::ZERO);
 }
 
 void SpawnMaster::SpawnDeathFlower(Vector3 position)
