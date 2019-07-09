@@ -71,6 +71,7 @@ void Coin::Disable()
     bubbleEmitter_->SetEmitting(false);
 }
 
+
 void Coin::Update(float)
 {
     if (GetPosition().y_ < -23.0f) {
@@ -93,4 +94,9 @@ void Coin::HandleNodeCollisionStart(StringHash, VariantMap& eventData)
         GetSubsystem<SpawnMaster>()->Create<HitFX>()->Set(GetPosition(), ship->GetColorSet());
         Disable();
     }
+}
+
+void Coin::Launch()
+{
+    rigidBody_->ApplyImpulse(Vector3::UP * 17.f);
 }

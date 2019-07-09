@@ -49,6 +49,7 @@ private:
     int appleCount_;
     int heartCount_;
     int barrelCount_;
+    Node* cannonNode_;
 
     AnimatedModel* healthIndicator_;
     SoundSource* deathSource_;

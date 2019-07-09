@@ -86,15 +86,16 @@ void Seeker::Update(float timeStep)
 
     for (TailGenerator* tg : {tailGens_.first_, tailGens_.second_} ) {
         if (tg) {
-            tg->SetTailLength(rigidBody_->GetLinearVelocity().Length() * 0.027f + 0.055f);
-            tg->SetWidthScale(MC->Sine(rigidBody_->GetLinearVelocity().Length() * 2.3f, 0.42f, 0.666f, Random(0.05f)));
+            float speed{ rigidBody_->GetLinearVelocity().Length() };
+            tg->SetTailLength(speed * 0.027f + 0.055f);
+            tg->SetWidthScale(MC->Sine(speed * 2.3f, 0.42f, 0.666f / (1.0f + speed), Random(0.05f)));
         }
     }
 }
 
 void Seeker::FixedUpdate(float timeStep)
 {
-    rigidBody_->ApplyForce((TargetPosition() - node_->GetPosition()).Normalized() * timeStep * 666.0f);
+    rigidBody_->ApplyForce((TargetPosition() - node_->GetPosition()).Normalized() * 6.0f);
 }
 
 void Seeker::HandleTriggerStart(StringHash eventType, VariantMap &eventData)

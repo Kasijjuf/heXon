@@ -24,8 +24,11 @@
 #include "ship.h"
 #include "chaomine.h"
 #include "seeker.h"
+#include "spire.h"
 #include "brick.h"
+#include "mason.h"
 #include "coin.h"
+#include "coinpump.h"
 #include "soundeffect.h"
 #include "spawnmaster.h"
 
@@ -142,16 +145,18 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
             //Destroy Seekers, Bricks and Coins
             } else if (Seeker* seeker = hitNode->GetComponent<Seeker>()){
 
-                points += 2 + Random(3);
-                seeker->Disable();
+                ++points;
+                SPAWN->Create<Spire>()->Set(SPAWN->NearestGridPoint(seeker->GetPosition()));
+
             } else if (Brick* brick = hitNode->GetComponent<Brick>()){
 
-                points += Random(5, 23);
-                brick->Disable();
+                ++points;
+                SPAWN->Create<Mason>()->Set(SPAWN->NearestGridPoint(brick->GetPosition()));
 
             } else if (Coin* coin = hitNode->GetComponent<Coin>()){
 
                 coin->Disable();
+                SPAWN->Create<CoinPump>()->Set(SPAWN->NearestGridPoint(coin->GetPosition()));
 
             //Turn enemies into mines
             } else {
@@ -170,7 +175,7 @@ void ChaoFlash::Set(const Vector3 position, int colorSet)
         owner->AddScore(points);
 
         if (points == 0 && !caughtApple && !caughtHeart)
-            SPAWN->SpawnDeathFlower(GetPosition(), 1, Random(6));
+            SPAWN->SpawnDeathFlower(GetPosition());
     }
 
     //Hand out upgrades

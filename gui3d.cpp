@@ -56,7 +56,8 @@ GUI3D::GUI3D(Context* context) : LogicComponent(context),
     heartCounterRoot_{},
     heartCounter_{},
     barrels_{},
-    barrelCount_{1}
+    barrelCount_{1},
+    cannonNode_{nullptr}
 {
 }
 
@@ -163,7 +164,7 @@ void GUI3D::Initialize(int colorSet)
         heart->SetMaterial(MC->GetMaterial("RedEnvmap"));
     }
 
-    Node* cannonNode_{ subNode_->CreateChild("Cannon") };
+    cannonNode_ = subNode_->CreateChild("Cannon");
     Log::Write(LOG_INFO, String(colorSet_));
     cannonNode_->SetPosition(Vector3(2.9f * ((colorSet_ & 2) - 1), -0.13f, 1.55f));
     float parentZ{ cannonNode_->GetParent()->GetWorldPosition().z_ };
@@ -202,7 +203,6 @@ void GUI3D::Initialize(int colorSet)
         barrel->SetMaterial(0, MC->colorSets_[colorSet_].hullMaterial_);
         barrel->SetMaterial(1, MC->GetMaterial("Metal"));
         barrel->SetMaterial(2, MC->GetMaterial("Black"));
-
         barrels_.Push(barrel);
 
         if (c == 0) {
@@ -257,9 +257,9 @@ void GUI3D::Update(float timeStep)
         for (unsigned m{0}; m < barrel->GetNumMorphs(); ++m) {
 
             if (weight == 1.0f) {
-                barrel->SetMorphWeight(m, Lerp(barrel->GetMorphWeight(m), m == 0 ? weight : Clamp(40.0f * (barrel->GetMorphWeight(m - 1) - 0.975f), 0.0f, 1.0f), Min(1.0f, timeStep * 23.0f)));
+                barrel->SetMorphWeight(m, Lerp(barrel->GetMorphWeight(m), m == 0 ? weight : (barrel->GetMorphWeight(m - 1) > .99f), Min(1.0f, timeStep * 17.0f)));
             } else {
-                barrel->SetMorphWeight(m, Lerp(barrel->GetMorphWeight(m), (m == barrel->GetNumMorphs() - 1) ? weight : Clamp(40.0f * barrel->GetMorphWeight(m + 1), 0.0f, 1.0f), Min(1.0f, timeStep * 23.0f)));
+                barrel->SetMorphWeight(m, Lerp(barrel->GetMorphWeight(m), (m == barrel->GetNumMorphs() - 1) ? weight : (barrel->GetMorphWeight(m + 1) > 0.01f), Min(1.0f, timeStep * 17.0f)));
 
             }
         }
@@ -341,6 +341,7 @@ void GUI3D::CountScore()
 void GUI3D::EnterLobby(StringHash eventType, VariantMap &eventData)
 { (void)eventType; (void)eventData;
 
+
     node_->SetEnabledRecursive(true);
     SetHeartsAndApples(0, 0);
     SetScore(score_);
@@ -355,6 +356,7 @@ void GUI3D::EnterLobby(StringHash eventType, VariantMap &eventData)
     subNode_->SetScale(0.75f);
 
     toCount_ = 0;
+    cannonNode_->SetEnabled(false);
 }
 void GUI3D::EnterPlay(StringHash eventType, VariantMap &eventData)
 { (void)eventType; (void)eventData;
@@ -372,6 +374,7 @@ void GUI3D::EnterPlay(StringHash eventType, VariantMap &eventData)
     subNode_->SetScale(MC->AspectRatio() > 1.6f ? 1.0f
                                                 : 0.75f);
 
+    cannonNode_->SetEnabled(true);
 }
 
 Color GUI3D::HealthToColor(float health)

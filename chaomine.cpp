@@ -36,6 +36,9 @@ void ChaoMine::OnNodeSet(Node *node)
 {
     Enemy::OnNodeSet(node);
 
+    if (!node)
+        return;
+
     node_->SetName("ChaoMine");
     big_ = false;
 

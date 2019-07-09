@@ -52,6 +52,7 @@ Player::Player(int playerId, Context* context): Object(context),
     multiplier_{1},
     gui3d_{nullptr}
 {
+    takenColorSets_[4] = 2 + Random(2);
     SubscribeToEvent(E_ENTERLOBBY, URHO3D_HANDLER(Player, EnterLobby));
     SubscribeToEvent(E_ENTERPLAY,  URHO3D_HANDLER(Player, EnterPlay));
 }

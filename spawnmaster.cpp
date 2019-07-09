@@ -35,6 +35,7 @@
 #include "bubble.h"
 #include "line.h"
 #include "coin.h"
+#include "coinpump.h"
 #include "phaser.h"
 
 SpawnMaster::SpawnMaster(Context* context):
@@ -98,7 +99,8 @@ void SpawnMaster::Clear()
         }
     }
 
-    MC->chaoBall_->Disable();
+    if (MC->chaoBall_)
+        MC->chaoBall_->Disable();
 }
 
 void SpawnMaster::Restart()
@@ -116,32 +118,48 @@ void SpawnMaster::Restart()
 
     Activate();
 //    SpawnPattern();
-//    Create<Baphomech>()->Set(Vector3::ZERO);
+    //    Create<Baphomech>()->Set(Vector3::ZERO);
+    Create<CoinPump>()->Set(Vector3::ZERO);
 }
 
-void SpawnMaster::SpawnDeathFlower(Vector3 position, int size, unsigned spires)
+void SpawnMaster::SpawnDeathFlower(Vector3 position)
 {
-    int radius{ 2 + 2 * size };
+    unsigned radius{ 2 + 2 * Random(3) };
+    unsigned petals{ Random(7) };
     float farOut{ ARENA_RADIUS - radius * 2.0f };
+
+    float typeFactor{ MC->SinceLastReset() };
+    for (Ship* s : MC->GetComponentsInScene<Ship>()) {
+        if (s->IsEnabled())
+            typeFactor -= Max(0.0f, 10.0f - s->GetHealth());
+    }
+    int type{ Random(1 + (typeFactor > 100.0f)) };
 
     if (position.Length() > farOut)
         position = position.Normalized() * farOut;
 
     Vector3 spawnPosition{ NearestGridPoint(position) + Vector3::DOWN * 13.0f };
-    Create<Mason>()->Set(spawnPosition);
 
-    if (spires == 1)
-        spires = 2;
-    if (spires == 4)
-        spires = 3;
-    if (spires == 5 || spires > 6)
-        spires = 6;
+    if (type == 0)
+        Create<Spire>()->Set(spawnPosition);
+    else
+        Create<Mason>()->Set(spawnPosition);
+
+    if      (petals < 2) petals = 2;
+    else if (petals < 5) petals = 3;
+    else                 petals = 6;
+
 
     const Vector3 initialOffset{ Quaternion(60.0f * Random(3), Vector3::UP) * Vector3::RIGHT };
-    for (unsigned s{0}; s < spires; ++s) {
+    for (unsigned p{0}; p < petals; ++p) {
 
-        Create<Spire>()->Set(spawnPosition + Vector3::DOWN * 10.0f * (s + 1)
-                           + Quaternion(60.0f * s * (6 / spires), Vector3::UP) * initialOffset * radius);
+        Vector3 petalPos{ spawnPosition + Vector3::DOWN * 10.0f * (p + 1)
+                    + Quaternion(60.0f * p * (6 / petals), Vector3::UP) * initialOffset * radius };
+
+        if (type == 0)
+            Create<Razor>()->Set(petalPos);
+        else
+            Create<Spire>()->Set(petalPos);
     }
 }
 Vector3 SpawnMaster::NearestGridPoint(Vector3 position)
@@ -179,7 +197,7 @@ Vector3 SpawnMaster::NearestGridPoint(Vector3 position)
 }
 void SpawnMaster::SpawnPattern()
 {
-    SpawnDeathFlower(Vector3::ZERO, Random(3));
+    SpawnDeathFlower(Vector3::ZERO);
 }
 
 Vector3 SpawnMaster::SpawnPoint(int fromEdge)

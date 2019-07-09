@@ -15,6 +15,7 @@ public:
     void Update(float) override;
     void Set(const Vector3 position) override;
     void Disable() override;
+    void Launch();
 
     void HandleNodeCollisionStart(StringHash, VariantMap& eventData);
 private:

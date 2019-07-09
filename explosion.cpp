@@ -19,6 +19,7 @@
 #include "spawnmaster.h"
 #include "chaomine.h"
 #include "coin.h"
+#include "coinpump.h"
 #include "effectinstance.h"
 
 #include "explosion.h"
@@ -101,7 +102,7 @@ void Explosion::FixedUpdate(float timeStep)
                     float damage{rigidBody_->GetMass() * timeStep};
 
                     Enemy* e{ h->GetNode()->GetDerivedComponent<Enemy>() };
-                    if (e && !e->IsInstanceOf<ChaoMine>()) {
+                    if (e && !e->IsInstanceOf<ChaoMine>() && !e->IsInstanceOf<CoinPump>()) {
 
                         e->Hit(damage, playerID_);
                     }

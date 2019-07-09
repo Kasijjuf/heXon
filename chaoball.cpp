@@ -35,6 +35,9 @@ void ChaoBall::OnNodeSet(Node *node)
 {
     Pickup::OnNodeSet(node);
 
+    if (!node)
+        return;
+
     node_->SetName("ChaoBall");
     pickupType_ = PT_CHAOBALL;
     node_->SetRotation(Quaternion(Random(360.0f), Random(360.0f), Random(360.0f)));
@@ -54,8 +57,6 @@ void ChaoBall::OnNodeSet(Node *node)
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.666f, 1.f), 0.35f));
     colorFrames.Push(ColorFrame(Color(0.0f, 0.0f, 0.0f, 0.0f), 0.4f));
     particleEmitter_->GetEffect()->SetColorFrames(colorFrames);
-
-    Disable();
 }
 
 void ChaoBall::Update(float timeStep)

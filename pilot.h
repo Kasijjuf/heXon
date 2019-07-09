@@ -49,7 +49,7 @@ public:
     void Think() override;
 
     void Randomize();
-    void Initialize(bool highest);
+    void Initialize(bool highest = false);
     int GetPlayerId() { return playerId_; }
     void Upload();
     void HandleNodeCollisionStart(StringHash eventType, VariantMap& eventData);

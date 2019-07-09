@@ -56,6 +56,7 @@
 #include "bubble.h"
 #include "line.h"
 #include "coin.h"
+#include "coinpump.h"
 #include "muzzle.h"
 
 #include "lobby.h"
@@ -128,15 +129,15 @@ void MasterControl::Setup()
 
     if (settings->Load()) {
 
-//        engineParameters_[EP_WINDOW_WIDTH] = settings->GetResolution().x_;
-//        engineParameters_[EP_WINDOW_HEIGHT] = settings->GetResolution().y_;
+        engineParameters_[EP_WINDOW_WIDTH] = settings->GetResolution().x_;
+        engineParameters_[EP_WINDOW_HEIGHT] = settings->GetResolution().y_;
         engineParameters_[EP_FULL_SCREEN] = settings->GetFullscreen();
     }
 }
 
 void MasterControl::Start()
 {
-    GetSubsystem<Engine>()->SetMaxFps(GetSubsystem<Graphics>()->GetRefreshRate());
+    GetSubsystem<Engine>()->SetMaxFps(GetSubsystem<Graphics>()->GetRefreshRate()/2);
 
     CreateColorSets();
 
@@ -166,6 +167,7 @@ void MasterControl::Start()
     ChaoMine::RegisterObject(context_);
     ChaoZap::RegisterObject(context_);
     Coin::RegisterObject(context_);
+    CoinPump::RegisterObject(context_);
 
     Razor::RegisterObject(context_);
     Spire::RegisterObject(context_);
@@ -186,6 +188,11 @@ void MasterControl::Start()
     context_->RegisterSubsystem(new EffectMaster(context_));
     context_->RegisterSubsystem(new InputMaster(context_));
     context_->RegisterSubsystem(new SpawnMaster(context_));
+    DebugHud* debugHud{ engine_->CreateDebugHud() };
+//    context_->RegisterSubsystem(debugHud);
+    debugHud->SetDefaultStyle(CACHE->GetResource<XMLFile>("UI/DefaultStyle.xml"));
+//    debugHud->ToggleAll();
+//    debugHud->SetMode(DEBUGHUD_SHOW_PROFILER);
 
     if (GRAPHICS) {
 
@@ -261,7 +268,7 @@ Sound* MasterControl::GetSample(String name)
     if (samples_.Contains(nameHash))
         return samples_[nameHash].Get();
 
-    Sound* sample{ CACHE->GetResource<Sound>("Samples/" + name + ".ogg") };
+    Sound* sample{ CACHE->GetResource<Sound>("Samples/" + name + ".wav") };
     samples_[nameHash] = sample;
     playedSamples_.Insert(nameHash);
 
@@ -369,7 +376,7 @@ void MasterControl::AddPlayer()
 
     Pilot* pilot{ GetSubsystem<SpawnMaster>()->Create<Pilot>(GetGameState() == GS_LOBBY) };
     GetSubsystem<InputMaster>()->SetPlayerControl(playerId, pilot);
-    pilot->Initialize(false);
+    pilot->Initialize();
 
     if (GetGameState() == GS_LOBBY)
         newPlayer->EnterLobby();
@@ -428,8 +435,10 @@ void MasterControl::CreateScene()
     world.octree->SetSize(BoundingBox(-42.0f * Vector3::ONE, 42.0f * Vector3::ONE), 8);
     physicsWorld_ = scene_->CreateComponent<PhysicsWorld>();
 //    physicsWorld_->SetGravity(Vector3::ZERO);
+//    physicsWorld_->SetMaxSubSteps(5);
+//    physicsWorld_->SetFps(23);
+    physicsWorld_->SetSplitImpulse(true);
     scene_->CreateComponent<DebugRenderer>();
-
     FillInnerEar();
 
     //Create a Zone component for fog control
@@ -469,7 +478,8 @@ void MasterControl::CreateScene()
     Node* arenaNode{ scene_->CreateChild("Arena", LOCAL) };
     arena_ = arenaNode->CreateComponent<Arena>();
 
-    GetSubsystem<SpawnMaster>()->Prespawn();
+    SpawnMaster* sm{ GetSubsystem<SpawnMaster>() };
+    sm->Prespawn();
 
     //Construct lobby
     Node* lobbyNode{ scene_->CreateChild("Lobby", LOCAL) };
@@ -482,12 +492,10 @@ void MasterControl::CreateScene()
                       Quaternion(60.0f + ((s % 2) * 60.0f - (s / 2) * 180.0f), Vector3::UP));
     }
 
-    Node* appleNode{ scene_->CreateChild("Apple") };
-    apple_ = appleNode->CreateComponent<Apple>();
-    Node* heartNode{ scene_->CreateChild("Heart") };
-    heart_ = heartNode->CreateComponent<Heart>();
-    Node* chaoBallNode{ scene_->CreateChild("ChaoBall") };
-    chaoBall_ = chaoBallNode->CreateComponent<ChaoBall>();
+    apple_ = sm->Create<Apple>();
+    heart_ = sm->Create<Heart>();
+    chaoBall_ = sm->Create<ChaoBall>();
+    chaoBall_->Disable();
 
     NavigationMesh* navMesh{ scene_->CreateComponent<NavigationMesh>() };
     navMesh->SetAgentRadius(0.34f);
@@ -523,21 +531,25 @@ void MasterControl::SetPaused(bool paused)
     if (paused) {
 
         AUDIO->PauseSoundType(SOUND_MUSIC);
+        GetSubsystem<Engine>()->SetMaxFps(0);
 
     } else {
 
         AUDIO->ResumeSoundType(SOUND_MUSIC);
+        GetSubsystem<Engine>()->SetMaxFps(GetSubsystem<Graphics>()->GetRefreshRate());
+
     }
 }
 void MasterControl::LeaveGameState()
 {
     switch (currentState_) {
-    case GS_INTRO : break;
+    case GS_INTRO : {
+    } break;
     case GS_LOBBY : {
     } break;
     case GS_PLAY : {
         GetSubsystem<SpawnMaster>()->Deactivate();
-    } break;
+    }   break;
     case GS_DEAD : {
         world.camera->SetGreyScale(false);
         musicSource_->SetGain(musicSource_->GetGain() / 0.666f);

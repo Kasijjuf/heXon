@@ -47,6 +47,7 @@ public:
     void PowerupWeapons();
     void PowerupShield();
     void SetHealth(float health);
+    float GetHealth() const { return health_; }
     void Hit(float damage, bool melee);
     void Eject();
 

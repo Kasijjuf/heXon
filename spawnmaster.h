@@ -23,7 +23,7 @@
 
 #include "mastercontrol.h"
 
-#define CHAOINTERVAL Random(23.0f, 100.0f)
+#define CHAOINTERVAL Random(23.0f, 55.0f)
 
 
 class SpawnMaster : public Object
@@ -81,7 +81,7 @@ public:
     void Prespawn();
     
     void SpawnPattern();
-    void SpawnDeathFlower(Vector3 position, int size, unsigned spires = 6);
+    void SpawnDeathFlower(Vector3 position);
 
 private:
     void HandleUpdate(StringHash eventType, VariantMap &eventData);

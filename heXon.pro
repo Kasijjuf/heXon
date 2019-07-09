@@ -76,7 +76,8 @@ SOURCES += \
     settings.cpp \
     mirage.cpp \
     animatedbillboardset.cpp \
-    baphomech.cpp
+    baphomech.cpp \
+    coinpump.cpp
 
 HEADERS += \
     apple.h \
@@ -128,7 +129,8 @@ HEADERS += \
     settings.h \
     mirage.h \
     animatedbillboardset.h \
-    baphomech.h
+    baphomech.h \
+    coinpump.h
 
 OTHER_FILES += \
     Docs/Todo.md \
