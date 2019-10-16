@@ -25,13 +25,13 @@ InputMaster::InputMaster(Context* context):
     Object(context),
     controlledByPlayer_{}
 {
-    keyBindingsMaster_[KEY_UP]     = buttonBindingsMaster_[static_cast<int>(SB_DPAD_UP)]    = MasterInputAction::UP;
-    keyBindingsMaster_[KEY_DOWN]   = buttonBindingsMaster_[static_cast<int>(SB_DPAD_DOWN)]  = MasterInputAction::DOWN;
-    keyBindingsMaster_[KEY_LEFT]   = buttonBindingsMaster_[static_cast<int>(SB_DPAD_LEFT)]  = MasterInputAction::LEFT;
-    keyBindingsMaster_[KEY_RIGHT]  = buttonBindingsMaster_[static_cast<int>(SB_DPAD_RIGHT)] = MasterInputAction::RIGHT;
-    keyBindingsMaster_[KEY_RETURN] = buttonBindingsMaster_[static_cast<int>(SB_CROSS)]      = MasterInputAction::CONFIRM;
-    keyBindingsMaster_[KEY_ESCAPE] = buttonBindingsMaster_[static_cast<int>(SB_CIRCLE)]     = MasterInputAction::CANCEL;
-    keyBindingsMaster_[KEY_P]      = buttonBindingsMaster_[static_cast<int>(SB_START)]      = MasterInputAction::PAUSE;
+    keyBindingsMaster_[KEY_UP]     = buttonBindingsMaster_[static_cast<int>(CONTROLLER_BUTTON_DPAD_UP)]    = MasterInputAction::UP;
+    keyBindingsMaster_[KEY_DOWN]   = buttonBindingsMaster_[static_cast<int>(CONTROLLER_BUTTON_DPAD_DOWN)]  = MasterInputAction::DOWN;
+    keyBindingsMaster_[KEY_LEFT]   = buttonBindingsMaster_[static_cast<int>(CONTROLLER_BUTTON_DPAD_LEFT)]  = MasterInputAction::LEFT;
+    keyBindingsMaster_[KEY_RIGHT]  = buttonBindingsMaster_[static_cast<int>(CONTROLLER_BUTTON_DPAD_RIGHT)] = MasterInputAction::RIGHT;
+    keyBindingsMaster_[KEY_RETURN] = buttonBindingsMaster_[static_cast<int>(CONTROLLER_BUTTON_A)]          = MasterInputAction::CONFIRM;
+    keyBindingsMaster_[KEY_ESCAPE] = buttonBindingsMaster_[static_cast<int>(CONTROLLER_BUTTON_B)]          = MasterInputAction::CANCEL;
+    keyBindingsMaster_[KEY_P]      = buttonBindingsMaster_[static_cast<int>(CONTROLLER_BUTTON_START)]      = MasterInputAction::PAUSE;
     keyBindingsMaster_[KEY_ESCAPE] = MasterInputAction::MENU;
 
     keyBindingsPlayer_[1][KEY_W] = PlayerInputAction::MOVE_UP;
@@ -57,20 +57,20 @@ InputMaster::InputMaster(Context* context):
 
     for (unsigned p : {1, 2, 3, 4}) {
 
-        buttonBindingsPlayer_[p][SB_DPAD_UP]    = PlayerInputAction::MOVE_UP;
-        buttonBindingsPlayer_[p][SB_DPAD_DOWN]  = PlayerInputAction::MOVE_DOWN;
-        buttonBindingsPlayer_[p][SB_DPAD_LEFT]  = PlayerInputAction::MOVE_LEFT;
-        buttonBindingsPlayer_[p][SB_DPAD_RIGHT] = PlayerInputAction::MOVE_RIGHT;
+        buttonBindingsPlayer_[p][CONTROLLER_BUTTON_DPAD_UP]     = PlayerInputAction::MOVE_UP;
+        buttonBindingsPlayer_[p][CONTROLLER_BUTTON_DPAD_DOWN]   = PlayerInputAction::MOVE_DOWN;
+        buttonBindingsPlayer_[p][CONTROLLER_BUTTON_DPAD_LEFT]   = PlayerInputAction::MOVE_LEFT;
+        buttonBindingsPlayer_[p][CONTROLLER_BUTTON_DPAD_RIGHT]  = PlayerInputAction::MOVE_RIGHT;
 
-        buttonBindingsPlayer_[p][SB_CROSS]      = PlayerInputAction::RAM;
-        buttonBindingsPlayer_[p][SB_CIRCLE]     = PlayerInputAction::REPEL;
-        buttonBindingsPlayer_[p][SB_TRIANGLE]   = PlayerInputAction::DIVE;
-        buttonBindingsPlayer_[p][SB_SQUARE]     = PlayerInputAction::DEPTHCHARGE;
+        buttonBindingsPlayer_[p][CONTROLLER_BUTTON_A]           = PlayerInputAction::RAM;
+        buttonBindingsPlayer_[p][CONTROLLER_BUTTON_B]           = PlayerInputAction::REPEL;
+        buttonBindingsPlayer_[p][CONTROLLER_BUTTON_X]           = PlayerInputAction::DIVE;
+        buttonBindingsPlayer_[p][CONTROLLER_BUTTON_Y]           = PlayerInputAction::DEPTHCHARGE;
 
-        axisBindingsPlayer_[p][0]               = PlayerInputAxis::MOVE_X;
-        axisBindingsPlayer_[p][1]               = PlayerInputAxis::MOVE_Y;
-        axisBindingsPlayer_[p][3]               = PlayerInputAxis::FIRE_X;
-        axisBindingsPlayer_[p][4]               = PlayerInputAxis::FIRE_Y;
+        axisBindingsPlayer_[p][CONTROLLER_AXIS_LEFTX]           = PlayerInputAxis::MOVE_X;
+        axisBindingsPlayer_[p][CONTROLLER_AXIS_LEFTY]           = PlayerInputAxis::MOVE_Y;
+        axisBindingsPlayer_[p][CONTROLLER_AXIS_RIGHTX]          = PlayerInputAxis::FIRE_X;
+        axisBindingsPlayer_[p][CONTROLLER_AXIS_RIGHTY]          = PlayerInputAxis::FIRE_Y;
     }
 
     SubscribeToEvent(E_KEYDOWN, URHO3D_HANDLER(InputMaster, HandleKeyDown));
@@ -115,7 +115,7 @@ void InputMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
     for (Player* p : MC->GetPlayers()){
 
         int pId{ p->GetPlayerId() };
-        Vector<SixaxisButton> pressedButtons{ pressedJoystickButtons_[pId-1] };
+        Vector<ControllerButton> pressedButtons{ pressedJoystickButtons_[pId - 1] };
 
         for (int button : pressedButtons)
             if (buttonBindingsPlayer_[pId].Contains(button)){
@@ -124,7 +124,7 @@ void InputMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
                     activeActions.player_[pId].Push(action);
             }
         //Handle eject
-        if (pressedButtons.Contains(SB_L1) && pressedButtons.Contains(SB_R1))
+        if (pressedButtons.Contains(CONTROLLER_BUTTON_LEFTSHOULDER) && pressedButtons.Contains(CONTROLLER_BUTTON_RIGHTSHOULDER))
             if (p->GetShip())
                 p->GetShip()->Eject();
     }
@@ -251,7 +251,7 @@ void InputMaster::HandleJoystickButtonDown(Urho3D::StringHash eventType, Urho3D:
 { (void)eventType;
 
     int joystickId{ eventData[JoystickButtonDown::P_JOYSTICKID].GetInt() };
-    SixaxisButton button{ static_cast<SixaxisButton>(eventData[JoystickButtonDown::P_BUTTON].GetInt()) };
+    ControllerButton button{ static_cast<ControllerButton>(eventData[JoystickButtonDown::P_BUTTON].GetInt()) };
 
     if (!pressedJoystickButtons_[joystickId].Contains(button))
         pressedJoystickButtons_[joystickId].Push(button);
@@ -259,11 +259,11 @@ void InputMaster::HandleJoystickButtonDown(Urho3D::StringHash eventType, Urho3D:
     JoystickState* joystickState{INPUT->GetJoystickByIndex(joystickId)};
     // Process game event
     switch (button) {
-    case SB_START: PauseButtonPressed();
+    case CONTROLLER_BUTTON_START: PauseButtonPressed();
         break;
-    case SB_L1: case SB_R1:
-        if (joystickState->GetButtonDown(SB_L1) &&
-                joystickState->GetButtonDown(SB_R1))
+    case CONTROLLER_BUTTON_LEFTSHOULDER: case CONTROLLER_BUTTON_RIGHTSHOULDER:
+        if (joystickState->GetButtonDown(CONTROLLER_BUTTON_LEFTSHOULDER) &&
+                joystickState->GetButtonDown(CONTROLLER_BUTTON_RIGHTSHOULDER))
             EjectButtonPressed(static_cast<int>(joystickId + 1));
         break;
 //    case SB_L1: case SB_R1:
@@ -278,7 +278,7 @@ void InputMaster::HandleJoystickButtonUp(Urho3D::StringHash eventType, Urho3D::V
 { (void)eventType;
 
     int joystickId{ eventData[JoystickButtonDown::P_JOYSTICKID].GetInt() };
-    SixaxisButton button{ static_cast<SixaxisButton>(eventData[JoystickButtonUp::P_BUTTON].GetInt()) };
+    ControllerButton button{ static_cast<ControllerButton>(eventData[JoystickButtonUp::P_BUTTON].GetInt()) };
 
     if (pressedJoystickButtons_[joystickId].Contains(button))
         pressedJoystickButtons_[joystickId].Remove(button);

@@ -1,7 +1,7 @@
 TARGET = hexon
 
 LIBS += \
-    ../heXon/Urho3D/lib/libUrho3D.a \
+    $$PWD/Urho3D/lib/libUrho3D.a \
     -lpthread \
     -ldl \
     -lGL
@@ -9,8 +9,8 @@ LIBS += \
 QMAKE_CXXFLAGS += -std=c++11 -O2
 
 INCLUDEPATH += \
-    ../heXon/Urho3D/include \
-    ../heXon/Urho3D/include/Urho3D/ThirdParty \
+    Urho3D/include \
+    Urho3D/include/Urho3D/ThirdParty \
 
 TEMPLATE = app
 CONFIG -= app_bundle

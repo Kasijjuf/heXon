@@ -49,13 +49,13 @@ void Mason::OnNodeSet(Node* node)
     meleeDamage_ = 0.23f;
 
     health_ = initialHealth_ = 15.0f;
-    worth_ = 42;
+    worth_  = 42;
 
     rigidBody_->SetMass(3.4f);
     rigidBody_->SetLinearFactor(Vector3::ZERO);
 
     blackMaterial_ = MC->GetMaterial("Razor")->Clone();
-    glowMaterial_ = MC->GetMaterial("Razor")->Clone();
+    glowMaterial_  = MC->GetMaterial("Razor")->Clone();
 
     glowMaterial_->SetShaderParameter("MatEmissiveColor", color_);
 
@@ -78,14 +78,15 @@ void Mason::Set(const Vector3 position)
 {
     Enemy::Set(position);
 
-    shots_ = 0;
-    sinceShot_ = 0.0f;
-    shotInterval_ = 0.23f;
-    spinInterval_ = 2.3f;
-    toSpin_ = 0.0f;
-    spun_ = 0.0f;
+    shots_          = 0;
+    sinceShot_      = 0.0f;
+    shotInterval_   = 0.23f;
+    spinInterval_   = 2.3f;
+    toSpin_         = 0.0f;
+    spun_           = 0.0f;
 
     float rot{ Random(3) * 60.0f + 30.0f };
+
     topNode_->SetRotation(Quaternion(rot, Vector3::UP));
     bottomNode_->SetRotation(Quaternion(rot, Vector3::UP));
 }

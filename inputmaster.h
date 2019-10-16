@@ -76,7 +76,7 @@ private:
     HashMap<int, HashMap<int, PlayerInputAxis>> axisBindingsPlayer_;
 
     Vector<int> pressedKeys_;
-    HashMap<int, Vector<LucKey::SixaxisButton>> pressedJoystickButtons_;
+    HashMap<int, Vector<ControllerButton>> pressedJoystickButtons_;
     HashMap<int, Vector2> leftStickPosition_;
     HashMap<int, Vector2> rightStickPosition_;
 
