@@ -165,7 +165,6 @@ void GUI3D::Initialize(int colorSet)
     }
 
     cannonNode_ = subNode_->CreateChild("Cannon");
-    Log::Write(LOG_INFO, String(colorSet_));
     cannonNode_->SetPosition(Vector3(2.9f * ((colorSet_ & 2) - 1), -0.13f, 1.55f));
     float parentZ{ cannonNode_->GetParent()->GetWorldPosition().z_ };
     cannonNode_->LookAt(Vector3::BACK * parentZ * 2.7f + Vector3::DOWN * 0.55f, Vector3::BACK * parentZ * 1.0f + Vector3::UP * 8.0f);

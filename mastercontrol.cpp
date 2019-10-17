@@ -352,7 +352,7 @@ void MasterControl::CreateColorSets()
 }
 
 void MasterControl::HandleJoystickConnected(StringHash eventType, VariantMap& eventData)
-{///Doesn't seem to work
+{
     if (INPUT->GetNumJoysticks() > NumPlayers())
         AddPlayer();
 }
@@ -639,10 +639,8 @@ void MasterControl::HandleUpdate(StringHash eventType, VariantMap &eventData)
     switch (currentState_) {
     case GS_LOBBY: {
 
-        for (Door* d : GetComponentsInScene<Door>()){
-            if (d->HidesAllPilots(false))
-                Exit();
-        }
+        if (GetComponentsInScene<Door>().Front()->HidesAllPilots(false))
+            Exit();
 
         if (AllReady(false))
             SetGameState(GS_PLAY);

@@ -113,7 +113,7 @@ void Player::AddScore(int points)
     if (!alive_ || points == 0)
         return;
 
-    points *= static_cast<int>(pow(2.0, static_cast<double>(multiplier_-1)));
+    points *= static_cast<int>(pow(2.0, static_cast<double>(multiplier_ - 1)));
     SetScore(GetScore() + points);
     //Check for multiplier increase
     for (int i{0}; i < 10; ++i){
