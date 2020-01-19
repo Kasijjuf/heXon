@@ -321,12 +321,13 @@ void GUI3D::CountScore()
         return;
 
     int maxLines{ 512 };
-    int threshold{ maxLines / (Max(GetSubsystem<SpawnMaster>()->CountActive<Ship>(), 1) * 8) };
+    int threshold{ maxLines / (Max(Ship::CountActive(), 1) * 8) };
 
-    int lines{ GetSubsystem<SpawnMaster>()->CountActive<Line>() };
+    int lines{ Line::CountActive() };
     int counted{};
 
     while ((toCount_ > 0)
+
         && (lines < maxLines)
         && (counted < threshold)) {
 

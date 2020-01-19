@@ -153,3 +153,15 @@ float LucKey::Cycle(float x, float min, float max)
     return res;
 }
 
+
+float LucKey::PosIntPow(float value, unsigned pow)
+{
+    float res{ value };
+
+    while (--pow) {
+
+        res *= value;
+    }
+
+    return res;
+}

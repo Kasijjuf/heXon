@@ -134,6 +134,8 @@ float Cosine(float x);
 
 int Cycle(int x, int min, int max);
 float Cycle(float x, float min, float max);
+
+float PosIntPow(float value, unsigned pow);
 }
 using namespace LucKey;
 

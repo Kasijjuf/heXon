@@ -41,6 +41,20 @@
 
 #include "ship.h"
 
+Vector<Ship*> Ship::ships_{};
+int Ship::CountActive()
+{
+    int count{ 0 };
+
+    for (Ship* s : ships_) {
+
+        if (s->IsEnabled())
+
+            ++count;
+    }
+    return count;
+}
+
 void Ship::RegisterObject(Context *context)
 {
     context->RegisterFactory<Ship>();
@@ -79,6 +93,12 @@ Ship::Ship(Context* context) : Controllable(context),
 {
     thrust_ = 3000.0f;
     maxSpeed_ = 23.0f;
+
+    ships_.Push(this);
+}
+Ship::~Ship()
+{
+    ships_.Remove(this);
 }
 
 void Ship::OnNodeSet(Node *node)

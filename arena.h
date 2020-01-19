@@ -39,7 +39,7 @@ enum TileType {B_SPACE, B_EMPTY, B_ENGINE};
 class Arena : public LogicComponent
 {
     URHO3D_OBJECT(Arena, LogicComponent);
-//    friend class Tile;
+
 public:
     Arena(Context* context);
     static void RegisterObject(Context* context);
@@ -51,6 +51,8 @@ public:
 
     Tile* GetRandomTile(bool forMason = false);
     void FlashX(Color color);
+
+    static PODVector<Pair<Vector3, float> > effectVector_;
 private:
     Vector3 targetPosition_;
     Vector3 targetScale_;
@@ -60,7 +62,6 @@ private:
     Light* playLight_;
     HashSet<Node*> hexAffectors_;
     Vector<Tile*> tiles_;
-    PODVector<Pair<Vector3, float> > effectVector_;
 
     void Update(float timeStep) override;
 

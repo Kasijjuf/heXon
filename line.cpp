@@ -20,7 +20,9 @@
 
 #include "line.h"
 
-HashMap<int, Vector<StaticModelGroup*>> Line::lineGroups_{};
+HashMap<int, StaticModelGroup*> Line::lineGroups_{};
+unsigned Line::count_{ 0 };
+
 
 void Line::RegisterObject(Context *context)
 {
@@ -29,8 +31,7 @@ void Line::RegisterObject(Context *context)
 
 Line::Line(Context* context) :
     Effect(context),
-    baseScale_{Random(1.0f, 2.3f)},
-    lineGroup_{nullptr}
+    baseScale_{ Random(1.0f, 2.3f) }
 {
 }
 
@@ -48,30 +49,28 @@ void Line::NewLineGroup(int colorSet)
     StaticModelGroup* newLineGroup{ MC->scene_->CreateComponent<StaticModelGroup>() };
     newLineGroup->SetModel(MC->GetModel("Line"));
     newLineGroup->SetMaterial(MC->colorSets_[colorSet].bulletMaterial_);
-    lineGroups_[colorSet].Push(newLineGroup);
+    lineGroups_[colorSet] = newLineGroup;
 }
 void Line::AddLineInstance(int colorSet)
 {
-    for (unsigned g{0}; g < lineGroups_[colorSet].Size(); ++g) {
+    StaticModelGroup* lineGroup{ lineGroups_[colorSet] };
 
-        StaticModelGroup* lineGroup{ lineGroups_[colorSet][g] };
-        if (lineGroup->GetNumInstanceNodes() < 64) {
+    if (!lineGroup) {
 
-            lineGroup_ = lineGroup;
-            lineGroup_->AddInstanceNode(node_);
-            return;
-        }
+        NewLineGroup(colorSet);
+        AddLineInstance(colorSet);
+
+    } else {
+
+        lineGroup->AddInstanceNode(node_);
+        colorSet_ = colorSet;
     }
-    NewLineGroup(colorSet);
-    AddLineInstance(colorSet);
 }
 void Line::RemoveLineInstance()
 {
-    if (lineGroup_) {
+    StaticModelGroup* lineGroup{ lineGroups_[colorSet_] };
 
-        lineGroup_->RemoveInstanceNode(node_);
-        lineGroup_ = nullptr;
-    }
+    lineGroup->RemoveInstanceNode(node_);
 }
 
 void Line::Update(float timeStep)
@@ -105,6 +104,8 @@ void Line::Set(int colorSet)
 
     AddLineInstance(colorSet_);
     node_->SetScale(baseScale_);
+
+    ++count_;
 }
 
 void Line::Disable()
@@ -115,6 +116,8 @@ void Line::Disable()
     UnsubscribeFromEvent(E_SCENEUPDATE);
 
     SceneObject::Disable();
+
+    --count_;
 }
 
 

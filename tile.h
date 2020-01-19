@@ -29,6 +29,7 @@ class Node;
 
 class Tile : public LogicComponent
 {
+
     URHO3D_OBJECT(Tile, LogicComponent);
     friend class Arena;
     friend class InputMaster;
@@ -38,7 +39,8 @@ public:
     static void RegisterObject(Context* context);
     void OnNodeSet(Node* node) override;
 private:
-    void Update(float timeStep) override;
+    static StaticModelGroup* tileGroup_;
+    void Update(float) override;
 
     Vector3 referencePosition_;
     float centerDistExp_;

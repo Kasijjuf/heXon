@@ -34,12 +34,13 @@ public:
     void Disable() override;
 
     bool IsEnabled() { return node_->IsEnabled(); }
+    static unsigned CountActive() { return count_;}
 private:
     float baseScale_;
     int colorSet_;
 
-    static HashMap<int, Vector<StaticModelGroup*>> lineGroups_;
-    StaticModelGroup* lineGroup_;
+    static HashMap<int, StaticModelGroup*> lineGroups_;
+    static unsigned count_;
 
     //    StaticModel* model_;
     void NewLineGroup(int colorSet);

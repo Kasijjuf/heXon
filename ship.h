@@ -32,6 +32,8 @@ class Ship : public Controllable
     URHO3D_OBJECT(Ship, LogicComponent);
 public:
     Ship(Context* context);
+    ~Ship();
+    static int CountActive();
     static void RegisterObject(Context* context);
     void OnNodeSet(Node* node) override;
     virtual void Set(const Vector3 position, const Quaternion rotation);
@@ -54,6 +56,8 @@ public:
     void Think() override;
     int GetColorSet() const { return colorSet_; }
     GUI3D* gui3d_;
+
+    static Vector<Ship*> ships_;
 protected:
     void Blink(Vector3 newPosition) override;
 private:

@@ -244,7 +244,7 @@ void SpawnMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
         razor->Set(SpawnPoint());
 
         sinceRazorSpawn_ = 0.0f;
-        razorInterval_ = (7.0f - CountActive<Ship>())
+        razorInterval_ = (7.0f - Ship::CountActive())
                 * pow(0.95f, ((MC->SinceLastReset()) + 10.0f) / 10.0f);
 
     }
@@ -254,7 +254,7 @@ void SpawnMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
         spire->Set(SpawnPoint(2));
 
         sinceSpireSpawn_ = 0.0f;
-        spireInterval_ = (23.0f - CountActive<Ship>() * 2)
+        spireInterval_ = (23.0f - Ship::CountActive() * 2)
                 * pow(0.95f, ((MC->scene_->GetElapsedTime() - MC->world.lastReset) + 42.0f) / 42.0f);
 
     }
@@ -264,7 +264,7 @@ void SpawnMaster::HandleUpdate(StringHash eventType, VariantMap &eventData)
         mason->Set(SpawnPoint(3));
 
         sinceMasonSpawn_ = 0.0f;
-        masonInterval_ = (123.0f - CountActive<Ship>() * 3)
+        masonInterval_ = (123.0f - Ship::CountActive() * 3)
                 * pow(0.95f, ((MC->scene_->GetElapsedTime() - MC->world.lastReset) + 123.0f) / 123.0f);
 
     }
@@ -292,13 +292,13 @@ Vector3 SpawnMaster::BubbleSpawnPoint()
 
 int SpawnMaster::MaxRazors()
 {
-    return Clamp(static_cast<int>(23 * MC->SinceLastReset() * 0.0042f), CountActive<Ship>() * 2, 23);
+    return Clamp(static_cast<int>(23 * MC->SinceLastReset() * 0.0042f), Ship::CountActive() * 2, 23);
 }
 int SpawnMaster::MaxSpires()
 {
-    return Clamp(static_cast<int>(7 * MC->SinceLastReset() * 0.0023f), CountActive<Ship>(), 7);
+    return Clamp(static_cast<int>(7 * MC->SinceLastReset() * 0.0023f), Ship::CountActive(), 7);
 }
 int SpawnMaster::MaxMasons()
 {
-    return Clamp(static_cast<int>(3 * MC->SinceLastReset() * 0.0013f), 1 + CountActive<Ship>() / 2, 3);
+    return Clamp(static_cast<int>(3 * MC->SinceLastReset() * 0.0013f), 1 + Ship::CountActive() / 2, 3);
 }

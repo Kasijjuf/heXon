@@ -253,12 +253,17 @@ void MasterControl::CreateUI()
 
     //Set starting position of the cursor at the rendering window center
     world.cursor.uiCursor->SetPosition(GRAPHICS->GetWidth() / 2, GRAPHICS->GetHeight() / 2);
+
+//    context_->RegisterSubsystem(new DebugHud(context_));
+//    GetSubsystem<DebugHud>()->SetDefaultStyle(GetSubsystem<ResourceCache>()->GetResource<XMLFile>("UI/DefaultStyle.xml"));
+//    GetSubsystem<DebugHud>()->ToggleAll();
 }
 
 Sound* MasterControl::GetMusic(String name) const
 {
     Sound* song{ CACHE->GetResource<Sound>("Music/" + name + ".ogg") };
     song->SetLooped(true);
+
     return song;
 }
 Sound* MasterControl::GetSample(String name)
@@ -778,7 +783,7 @@ Player* MasterControl::GetPlayer(int playerId) const
 }
 Player* MasterControl::GetPlayerByColorSet(int colorSet)
 {
-    for (Ship* s : GetComponentsInScene<Ship>()) {
+    for (Ship* s : Ship::ships_) {
 
         if (s->GetColorSet() == colorSet)
             return s->GetPlayer();

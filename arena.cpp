@@ -24,6 +24,8 @@
 #include "explosion.h"
 #include "brick.h"
 
+PODVector<Pair<Vector3, float> > Arena::effectVector_{};
+
 void Arena::RegisterObject(Context *context)
 {
     context->RegisterFactory<Arena>();

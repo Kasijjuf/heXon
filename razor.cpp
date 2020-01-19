@@ -29,8 +29,8 @@ void Razor::RegisterObject(Context *context)
 
 Razor::Razor(Context* context):
     Enemy(context),
-    topSpeed_{10.0f},
-    aimSpeed_{0.25f * topSpeed_},
+    topSpeed_{ 10.0f },
+    aimSpeed_{ 0.25f * topSpeed_ },
     spinRate_{}
 {
     sprite_ = true;

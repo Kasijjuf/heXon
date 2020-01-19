@@ -18,6 +18,8 @@
 
 #include "tile.h"
 
+StaticModelGroup* Tile::tileGroup_{ nullptr };
+
 void Tile::RegisterObject(Context *context)
 {
     context->RegisterFactory<Tile>();
@@ -33,11 +35,20 @@ Tile::Tile(Context* context):
 void Tile::OnNodeSet(Node *node)
 { if (!node) return;
 
+    if (!tileGroup_) {
+
+        tileGroup_ = GetScene()->CreateComponent<StaticModelGroup>();
+        tileGroup_->SetModel(MC->GetModel("Hexagon"));
+        tileGroup_->SetMaterial(MC->GetMaterial("BackgroundTile"));
+        tileGroup_->SetCastShadows(false);
+    }
+
     node_->SetScale(1.1f);
-    model_ = node_->CreateComponent<StaticModel>();
-    model_->SetModel(MC->GetModel("Hexagon"));
-    model_->SetMaterial(MC->GetMaterial("BackgroundTile"));
-    model_->SetCastShadows(false);
+    tileGroup_->AddInstanceNode(node_);
+//    model_ = node_->CreateComponent<StaticModel>();
+//    model_->SetModel(MC->GetModel("Hexagon"));
+//    model_->SetMaterial(MC->GetMaterial("BackgroundTile"));
+//    model_->SetCastShadows(false);
 
     referencePosition_ = node_->GetPosition();
     centerDistExp_ = static_cast<float>(exp2(static_cast<double>(0.75f * referencePosition_.Length())));
@@ -45,10 +56,10 @@ void Tile::OnNodeSet(Node *node)
     SetUpdateEventMask(USE_UPDATE);
 }
 
-void Tile::Update(float timeStep)
+void Tile::Update(float)
 {
 
-    float elapsedTime{ MC->scene_->GetElapsedTime() };
+    float elapsedTime{ GetScene()->GetElapsedTime() };
     float offsetY{ 0.0f };
 
     //Switch curcuit
@@ -56,13 +67,14 @@ void Tile::Update(float timeStep)
         node_->SetRotation(Quaternion(Random(3) * 120.0f + 60.0f * flipped_, Vector3::UP));
 
     //Calculate periodic tile movement
-    wave_ = 7.0f * pow(LucKey::Sine(Abs(centerDistExp_ - elapsedTime * 5.2625f)), 4.0f);
+    wave_ = 7.0f * PosIntPow(Sine(Abs(centerDistExp_ - elapsedTime * 5.2625f)), 4);
 
-    for (Pair<Vector3, float> hexAffector : node_->GetParentComponent<Arena>()->GetEffectVector()) {
+    for (Pair<Vector3, float> hexAffector : Arena::effectVector_) {
 
         float offsetYPart{ hexAffector.second_ - (0.1f * referencePosition_.DistanceToPoint(hexAffector.first_)) };
         if (offsetYPart > 0.0f) {
-            offsetYPart = Pow(offsetYPart, 4.0f);
+
+            offsetYPart = PosIntPow(offsetYPart, 4);
             offsetY += offsetYPart;
         }
     }
